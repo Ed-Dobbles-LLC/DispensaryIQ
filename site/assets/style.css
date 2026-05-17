@@ -1635,3 +1635,73 @@ a:hover { color: var(--teal-bright); }
   .diq-page-header { page-break-after: avoid; }
   .diq-dim-grid { page-break-after: always; }
 }
+
+
+/* ============================================================
+   v11 — Export button group
+   ============================================================ */
+.diq-export-group {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+.diq-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid rgba(133, 228, 253, 0.20);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  font-family: 'Calibri', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.diq-export-btn:hover {
+  border-color: var(--teal-bright);
+  color: var(--teal-bright);
+  background: rgba(0, 185, 142, 0.06);
+}
+.diq-export-btn-all {
+  background: rgba(0, 185, 142, 0.08);
+  border-color: rgba(0, 185, 142, 0.40);
+  color: var(--teal-bright);
+}
+.diq-export-btn-all:hover {
+  background: rgba(0, 185, 142, 0.14);
+  border-color: var(--teal-bright);
+}
+.diq-export-btn svg { flex-shrink: 0; }
+
+@media print {
+  .diq-export-group { display: none !important; }
+}
+
+/* On narrow screens, collapse text labels */
+@media (max-width: 980px) {
+  .diq-export-btn span { display: none; }
+  .diq-export-btn { padding: 6px 8px; }
+}
+
+
+/* ============================================================
+   v12 — Table column alignment
+   First column: flush left.  All other columns (headers + body): centered.
+   Overrides the legacy .r right-align class.
+   ============================================================ */
+.diq-cat-table th,
+.diq-cat-table td {
+  text-align: center;
+}
+.diq-cat-table th:first-child,
+.diq-cat-table td:first-child {
+  text-align: left;
+}
+.diq-cat-table th.r,
+.diq-cat-table td.r {
+  text-align: center;
+}

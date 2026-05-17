@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Price compliance · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=10">
 </head>
 <body>
 
@@ -23,13 +23,21 @@
       <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
       <a href="alerts.html" class="diq-nav-link">Alerts</a>
       <a href="territory.html" class="diq-nav-link phase">Territory</a>
-      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
-        </svg>
-        <span>Print</span>
-      </button>
+      <a href="named-accounts.html" class="diq-nav-link">Accounts</a>
+      <div class="diq-export-group" role="group" aria-label="Export options">
+        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save this page as PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/></svg>
+          <span>PDF</span>
+        </button>
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download this page as a PNG image">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/></svg>
+          <span>PNG</span>
+        </button>
+        <button onclick="diqExportAll()" class="diq-export-btn diq-export-btn-all" title="Bundle all 11 pages into one combined PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="2" width="9" height="11" rx="0.8"/><rect x="5" y="4" width="9" height="11" rx="0.8" fill="none"/></svg>
+          <span>All pages</span>
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -45,7 +53,7 @@
     </div>
 
     <h1 class="diq-page-title">Which retailers are off-band this week?</h1>
-    <p class="diq-page-subtitle">Until Curaleaf provides MSRP, we model Synthetic MSRP from two anchors: (1) median price at <strong>Curaleaf-owned stores</strong> (ground truth) when N&ge;3 doors carry the matched SKU, otherwise (2) cross-retailer modal price. Products are matched on <strong>brand &times; product type &times; pack size &times; THC band</strong>. Retailers are flagged at four severity bands (&plusmn;5/10/15/25%) against the Synthetic MSRP.</p>
+    <p class="diq-page-subtitle">Until Curaleaf provides MSRP, we model Synthetic MSRP from two anchors: (1) median price at <strong>Curaleaf-owned stores</strong> (ground truth) when N&ge;3 stores carry the matched SKU, otherwise (2) cross-retailer modal price. Products are matched on <strong>brand &times; product type &times; pack size &times; THC band</strong>. Retailers are flagged at four severity bands (&plusmn;5/10/15/25%) against the Synthetic MSRP.</p>
   </header>
 
   <section class="diq-section">
@@ -69,14 +77,14 @@
         <tr>
           <th>Brand &middot; type &middot; pack</th>
           <th>State</th>
-          <th class="r">Synthetic MSRP</th>
+          <th>Synthetic MSRP</th>
           <th>Anchor</th>
-          <th class="r">Retailers</th>
-          <th class="r">In-band (&plusmn;5%)</th>
-          <th class="r">Soft (5-10%)</th>
-          <th class="r">Hard (10-15%)</th>
-          <th class="r">Severe (15-25%)</th>
-          <th class="r">Extreme (&gt;25%)</th>
+          <th>Retailers</th>
+          <th>In-band (&plusmn;5%)</th>
+          <th>Soft (5-10%)</th>
+          <th>Hard (10-15%)</th>
+          <th>Severe (15-25%)</th>
+          <th>Extreme (&gt;25%)</th>
           <th>Direction</th>
         </tr>
       </thead>
@@ -92,43 +100,18 @@
     <table class="diq-cat-table">
       <thead><tr><th>Rule</th><th>Anchor</th><th>Minimum</th><th>Confidence</th></tr></thead>
       <tbody>
-        <tr>
-          <td>1. Curaleaf-owned modal</td>
-          <td>Median price at Curaleaf-owned stores carrying the matched SKU</td>
-          <td>N &ge; 3 Curaleaf-owned doors</td>
-          <td><span class="diq-verdict verdict-tight">HIGH (Curaleaf-owned)</span></td>
-        </tr>
-        <tr>
-          <td>2. Cross-retailer modal (Circana convention)</td>
-          <td>Median across all non-Curaleaf retailers carrying matched SKU</td>
-          <td>N &ge; 10 obs &amp; &ge; 3 distinct retailers</td>
-          <td><span class="diq-verdict verdict-tight">HIGH (market modal)</span></td>
-        </tr>
-        <tr>
-          <td>3. Trimmed-mean fallback</td>
-          <td>10% trimmed mean (trim 10% from each tail)</td>
-          <td>N &ge; 10 obs (no modal &ge; 30%)</td>
-          <td><span class="diq-verdict verdict-mod">MEDIUM</span></td>
-        </tr>
-        <tr>
-          <td>4. Multi-state escalation</td>
-          <td>Pilot-wide modal across IL/NJ/NY</td>
-          <td>State N &lt; 10 obs</td>
-          <td><span class="diq-verdict verdict-mod">MEDIUM (thin market)</span></td>
-        </tr>
-        <tr>
-          <td>5. Persistence rule (Nielsen RMS convention)</td>
-          <td>Synthetic MSRP does not change unless new modal persists 8 weeks</td>
-          <td>—</td>
-          <td>Anti-drift</td>
-        </tr>
+        <tr><td>1. Curaleaf-owned modal</td><td>Median price at Curaleaf-owned stores carrying the matched SKU</td><td>N &ge; 3 Curaleaf-owned stores</td><td><span class="diq-verdict verdict-tight">HIGH (Curaleaf-owned)</span></td></tr>
+        <tr><td>2. Cross-retailer modal</td><td>Median across all non-Curaleaf retailers carrying matched SKU</td><td>N &ge; 10 obs &amp; &ge; 3 distinct retailers</td><td><span class="diq-verdict verdict-tight">HIGH (market modal)</span></td></tr>
+        <tr><td>3. Trimmed-mean fallback</td><td>10% trimmed mean (trim 10% from each tail)</td><td>N &ge; 10 obs (no modal &ge; 30%)</td><td><span class="diq-verdict verdict-mod">MEDIUM</span></td></tr>
+        <tr><td>4. Multi-state escalation</td><td>Pilot-wide modal across IL/NJ/NY</td><td>State N &lt; 10 obs</td><td><span class="diq-verdict verdict-mod">MEDIUM (thin market)</span></td></tr>
+        <tr><td>5. Persistence rule</td><td>Synthetic MSRP does not change unless new modal persists 8 weeks</td><td>—</td><td>Anti-drift</td></tr>
       </tbody>
     </table>
     <p style="font-size:12px;color:var(--ink-faint);margin-top:8px">
-      <strong>Matching rules.</strong> brand_canonical (Curaleaf graph: Select, Grassroots, Find, Anthem, JAMS, Reef, B Noble); product_type (vape / flower / pre-roll / edible / concentrate, Headset-derived taxonomy); pack_size (weight_g in grams or size_mg in milligrams, parsed at extraction); THC band (quintile bins per category, e.g. flower 18–22% / 22–26% / 26–30% / 30%+). Unmatched cohorts are excluded from MSRP modeling — they appear in distribution counts but not in pricing compliance.
+      <strong>Matching rules.</strong> brand_canonical (Curaleaf graph: Select, Grassroots, Find, Anthem, JAMS, Reef, B Noble); product_type (vape / flower / pre-roll / edible / concentrate); pack_size (weight_g or size_mg, parsed at extraction); THC band (quintile bins per category, e.g. flower 18-22% / 22-26% / 26-30% / 30%+). Unmatched cohorts are excluded from MSRP modeling.
     </p>
     <p style="font-size:12px;color:var(--ink-faint);margin-top:8px">
-      <strong>Severity bands.</strong> &plusmn;5% = in-band (within typical weekly fluctuation, not flagged). &plusmn;5-10% = soft excursion. &plusmn;10-15% = hard excursion (fires P2 alert). &plusmn;15-25% = severe (fires P1 alert). &gt;&plusmn;25% = extreme (fires P0 alert). Both above-band and below-band excursions are reported &mdash; overpricing erodes velocity, underpricing erodes margin.
+      <strong>Severity bands.</strong> &plusmn;5% in-band (not flagged). &plusmn;5-10% soft. &plusmn;10-15% hard (fires P2 alert). &plusmn;15-25% severe (fires P1 alert). &gt;&plusmn;25% extreme (fires P0 alert). Both above-band and below-band excursions are reported.
     </p>
   </section>
 
@@ -151,55 +134,34 @@
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+<script src="assets/export.js?v=10"></script>
 
 <script>
 const DIQ_DATA = [{"brand": "Find", "type": "flower", "wt": 3.5, "state": "NY", "msrp": 19.5, "conf": "HIGH (Curaleaf-owned)", "cura_n": 3, "mkt_n": 12, "in": 1, "soft": 0, "hard": 1, "sev": 0, "ext": 10, "below": 0, "above": 10, "flag": "extreme"}, {"brand": "Select", "type": "vape", "wt": 1, "state": "NY", "msrp": 35.0, "conf": "HIGH (Curaleaf-owned)", "cura_n": 7, "mkt_n": 8, "in": 0, "soft": 1, "hard": 0, "sev": 0, "ext": 7, "below": 0, "above": 7, "flag": "extreme"}, {"brand": "Find", "type": "pre-roll", "wt": 1, "state": "NJ", "msrp": 12.0, "conf": "HIGH (Curaleaf-owned)", "cura_n": 4, "mkt_n": 6, "in": 0, "soft": 1, "hard": 0, "sev": 5, "ext": 0, "below": 4, "above": 1, "flag": "severe"}, {"brand": "Grassroots", "type": "pre-roll", "wt": 1, "state": "IL", "msrp": 10.35, "conf": "HIGH (Curaleaf-owned)", "cura_n": 4, "mkt_n": 7, "in": 0, "soft": 0, "hard": 0, "sev": 2, "ext": 5, "below": 0, "above": 7, "flag": "extreme"}, {"brand": "Find", "type": "flower", "wt": 28, "state": "NY", "msrp": 150.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 11, "in": 3, "soft": 0, "hard": 2, "sev": 6, "ext": 0, "below": 2, "above": 4, "flag": "severe"}, {"brand": "Find", "type": "flower", "wt": 3.5, "state": "NJ", "msrp": 35.75, "conf": "MEDIUM (thin market)", "cura_n": 2, "mkt_n": 6, "in": 1, "soft": 0, "hard": 2, "sev": 1, "ext": 2, "below": 2, "above": 1, "flag": "extreme"}, {"brand": "Grassroots", "type": "flower", "wt": 3.5, "state": "NY", "msrp": 40.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 16, "in": 6, "soft": 0, "hard": 3, "sev": 4, "ext": 3, "below": 3, "above": 4, "flag": "mixed"}, {"brand": "Select", "type": "vape", "wt": 2, "state": "IL", "msrp": 60.45, "conf": "HIGH (Curaleaf-owned)", "cura_n": 12, "mkt_n": 12, "in": 5, "soft": 1, "hard": 0, "sev": 0, "ext": 6, "below": 0, "above": 6, "flag": "extreme"}, {"brand": "Find", "type": "pre-roll", "wt": 6.25, "state": "IL", "msrp": 60.0, "conf": "MEDIUM (thin market)", "cura_n": 0, "mkt_n": 9, "in": 6, "soft": 0, "hard": 0, "sev": 0, "ext": 3, "below": 0, "above": 3, "flag": "extreme"}, {"brand": "Anthem", "type": "pre-roll", "wt": 2.5, "state": "IL", "msrp": 39.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 17, "in": 11, "soft": 0, "hard": 2, "sev": 3, "ext": 1, "below": 3, "above": 1, "flag": "severe"}, {"brand": "Grassroots", "type": "flower", "wt": 14, "state": "IL", "msrp": 75.0, "conf": "MEDIUM (thin market)", "cura_n": 2, "mkt_n": 8, "in": 3, "soft": 0, "hard": 0, "sev": 4, "ext": 1, "below": 2, "above": 3, "flag": "severe"}, {"brand": "Anthem", "type": "pre-roll", "wt": 3.5, "state": "IL", "msrp": 35.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 14, "in": 10, "soft": 0, "hard": 2, "sev": 0, "ext": 2, "below": 2, "above": 0, "flag": "mixed"}, {"brand": "Anthem", "type": "pre-roll", "wt": 1, "state": "IL", "msrp": 19.0, "conf": "HIGH (market modal)", "cura_n": 1, "mkt_n": 13, "in": 9, "soft": 2, "hard": 1, "sev": 0, "ext": 1, "below": 1, "above": 0, "flag": "in-band"}, {"brand": "Grassroots", "type": "flower", "wt": 3.5, "state": "IL", "msrp": 32.5, "conf": "HIGH (Curaleaf-owned)", "cura_n": 24, "mkt_n": 14, "in": 11, "soft": 1, "hard": 1, "sev": 1, "ext": 0, "below": 0, "above": 1, "flag": "in-band"}, {"brand": "JAMS", "type": "edible", "wt": 0.1, "state": "IL", "msrp": 12.0, "conf": "MEDIUM (thin market)", "cura_n": 0, "mkt_n": 6, "in": 6, "soft": 0, "hard": 0, "sev": 0, "ext": 0, "below": 0, "above": 0, "flag": "in-band"}];
-
-const FLAG_CLASS = {
-  'in-band':  'verdict-tight',
-  'mixed':    'verdict-mod',
-  'severe':   'verdict-wide',
-  'extreme':  'verdict-chaotic',
-};
-const FLAG_LABEL = {
-  'in-band':  'In-band overall',
-  'mixed':    'Mixed direction',
-  'severe':   'Severe — below or above',
-  'extreme':  'Extreme — flag for action',
-};
-
+const FLAG_CLASS = {'in-band':'verdict-tight','mixed':'verdict-mod','severe':'verdict-wide','extreme':'verdict-chaotic'};
+const FLAG_LABEL = {'in-band':'In-band overall','mixed':'Mixed direction','severe':'Severe — below or above','extreme':'Extreme — flag for action'};
 function fmtMoney(n) { return '$' + n.toFixed(2); }
-function pct(numerator, denominator) {
-  if (!denominator) return '—';
-  return Math.round(100 * numerator / denominator) + '%';
-}
-
 function render() {
   const tbody = document.getElementById('diq-price-tbody');
-  // Sort: extreme/severe first, then by retailer count off
   const sorted = [...DIQ_DATA].sort((a, b) => {
-    const sevOrder = {'extreme':0, 'severe':1, 'mixed':2, 'in-band':3};
+    const sevOrder = {'extreme':0,'severe':1,'mixed':2,'in-band':3};
     if (sevOrder[a.flag] !== sevOrder[b.flag]) return sevOrder[a.flag] - sevOrder[b.flag];
     return (b.ext + b.sev) - (a.ext + a.sev);
   });
   tbody.innerHTML = sorted.map(r => {
-    const sku = `<strong>${r.brand}</strong> · ${r.type} · ${r.wt}g`;
-    const inBandPct = pct(r['in'], r.mkt_n);
-    const offBand = r.hard + r.sev + r.ext;
-    const direction = r.below + r.above === 0 ? '—' :
-      `${r.below} below / ${r.above} above`;
+    const direction = r.below + r.above === 0 ? '—' : `${r.below} below / ${r.above} above`;
     return `
       <tr>
-        <td>${sku}</td>
-        <td><span class="cat-pill" style="background:var(--teal)"></span>${r.state}</td>
-        <td class="r"><strong>${fmtMoney(r.msrp)}</strong></td>
+        <td><strong>${r.brand}</strong> · ${r.type} · ${r.wt}g</td>
+        <td>${r.state}</td>
+        <td><strong>${fmtMoney(r.msrp)}</strong></td>
         <td><span class="diq-conf-${r.conf.includes('HIGH') ? 'high' : 'med'}">${r.conf}</span></td>
-        <td class="r">${r.mkt_n}</td>
-        <td class="r ${r['in'] > 0 ? 'diq-cell-good' : ''}">${r['in']}</td>
-        <td class="r">${r.soft}</td>
-        <td class="r">${r.hard || ''}</td>
-        <td class="r ${r.sev > 0 ? 'diq-cell-warn' : ''}">${r.sev || ''}</td>
-        <td class="r ${r.ext > 0 ? 'diq-cell-bad' : ''}">${r.ext || ''}</td>
+        <td>${r.mkt_n}</td>
+        <td class="${r['in'] > 0 ? 'diq-cell-good' : ''}">${r['in']}</td>
+        <td>${r.soft}</td>
+        <td>${r.hard || ''}</td>
+        <td class="${r.sev > 0 ? 'diq-cell-warn' : ''}">${r.sev || ''}</td>
+        <td class="${r.ext > 0 ? 'diq-cell-bad' : ''}">${r.ext || ''}</td>
         <td>${direction} <span class="diq-verdict ${FLAG_CLASS[r.flag]}">${FLAG_LABEL[r.flag]}</span></td>
       </tr>`;
   }).join('');

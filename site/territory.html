@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Territory · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=10">
 </head>
 <body>
 
@@ -24,12 +24,26 @@
       <a href="alerts.html" class="diq-nav-link">Alerts</a>
       <a href="territory.html" class="diq-nav-link active phase">Territory</a>
       <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
-        </svg>
-        <span>Print</span>
-      </button>
+      <div class="diq-export-group" role="group" aria-label="Export options">
+        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save this page as PDF (uses your browser's Save as PDF)">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
+          </svg>
+          <span>PDF</span>
+        </button>
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download this page as a PNG image">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/>
+          </svg>
+          <span>PNG</span>
+        </button>
+        <button onclick="diqExportAll()" class="diq-export-btn diq-export-btn-all" title="Bundle all 11 pages into one combined PDF for sharing">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="3" y="2" width="9" height="11" rx="0.8"/><rect x="5" y="4" width="9" height="11" rx="0.8" fill="none"/>
+          </svg>
+          <span>All pages</span>
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -45,7 +59,7 @@
     </div>
 
     <h1 class="diq-page-title">Territory view — RVP heatmap</h1>
-    <p class="diq-page-subtitle">The territory layer rolls up the five-dimension execution scorecard into RVP territory boundaries with traffic-light status. Modeled on Diageo's EDGE territory-management view. This is the bridge between Brooke's market-level scorecard and the account-level action list (Phase 3).</p>
+    <p class="diq-page-subtitle">The territory layer rolls up the five-dimension execution scorecard into RVP territory boundaries with traffic-light status. This is the bridge between Brooke's market-level scorecard and the account-level action list (Phase 3).</p>
   </header>
 
   <section class="diq-section">
@@ -124,7 +138,7 @@
   <section class="diq-section">
     <div class="diq-callout">
       <p class="diq-callout-label">&#9656; What this unlocks</p>
-      <p style="margin:0">Once live, each RVP owns their territory's five-dimension scorecard. A Monday-morning view answers "which territories are red, which are green, which are trending wrong direction?" Drill-down from any territory lands on the account-level action list (Phase 3). The state scorecard then aggregates territories instead of summing dispensaries. This is the operational layer Diageo's EDGE works through; we adopt the same pattern.</p>
+      <p style="margin:0">Once live, each RVP owns their territory's five-dimension scorecard. A Monday-morning view answers "which territories are red, which are green, which are trending wrong direction?" Drill-down from any territory lands on the account-level action list (Phase 3). The state scorecard then aggregates territories instead of summing dispensaries directly.</p>
     </div>
   </section>
 
@@ -141,5 +155,6 @@
   </div>
 </footer>
 
+<script src="assets/export.js?v=10"></script>
 </body>
 </html>

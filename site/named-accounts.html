@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Accounts · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=10">
 </head>
 <body>
 
@@ -23,13 +23,21 @@
       <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
       <a href="alerts.html" class="diq-nav-link">Alerts</a>
       <a href="territory.html" class="diq-nav-link phase">Territory</a>
-      <a href="named-accounts.html" class="diq-nav-link active phase">Accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
-        </svg>
-        <span>Print</span>
-      </button>
+      <a href="named-accounts.html" class="diq-nav-link active">Accounts</a>
+      <div class="diq-export-group" role="group" aria-label="Export options">
+        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save this page as PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/></svg>
+          <span>PDF</span>
+        </button>
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download this page as a PNG image">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/></svg>
+          <span>PNG</span>
+        </button>
+        <button onclick="diqExportAll()" class="diq-export-btn diq-export-btn-all" title="Bundle all 11 pages into one combined PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="2" width="9" height="11" rx="0.8"/><rect x="5" y="4" width="9" height="11" rx="0.8" fill="none"/></svg>
+          <span>All pages</span>
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -37,7 +45,7 @@
 <main class="diq-main">
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Phase 3 wireframe &middot; Q4 2026 &middot; <span class="diq-preview-pill">Roadmapped</span></p>
+    <p class="diq-page-eyebrow">Report &middot; Named-account action list &middot; <span class="diq-preview-pill">Live data</span></p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
@@ -45,88 +53,49 @@
     </div>
 
     <h1 class="diq-page-title">Named-account action list</h1>
-    <p class="diq-page-subtitle">Store-level prescriptions: which accounts to engage this week, with what intervention, against which competitor. The bottom layer of Brooke's three-layer Monday vision (Market / Territory / Account).</p>
+    <p class="diq-page-subtitle">Real dispensaries from this week's capture, ranked by priority. P0 pricing offenders are the most extreme deviations from Synthetic MSRP at retailers carrying Curaleaf SKUs. P1 distribution opportunities are top NY at-risk prospects (carrying Leal/Rolling Green, no Find).</p>
   </header>
 
   <section class="diq-section">
-    <div class="diq-callout" style="border-color: #DB8C5E; background: rgba(219, 140, 94, 0.06)">
-      <p class="diq-callout-label" style="color: #DB8C5E">&#9656; Phase 3 — Q4 2026</p>
-      <p style="margin:0">Account-level action list requires (a) named-account universe from Curaleaf sales operations, (b) account-owner assignments, (c) commercial-terms-data access (current contract, current programs, current target SKUs). Wireframe below shows the operating shape — what arrives in Brooke's Monday email at the account-level granularity.</p>
+    <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
+      <p class="diq-callout-label" style="color: var(--coral)">&#9656; This week &middot; P0 pricing action list</p>
+      <p style="margin:0">12 named accounts pricing Curaleaf SKUs &ge;25% above (or below) Synthetic MSRP, with at least 3 observations supporting the call. Worst offenders are New York Select 1g vape stores (RISE Dispensary NY at +71% with 26 observations is the most credible call). Illinois has the deepest Select 2g vape excursions at Maribis and Greenhouse.</p>
     </div>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Wireframe &middot; Monday action list</h2>
-      <span class="diq-section-meta">Illustrative layout &middot; sample data</span>
+      <h2 class="diq-section-title">P0 / P1 pricing offenders</h2>
+      <span class="diq-section-meta">Real dispensaries &middot; ranked by deviation magnitude &middot; minimum 3 observations</span>
     </div>
     <table class="diq-cat-table">
-      <thead>
-        <tr>
-          <th style="width:50px">Pri</th>
-          <th>Account</th>
-          <th>City</th>
-          <th>Avail</th>
-          <th>Pricing</th>
-          <th>Promo</th>
-          <th>Vis</th>
-          <th>Comp</th>
-          <th>Recommended action this week</th>
-          <th>Owner</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="background: rgba(219, 84, 97, 0.04)">
-          <td><span class="diq-pri diq-pri-p0">P0</span></td>
-          <td><strong>[Account A]</strong></td>
-          <td>Brooklyn</td>
-          <td>●</td><td>⚠</td><td>●</td><td>●</td><td>⚠</td>
-          <td style="font-size:12px">Find 3.5g pricing 38% above MSRP &middot; Leal gained 8 SKUs; engage on Find merchandising swap</td>
-          <td style="font-size:11px;color:var(--ink-soft)">[RVP 3]</td>
-        </tr>
-        <tr style="background: rgba(219, 84, 97, 0.04)">
-          <td><span class="diq-pri diq-pri-p0">P0</span></td>
-          <td><strong>[Account B]</strong></td>
-          <td>Newark</td>
-          <td>●</td><td>⚠</td><td>●</td><td>●</td><td>●</td>
-          <td style="font-size:12px">Find 1g pre-roll 22% below MSRP &middot; promotional or systemic? Engage account manager</td>
-          <td style="font-size:11px;color:var(--ink-soft)">[RVP 1]</td>
-        </tr>
-        <tr>
-          <td><span class="diq-pri diq-pri-p1">P1</span></td>
-          <td>[Account C]</td>
-          <td>Chicago</td>
-          <td>○</td><td>●</td><td>●</td><td>●</td><td>●</td>
-          <td style="font-size:12px">Curaleaf absent — competitor carries 23 SKUs &middot; distribution opportunity</td>
-          <td style="font-size:11px;color:var(--ink-soft)">[RVP 4]</td>
-        </tr>
-        <tr>
-          <td><span class="diq-pri diq-pri-p1">P1</span></td>
-          <td>[Account D]</td>
-          <td>Manhattan</td>
-          <td>●</td><td>●</td><td>●</td><td>⚠</td><td>●</td>
-          <td style="font-size:12px">Featured share dropped &mdash;7pp WoW for Select &middot; review banner placement</td>
-          <td style="font-size:11px;color:var(--ink-soft)">[RVP 4]</td>
-        </tr>
-        <tr>
-          <td><span class="diq-pri diq-pri-p2">P2</span></td>
-          <td>[Account E]</td>
-          <td>Jersey City</td>
-          <td>●</td><td>●</td><td>⚠</td><td>●</td><td>●</td>
-          <td style="font-size:12px">Promo penetration spike to 67% &middot; investigate inventory-clearance vs activation</td>
-          <td style="font-size:11px;color:var(--ink-soft)">[RVP 2]</td>
-        </tr>
-      </tbody>
+      <thead><tr><th>Account</th><th>City</th><th>State</th><th>Brand &middot; pack</th><th>Observed</th><th>MSRP</th><th>Deviation</th><th>Obs</th><th>Action</th><th>Pri</th></tr></thead>
+      <tbody id="diq-pricing-tbody"></tbody>
     </table>
-    <p style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-family:'Consolas',monospace">
-      <strong>WIREFRAME ONLY.</strong> Account names redacted. Status indicators are illustrative. Live version surfaces top 10-20 priority accounts ranked by composite-priority score (priority brand &times; account size &times; severity). Each row links to a single-account view: 4-week trend across all 5 dimensions, contract terms, owner, and last-touched timestamp.
-    </p>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">P1 distribution opportunities &middot; top NY at-risk prospects</h2>
+      <span class="diq-section-meta">NY dispensaries carrying Leal/Rolling Green with zero Find &middot; ranked by competitor SKU count</span>
+    </div>
+    <table class="diq-cat-table">
+      <thead><tr><th>Account</th><th>City</th><th>State</th><th>Observed</th><th>Action</th><th>Pri</th></tr></thead>
+      <tbody id="diq-dist-tbody"></tbody>
+    </table>
   </section>
 
   <section class="diq-section">
     <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; The pitch beat</p>
-      <p style="margin:0">Phase 1 (Market view, this pilot): tells Brooke <em>what is happening</em>. Phase 2 (Territory view, Q3): tells RVPs <em>where to focus</em>. Phase 3 (Account view, Q4): tells the field rep <em>what to do today</em>. The three layers operate on the same five-dimension scorecard and the same Synthetic-MSRP foundation. Account view is the operational end-state — sales execution.</p>
+      <p class="diq-callout-label">&#9656; Sample size and confidence</p>
+      <p style="margin:0">Every account on this list has at least 3 price observations for the flagged SKU cohort. The highest-confidence call is RISE Dispensary NY on Select 1g vape (n=26). Below n=10 the deviation is directional, not statistically conclusive. Phase 3 will add account-owner assignment, last-touched timestamp, and a 4-week trend across the five execution dimensions per account.</p>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout" style="border-color: #DB8C5E; background: rgba(219, 140, 94, 0.06)">
+      <p class="diq-callout-label" style="color: #DB8C5E">&#9656; Phase 3 enhancement &middot; Q4 2026</p>
+      <p style="margin:0">The above lists are real data, surfaced today. Phase 3 adds: (a) account-owner assignment from Curaleaf sales ops, (b) 4-week trend across all five dimensions per account, (c) commercial-terms overlay (current contract, current programs, target SKUs), (d) recommended-action templates per offender pattern, (e) last-touched timestamp. The data layer is live; the operational wrapper unlocks once Curaleaf provides the named-account universe and owner assignments.</p>
     </div>
   </section>
 
@@ -142,6 +111,38 @@
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+<script src="assets/export.js?v=10"></script>
+
+<script>
+const PRICING = [{"name": "RISE Dispensary", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$60.00", "msrp": "$35.00", "dev": "+71%", "n": 26, "action": "Pricing investigation \u2014 highest sample-size offender in pilot", "flag": "P0"}, {"name": "ZenZest", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$68.00", "msrp": "$35.00", "dev": "+94%", "n": 8, "action": "Pricing investigation", "flag": "P0"}, {"name": "Maribis of Springfield", "city": "Springfield", "state": "IL", "brand": "Select 2g vape", "observed": "$90.00", "msrp": "$60.45", "dev": "+49%", "n": 7, "action": "Pricing investigation", "flag": "P0"}, {"name": "Greenhouse Dispensary", "city": "Deerfield", "state": "IL", "brand": "Select 2g vape", "observed": "$93.00", "msrp": "$60.45", "dev": "+54%", "n": 6, "action": "Pricing investigation", "flag": "P0"}, {"name": "Vireo Health", "city": "Johnson City", "state": "NY", "brand": "Select 1g vape", "observed": "$50.00", "msrp": "$35.00", "dev": "+43%", "n": 5, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Dispensary", "city": "New York", "state": "NY", "brand": "Find 3.5g flower", "observed": "$35.00", "msrp": "$19.50", "dev": "+80%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Dispensary", "city": "Charleston", "state": "IL", "brand": "Find 6.25g pre-roll", "observed": "$85.00", "msrp": "$60.00", "dev": "+42%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Medical & Rec Dispensary", "city": "Canton", "state": "IL", "brand": "Find 6.25g pre-roll", "observed": "$85.00", "msrp": "$60.00", "dev": "+42%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "Lighthouse Cannabis", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$59.29", "msrp": "$35.00", "dev": "+69%", "n": 3, "action": "Pricing investigation", "flag": "P0"}, {"name": "SWAY Cannabis Dispensary", "city": "Chicago", "state": "IL", "brand": "Select 1g vape", "observed": "$50.00", "msrp": "$30.00", "dev": "+67%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "Beyond/Hello - Sauget", "city": "Sauget", "state": "IL", "brand": "Anthem 1g pre-roll", "observed": "$12.00", "msrp": "$19.00", "dev": "-37%", "n": 6, "action": "Pricing investigation (below-band)", "flag": "P1"}, {"name": "Beyond/Hello - Sauget", "city": "Sauget", "state": "IL", "brand": "Anthem 2.5g pre-roll", "observed": "$25.00", "msrp": "$39.00", "dev": "-36%", "n": 4, "action": "Pricing investigation (below-band)", "flag": "P1"}];
+const DIST = [{"name": "Black Market Canna Co LLC", "city": "Poughkeepsie", "state": "NY", "observed": "185 comp SKUs (Leal+RG)", "action": "Distribution opportunity \u2022 largest at-risk prospect in NY", "flag": "P1"}, {"name": "Misfits Dispensary", "city": "Rochester", "state": "NY", "observed": "177 Rolling Green SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Aspire", "city": "Ithaca", "state": "NY", "observed": "118 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "The Station Beacon", "city": "Beacon", "state": "NY", "observed": "115 Leal SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Northern Lights Dispensary", "city": "Canton", "state": "NY", "observed": "113 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Bloom Cannabis Dispensary", "city": "Penn Yan", "state": "NY", "observed": "99 Rolling Green SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Dryden Dispensary", "city": "Dryden", "state": "NY", "observed": "95 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Leafy Peaks", "city": "Waterford", "state": "NY", "observed": "85 Leal SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Wild Flower Dispensary", "city": "Auburn", "state": "NY", "observed": "83 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Smiley Exotics", "city": "New York", "state": "NY", "observed": "78 comp SKUs (Leal+RG)", "action": "Distribution opportunity \u2022 Manhattan", "flag": "P1"}];
+const PRI_CLS = {'P0':'diq-pri-p0','P1':'diq-pri-p1','P2':'diq-pri-p2','P3':'diq-pri-p3'};
+function priBadge(p) { return `<span class="diq-pri ${PRI_CLS[p]}">${p}</span>`; }
+
+document.getElementById('diq-pricing-tbody').innerHTML = PRICING.map(a => `
+  <tr${a.flag === 'P0' ? ' style="background: rgba(219, 84, 97, 0.04)"' : ''}>
+    <td><strong>${a.name}</strong></td>
+    <td>${a.city}</td>
+    <td>${a.state}</td>
+    <td>${a.brand}</td>
+    <td>${a.observed}</td>
+    <td>${a.msrp}</td>
+    <td><strong style="color:${a.dev.startsWith('-') ? 'var(--sky)' : 'var(--coral)'}">${a.dev}</strong></td>
+    <td>${a.n}</td>
+    <td style="font-size:12px;color:var(--ink-soft)">${a.action}</td>
+    <td>${priBadge(a.flag)}</td>
+  </tr>`).join('');
+
+document.getElementById('diq-dist-tbody').innerHTML = DIST.map(a => `
+  <tr>
+    <td><strong>${a.name}</strong></td>
+    <td>${a.city}</td>
+    <td>${a.state}</td>
+    <td>${a.observed}</td>
+    <td style="font-size:12px;color:var(--ink-soft)">${a.action}</td>
+    <td>${priBadge(a.flag)}</td>
+  </tr>`).join('');
+</script>
 
 </body>
 </html>

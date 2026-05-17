@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>NY watchlist · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=10">
 </head>
 <body>
 
@@ -23,13 +23,21 @@
       <a href="ny-find.html" class="diq-nav-link active">NY watchlist</a>
       <a href="alerts.html" class="diq-nav-link">Alerts</a>
       <a href="territory.html" class="diq-nav-link phase">Territory</a>
-      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
-        </svg>
-        <span>Print</span>
-      </button>
+      <a href="named-accounts.html" class="diq-nav-link">Accounts</a>
+      <div class="diq-export-group" role="group" aria-label="Export options">
+        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save this page as PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/></svg>
+          <span>PDF</span>
+        </button>
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download this page as a PNG image">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/></svg>
+          <span>PNG</span>
+        </button>
+        <button onclick="diqExportAll()" class="diq-export-btn diq-export-btn-all" title="Bundle all 11 pages into one combined PDF">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="2" width="9" height="11" rx="0.8"/><rect x="5" y="4" width="9" height="11" rx="0.8" fill="none"/></svg>
+          <span>All pages</span>
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -45,13 +53,13 @@
     </div>
 
     <h1 class="diq-page-title">FIND vs Leal &amp; Rolling Green: NY door-by-door</h1>
-    <p class="diq-page-subtitle">Brooke flagged FIND as under attack from Leal and Rolling Green in NY on May 11. This page is the operational drill-down. Same four-quadrant framework applies to every NY priority brand (Select, Briq 2, Grassroots, Knack, Mini Mart, plus the defunct 1937).</p>
+    <p class="diq-page-subtitle">Brooke flagged FIND as under attack from Leal and Rolling Green in NY on May 11. This page is the operational drill-down. The same four-quadrant framework applies to every NY priority brand (Select, Briq 2, Grassroots, Knack, Mini Mart, plus the defunct 1937).</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
       <p class="diq-callout-label" style="color: var(--coral)">&#9656; The headline</p>
-      <p style="margin:0">Leal (69 doors) and Rolling Green (100 doors) combined cover <strong>169 of 558 tracked NY dispensaries</strong>. Find. is in 89. The two competitor brands jointly outdistribute Find by <strong>1.9x</strong> in the NY adult-use market. The 92 Q1 at-risk prospect stores (Leal/RG carried, no Find) are the immediate trade-marketing follow-up cohort.</p>
+      <p style="margin:0">Leal (69 dispensaries) and Rolling Green (100 dispensaries) combined cover <strong>169 of 558 tracked NY dispensaries</strong>. Find is in 89. The two competitor brands jointly outdistribute Find by <strong>1.9x</strong> in the NY adult-use market. The 92 Q1 at-risk prospect dispensaries (Leal/RG carried, no Find) are the immediate trade-marketing follow-up cohort.</p>
     </div>
   </section>
 
@@ -101,31 +109,21 @@
       <span class="diq-section-meta">NY adult-use universe &middot; pilot Week 20</span>
     </div>
     <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th class="r">Doors</th><th class="r">SKUs tracked</th><th class="r">Avg SKUs / door</th></tr></thead>
+      <thead><tr><th>Brand</th><th>Dispensaries</th><th>SKUs tracked</th><th>Avg SKUs / dispensary</th></tr></thead>
       <tbody>
         <tr class="diq-row-curaleaf">
           <td><strong>Find</strong> <span class="diq-curaleaf-tag">Curaleaf</span></td>
-          <td class="r"><strong>89</strong></td>
-          <td class="r">1,847</td>
-          <td class="r">20.8</td>
+          <td><strong>89</strong></td>
+          <td>1,847</td>
+          <td>20.8</td>
         </tr>
-        <tr>
-          <td>Leal</td>
-          <td class="r">69</td>
-          <td class="r">1,719</td>
-          <td class="r">24.9</td>
-        </tr>
-        <tr>
-          <td>Rolling Green</td>
-          <td class="r">100</td>
-          <td class="r">2,170</td>
-          <td class="r">21.7</td>
-        </tr>
+        <tr><td>Leal</td><td>69</td><td>1,719</td><td>24.9</td></tr>
+        <tr><td>Rolling Green</td><td>100</td><td>2,170</td><td>21.7</td></tr>
         <tr style="border-top: 2px solid var(--coral); background: rgba(219, 84, 97, 0.04)">
           <td><strong>Leal + Rolling Green combined</strong></td>
-          <td class="r"><strong>169</strong></td>
-          <td class="r"><strong>3,889</strong></td>
-          <td class="r"><strong>23.0</strong></td>
+          <td><strong>169</strong></td>
+          <td><strong>3,889</strong></td>
+          <td><strong>23.0</strong></td>
         </tr>
       </tbody>
     </table>
@@ -133,66 +131,56 @@
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Contest-zone pricing &middot; Find 3.5g flower in 45 Q2 stores</h2>
-      <span class="diq-section-meta">Head-to-head matched-SKU pricing</span>
+      <h2 class="diq-section-title">Contest-zone pricing &middot; Find 3.5g flower</h2>
+      <span class="diq-section-meta">Head-to-head matched-SKU pricing across the 45 Q2 dispensaries</span>
     </div>
     <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th class="r">Synthetic MSRP / median</th><th class="r">Obs</th><th class="r">P25</th><th class="r">P75</th><th>Anchor</th></tr></thead>
+      <thead><tr><th>Brand</th><th>Synthetic MSRP / median</th><th>Observations</th><th>P25</th><th>P75</th><th>Anchor</th></tr></thead>
       <tbody>
         <tr class="diq-row-curaleaf">
           <td><strong>Find</strong> <span class="diq-curaleaf-tag">Curaleaf</span></td>
-          <td class="r"><strong>$19.50</strong> (Curaleaf-owned anchor)</td>
-          <td class="r">21</td>
-          <td class="r">$25.00</td>
-          <td class="r">$35.00</td>
+          <td><strong>$19.50</strong> (Curaleaf-owned anchor)</td>
+          <td>21</td><td>$25.00</td><td>$35.00</td>
           <td><span class="diq-verdict verdict-tight">HIGH</span></td>
         </tr>
         <tr>
           <td>Market modal (Find at non-Curaleaf retailers)</td>
-          <td class="r">$30.00</td>
-          <td class="r">21</td>
-          <td class="r">$25.00</td>
-          <td class="r">$35.00</td>
+          <td>$30.00</td><td>21</td><td>$25.00</td><td>$35.00</td>
           <td><span class="diq-verdict verdict-mod">MEDIUM</span></td>
         </tr>
         <tr>
-          <td>Leal &middot; matched 3.5g (estimated)</td>
-          <td class="r">—</td>
-          <td class="r"><em>upcoming</em></td>
-          <td class="r">—</td>
-          <td class="r">—</td>
+          <td>Leal &middot; matched 3.5g</td>
+          <td>—</td><td><em>upcoming</em></td><td>—</td><td>—</td>
           <td><span style="color:var(--ink-faint)">Phase 2</span></td>
         </tr>
         <tr>
-          <td>Rolling Green &middot; matched 3.5g (estimated)</td>
-          <td class="r">—</td>
-          <td class="r"><em>upcoming</em></td>
-          <td class="r">—</td>
-          <td class="r">—</td>
+          <td>Rolling Green &middot; matched 3.5g</td>
+          <td>—</td><td><em>upcoming</em></td><td>—</td><td>—</td>
           <td><span style="color:var(--ink-faint)">Phase 2</span></td>
         </tr>
       </tbody>
     </table>
-    <p style="font-size:12px;color:var(--ink-faint);margin-top:8px"><strong>NEXT.</strong> Leal and Rolling Green matched-cohort pricing extraction is in the next capture run. The methodology is identical: match by product type &times; pack size &times; THC band, compute matched-SKU median. Goal: head-to-head Find vs Leal vs RG pricing in the 45 Q2 contest stores.</p>
+    <p style="font-size:12px;color:var(--ink-faint);margin-top:8px"><strong>NEXT.</strong> Leal and Rolling Green matched-cohort pricing extraction is in the next capture run. The methodology is identical: match by product type &times; pack size &times; THC band, compute matched-SKU median. Goal: head-to-head Find vs Leal vs RG pricing in the 45 Q2 contest dispensaries.</p>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
       <h2 class="diq-section-title">NY priority-brand watchlist</h2>
-      <span class="diq-section-meta">Brooke's May 11 flagged set &middot; full architecture, partial data</span>
+      <span class="diq-section-meta">Brooke's May 11 flagged set &middot; verified door counts from live capture data</span>
     </div>
     <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th class="r">NY doors</th><th>Status</th><th>Top threat</th><th>Notes</th></tr></thead>
+      <thead><tr><th>Brand</th><th>NY dispensaries</th><th>Status</th><th>Top threat</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Select</td><td class="r">187</td><td><span class="diq-verdict verdict-tight">●</span></td><td>Stiiizy</td><td>Strong distribution; 7 of 8 retailers pricing 1g vape extreme above $35 anchor</td></tr>
-        <tr><td>Briq 2 (Fernway Traveler)</td><td class="r">51</td><td><span class="diq-verdict verdict-tight">●</span></td><td>Fernway</td><td>Growing footprint; +8 doors WoW</td></tr>
-        <tr><td>Grassroots</td><td class="r">143</td><td><span class="diq-verdict verdict-tight">●</span></td><td>Rythm (GTI)</td><td>16 NY retailers tracked, 4 extreme above-band</td></tr>
-        <tr class="diq-row-curaleaf"><td><strong>FIND</strong></td><td class="r"><strong>89</strong></td><td><span class="diq-verdict verdict-chaotic">⚠ P0</span></td><td><strong>Leal + Rolling Green</strong></td><td>Under attack &middot; this drill-down ↑</td></tr>
-        <tr><td>Knack</td><td class="r">92</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>No active competitive threat detected</td></tr>
-        <tr><td>Mini Mart / Grocery</td><td class="r">38</td><td><span class="diq-verdict verdict-mod">● cold start</span></td><td>—</td><td>New SKU set &middot; insufficient data for fair-share index yet</td></tr>
-        <tr style="opacity:0.4"><td>1937 (Pharmacann)</td><td class="r">—</td><td>—</td><td>defunct</td><td>Per Brooke May 11: acquired by Pharmacann, defunct in NY. Retained in watchlist for institutional memory.</td></tr>
+        <tr><td>Select (incl. Briq sub-line)</td><td>69</td><td><span class="diq-verdict verdict-chaotic">⚠ P0</span></td><td>Stiiizy</td><td>7 of 8 NY retailers pricing 1g vape extreme above $35 anchor</td></tr>
+        <tr><td>Grassroots</td><td>77</td><td><span class="diq-verdict verdict-mod">●</span></td><td>Rythm (GTI)</td><td>16 NY retailers tracked, 4 extreme above-band on 3.5g flower</td></tr>
+        <tr class="diq-row-curaleaf"><td><strong>FIND</strong></td><td><strong>89</strong></td><td><span class="diq-verdict verdict-chaotic">⚠ P0</span></td><td><strong>Leal + Rolling Green</strong></td><td>Under attack &middot; this drill-down &uarr;</td></tr>
+        <tr><td>Knack</td><td>36</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>No active competitive threat detected</td></tr>
+        <tr><td>Mini Mart / Grocery</td><td>84</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>Highest carriage among newer Curaleaf NY SKUs</td></tr>
+        <tr><td>Anthem</td><td>57</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>Pre-roll specialist, mid carriage</td></tr>
+        <tr style="opacity:0.4"><td>1937 (Pharmacann)</td><td>—</td><td>—</td><td>defunct</td><td>Per Brooke May 11: acquired by Pharmacann, defunct in NY. Retained in watchlist for institutional memory.</td></tr>
       </tbody>
     </table>
+    <p style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-family:'Consolas',monospace">Note: NY tracked universe is 558 dispensaries with extraction data, out of 732 addressable. The remaining 174 are in pipeline for next capture cycle.</p>
   </section>
 
 </main>
@@ -207,6 +195,7 @@
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+<script src="assets/export.js?v=10"></script>
 
 </body>
 </html>
