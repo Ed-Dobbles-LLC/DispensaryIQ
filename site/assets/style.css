@@ -524,6 +524,30 @@ a:hover { color: var(--teal-bright); }
 }
 .diq-card:hover .diq-card-arrow { color: var(--sky); transform: translate(2px, -2px); }
 
+
+.diq-print-btn {
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-soft);
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  margin-left: 16px;
+}
+.diq-print-btn:hover {
+  color: var(--ink);
+  border-color: var(--teal);
+  background: rgba(0, 185, 142, 0.06);
+}
+
 .diq-footer {
   border-top: 1px solid var(--rule);
   background: var(--navy-deep);
@@ -560,4 +584,290 @@ a:hover { color: var(--teal-bright); }
   .diq-dist-summary { border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; padding-bottom: 24px; }
   .diq-bucket { grid-template-columns: 84px 1fr 48px; gap: 10px; }
   .diq-prepared-for { width: 100%; max-width: 100%; }
+}
+
+/* ============================================================
+   PRINT STYLES — landscape, light theme, page-break aware
+   ============================================================ */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0.4in;
+  }
+
+  /* Force background colors and SVG fills to print */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #060A57;
+    font-size: 10pt;
+    line-height: 1.4;
+  }
+
+  a { color: #060A57; text-decoration: none; }
+
+  /* Hide screen-only chrome */
+  .diq-nav { display: none !important; }
+  .diq-print-btn { display: none !important; }
+  .diq-card.disabled { display: none !important; }
+  .diq-card-arrow { display: none !important; }
+
+  /* Main container reset */
+  .diq-main {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* PAGE HEADER */
+  .diq-page-header {
+    border-bottom: 1.5pt solid #060A57;
+    padding-bottom: 10pt;
+    margin-bottom: 14pt;
+    page-break-after: avoid;
+  }
+  .diq-page-eyebrow {
+    color: #00B98E !important;
+    font-size: 8pt;
+    margin: 0 0 6pt;
+  }
+  .diq-page-title {
+    color: #060A57 !important;
+    font-size: 24pt;
+    margin: 0 0 4pt;
+  }
+  .diq-page-subtitle {
+    color: #4a5568 !important;
+    font-size: 11pt;
+    max-width: 100%;
+  }
+  .diq-page-subtitle strong { color: #060A57 !important; }
+
+  /* PREPARED FOR — keep this visible and clean */
+  .diq-prepared-for {
+    background: #f5f6fa !important;
+    border: 0.5pt solid rgba(6, 10, 87, 0.18);
+    margin: 0 0 12pt;
+    padding: 6pt 10pt;
+    border-radius: 3pt;
+    page-break-inside: avoid;
+  }
+  .diq-prepared-label {
+    color: #718096 !important;
+    border-right-color: rgba(6, 10, 87, 0.18) !important;
+    font-size: 8pt;
+    padding-right: 10pt;
+  }
+  .diq-prepared-logo {
+    height: 18pt !important;
+    /* Invert white wordmark to navy via SVG fill override */
+    filter: invert(7%) sepia(83%) saturate(7150%) hue-rotate(243deg) brightness(40%) contrast(110%);
+  }
+
+  /* SECTION */
+  .diq-section {
+    margin: 0 0 14pt;
+    page-break-inside: avoid;
+  }
+  .diq-section-head {
+    border-bottom: 0.5pt solid rgba(6, 10, 87, 0.20);
+    padding-bottom: 5pt;
+    margin-bottom: 10pt;
+    page-break-after: avoid;
+  }
+  .diq-section-title {
+    color: #060A57 !important;
+    font-size: 14pt;
+  }
+  .diq-section-meta {
+    color: #718096 !important;
+    font-size: 8pt;
+  }
+
+  /* TILES — light card style */
+  .diq-tiles {
+    background: rgba(6, 10, 87, 0.10) !important;
+    border-color: rgba(6, 10, 87, 0.18) !important;
+    page-break-inside: avoid;
+  }
+  .diq-tile {
+    background: #ffffff !important;
+    padding: 12pt 14pt;
+  }
+  .diq-tile-label {
+    color: #718096 !important;
+    font-size: 7.5pt;
+    margin: 0 0 5pt;
+  }
+  .diq-tile-value {
+    color: #060A57 !important;
+    font-size: 22pt;
+  }
+  .diq-tile-sub {
+    color: #4a5568 !important;
+    font-size: 9pt;
+    margin: 4pt 0 0;
+  }
+
+  /* HERO METRIC — light flat panel */
+  .diq-hero-metric {
+    background: #f5f6fa !important;
+    border: 1pt solid rgba(6, 10, 87, 0.24);
+    color: #060A57 !important;
+    padding: 18pt 22pt;
+    gap: 28pt;
+    page-break-inside: avoid;
+    border-radius: 3pt;
+  }
+  .diq-hero-metric::after { display: none !important; }
+  .diq-hero-label {
+    color: #00B98E !important;
+    font-size: 8pt;
+  }
+  .diq-hero-number {
+    color: #060A57 !important;
+    font-size: 56pt;
+  }
+  .diq-hero-number .accent { color: #00B98E !important; }
+  .diq-hero-body {
+    color: #4a5568 !important;
+    font-size: 11pt;
+  }
+  .diq-hero-body strong { color: #060A57 !important; }
+
+  /* MAP — invert dark fills to light, retint NJ dots for paper */
+  .diq-map-wrap {
+    background: #ffffff !important;
+    border: 0.5pt solid rgba(6, 10, 87, 0.18);
+    padding: 10pt;
+    page-break-inside: avoid;
+  }
+  .diq-map-legend {
+    color: #4a5568 !important;
+    font-size: 9pt;
+    margin-bottom: 8pt;
+  }
+  .diq-tip { display: none !important; }
+
+  /* SVG state polygon recolor: white-on-dark → light navy on white */
+  #diq-map path[fill="rgba(255,255,255,0.025)"] {
+    fill: rgba(6, 10, 87, 0.025) !important;
+    stroke: rgba(6, 10, 87, 0.18) !important;
+  }
+  #diq-map path[fill="rgba(255,255,255,0.05)"] {
+    fill: rgba(6, 10, 87, 0.04) !important;
+    stroke: rgba(6, 10, 87, 0.50) !important;
+  }
+  /* SVG dot stroke (was dark navy fill stroke) → white stroke on light paper */
+  #diq-map circle[stroke="#0A0E1C"] {
+    stroke: #ffffff !important;
+  }
+  /* NJ dots: sky on white = invisible. Switch to navy. */
+  #diq-map circle[fill="#85E4FD"] {
+    fill: #060A57 !important;
+  }
+  /* Legend swatch for NJ also needs to match the print color */
+  .diq-legend-dot[style*="85E4FD"] {
+    background: #060A57 !important;
+  }
+  /* Distribution bar segments: NJ sky becomes navy on print */
+  .diq-bucket-seg.nj {
+    background: #060A57 !important;
+  }
+
+  /* DISTRIBUTION GRID */
+  .diq-dist-grid {
+    background: #ffffff !important;
+    border: 0.5pt solid rgba(6, 10, 87, 0.18);
+    padding: 14pt;
+    gap: 18pt;
+    page-break-inside: avoid;
+  }
+  .diq-dist-summary {
+    border-right-color: rgba(6, 10, 87, 0.18) !important;
+    padding-right: 18pt;
+  }
+  .diq-dist-summary-bignum { color: #060A57 !important; font-size: 44pt; }
+  .diq-dist-summary-label { color: #718096 !important; font-size: 8pt; }
+  .diq-dist-secondary {
+    border-top-color: rgba(6, 10, 87, 0.18) !important;
+  }
+  .diq-dist-mini-label { color: #718096 !important; }
+  .diq-dist-mini-value { color: #060A57 !important; font-size: 16pt; }
+  .diq-bucket-label { color: #4a5568 !important; }
+  .diq-bucket-bar { background: rgba(6, 10, 87, 0.06) !important; }
+  .diq-bucket-seg.il { background: #00B98E !important; }
+  .diq-bucket-seg.ny { background: #DB8C5E !important; }
+  .diq-bucket-count { color: #060A57 !important; }
+
+  /* CALLOUT — keep coral on print, just lighter background */
+  .diq-callout {
+    background: rgba(219, 84, 97, 0.08) !important;
+    border-left-color: #DB5461 !important;
+    color: #060A57 !important;
+    page-break-inside: avoid;
+  }
+  .diq-callout-label { color: #DB5461 !important; }
+  .diq-callout strong { color: #060A57 !important; }
+
+  /* CATEGORY TABLE */
+  .diq-cat-table {
+    background: #ffffff !important;
+    border: 0.5pt solid rgba(6, 10, 87, 0.18);
+    page-break-inside: avoid;
+  }
+  .diq-cat-table th {
+    background: #f5f6fa !important;
+    color: #718096 !important;
+    border-bottom-color: rgba(6, 10, 87, 0.18) !important;
+    padding: 7pt 10pt;
+  }
+  .diq-cat-table td {
+    color: #060A57 !important;
+    border-bottom-color: rgba(6, 10, 87, 0.06) !important;
+    padding: 7pt 10pt;
+    font-size: 10pt;
+  }
+  .diq-cat-table tr:hover td { background: transparent !important; }
+
+  /* LANDING CARDS — only "live" ones print, see hide rule above */
+  .diq-card-grid {
+    background: rgba(6, 10, 87, 0.10) !important;
+    border-color: rgba(6, 10, 87, 0.18) !important;
+  }
+  .diq-card {
+    background: #ffffff !important;
+    padding: 14pt;
+    min-height: 0;
+    page-break-inside: avoid;
+  }
+  .diq-card-num { color: #718096 !important; font-size: 8pt; }
+  .diq-card-title { color: #060A57 !important; font-size: 13pt; }
+  .diq-card-desc { color: #4a5568 !important; font-size: 9.5pt; }
+  .diq-card-status.live { color: #00B98E !important; }
+  .diq-card-status.soon { color: #718096 !important; }
+
+  /* FOOTER */
+  .diq-footer {
+    background: #ffffff !important;
+    border-top: 0.5pt solid rgba(6, 10, 87, 0.18);
+    padding: 8pt 0;
+    margin-top: 16pt;
+    page-break-inside: avoid;
+  }
+  .diq-footer-inner { color: #718096 !important; font-size: 8pt; }
+  .diq-footer-logo {
+    opacity: 1 !important;
+    filter: invert(7%) sepia(83%) saturate(7150%) hue-rotate(243deg) brightness(40%) contrast(110%);
+  }
+
+  /* Smart page-break hints */
+  .diq-hero-metric { page-break-after: always; }
+  .diq-map-wrap { page-break-after: always; }
+  .diq-dist-grid { page-break-after: avoid; }
 }
