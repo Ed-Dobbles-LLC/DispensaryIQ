@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Market share · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=6">
+</head>
+<body>
+
+<nav class="diq-nav">
+  <div class="diq-nav-inner">
+    <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
+    <div class="diq-nav-links">
+      <a href="index.html" class="diq-nav-link">Overview</a>
+      <a href="coverage.html" class="diq-nav-link">Coverage</a>
+      <a href="products.html" class="diq-nav-link">Product depth</a>
+      <a href="market-share.html" class="diq-nav-link active">Market share</a>
+      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
+      <a href="#" class="diq-nav-link disabled">Named accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print this page" aria-label="Print">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
+        </svg>
+        <span>Print</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="diq-main">
+
+  <header class="diq-page-header">
+    <p class="diq-page-eyebrow">Report 03 &middot; Market share</p>
+
+    <div class="diq-prepared-for">
+      <p class="diq-prepared-label">Prepared for</p>
+      <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
+    </div>
+
+    <h1 class="diq-page-title">Who owns the shelf?</h1>
+    <p class="diq-page-subtitle">Top brands by share of products on dispensary menus. Curaleaf's portfolio (Select, Grassroots, Find, Anthem, JAMS, Reef, B Noble) rolled up and benchmarked against the field.</p>
+  </header>
+
+  <section class="diq-section">
+    <div class="diq-toggle-bar" role="tablist" aria-label="Select market view">
+      <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">Pilot total</span>
+        <span class="diq-toggle-sub">3 states &middot; 1,006 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #00B98E"></span>
+        <span class="diq-toggle-label">Illinois</span>
+        <span class="diq-toggle-sub">268 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="NJ" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #85E4FD"></span>
+        <span class="diq-toggle-label">New Jersey</span>
+        <span class="diq-toggle-sub">180 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="NY" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
+        <span class="diq-toggle-label">New York</span>
+        <span class="diq-toggle-sub">558 disps</span>
+      </button>
+    </div>
+  </section>
+
+
+  <section class="diq-section">
+    <div class="diq-hero-metric">
+      <div>
+        <p class="diq-hero-label" data-bind="hero-label">Curaleaf portfolio rank &middot; Pilot</p>
+        <p class="diq-hero-number">#<span data-bind="curaleaf-rank">1</span></p>
+      </div>
+      <div>
+        <p class="diq-hero-label">Overall shelf share</p>
+        <p class="diq-hero-body">
+          <strong><span data-bind="curaleaf-share">3.30</span>% of pilot shelf</strong> &mdash; <span data-bind="curaleaf-n">12,841</span> products across the Curaleaf portfolio (Select, Grassroots, Find, Anthem, JAMS, Reef, B Noble) on third-party menus. This is the headline brand-level intelligence: not "where are our stores," but "where does the brand actually appear, regardless of who owns the door."
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title" data-bind="overall-title">Overall top 5 &middot; Pilot</h2>
+      <span class="diq-section-meta">By total product count</span>
+    </div>
+    <table class="diq-cat-table" id="diq-overall-table">
+      <thead>
+        <tr>
+          <th style="width: 56px;">Rank</th>
+          <th>Brand</th>
+          <th class="r">Products</th>
+          <th class="r">Share %</th>
+        </tr>
+      </thead>
+      <tbody id="diq-overall-tbody"></tbody>
+    </table>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title" data-bind="cat-title">By category &middot; Pilot</h2>
+      <span class="diq-section-meta">Top 3 per category &middot; Curaleaf rank shown</span>
+    </div>
+    <table class="diq-cat-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>#1 brand (share)</th>
+          <th>#2 brand (share)</th>
+          <th>#3 brand (share)</th>
+          <th class="r">Curaleaf rank</th>
+        </tr>
+      </thead>
+      <tbody id="diq-cat-share-tbody"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer class="diq-footer">
+  <div class="diq-footer-inner">
+    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
+  </div>
+</footer>
+
+<script>
+const DIQ_CAT_META = {"flower": {"label": "Flower", "pill": "#85E4FD"}, "vape": {"label": "Vape", "pill": "#00B98E"}, "pre-roll": {"label": "Pre-roll", "pill": "#DB8C5E"}, "edible": {"label": "Edible", "pill": "#DB5461"}, "concentrate": {"label": "Concentrate", "pill": "#1A2074"}, "tincture": {"label": "Tincture", "pill": "#1FD4A8"}, "topical": {"label": "Topical", "pill": "#7A8099"}, "beverage": {"label": "Beverage", "pill": "#4A4F58"}};
+const DIQ_DATA = {"PILOT": {"label": "Pilot", "curaleaf_overall_rank": 1, "curaleaf_overall_share": 3.3, "curaleaf_overall_n": 12841, "overall_top5": [{"rk": 1, "brand": "Curaleaf portfolio", "n": 12841, "share": 3.3, "curaleaf": true}, {"rk": 2, "brand": "Ayrloom", "n": 10813, "share": 2.78, "curaleaf": false}, {"rk": 3, "brand": "Rythm (GTI)", "n": 6955, "share": 1.79, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n": 6378, "share": 1.64, "curaleaf": false}, {"rk": 5, "brand": "MFNY", "n": 6213, "share": 1.6, "curaleaf": false}], "by_category": {"flower": {"top3": [["Curaleaf portfolio", 5.25, true], ["high_supply", 3.05, false], ["rythm", 2.99, false]], "curaleaf_rank": 1, "curaleaf_share": 5.25}, "pre-roll": {"top3": [["Curaleaf portfolio", 4.8, true], ["dogwalkers", 4.79, false], ["jetpacks", 4.69, false]], "curaleaf_rank": 1, "curaleaf_share": 4.8}, "vape": {"top3": [["rove", 5.49, false], ["jaunty", 5.19, false], ["fernway", 4.68, false]], "curaleaf_rank": 5, "curaleaf_share": 3.8}, "concentrate": {"top3": [["mfny", 6.92, false], ["rythm", 6.1, false], ["jetpacks", 4.75, false]], "curaleaf_rank": 11, "curaleaf_share": 1.95}, "edible": {"top3": [["gr_n", 7.07, false], ["ayrloom", 5.88, false], ["wyld", 5.12, false]], "curaleaf_rank": 15, "curaleaf_share": 1.3}, "tincture": {"top3": [["ayrloom", 22.94, false], ["mfny", 15.29, false], ["head_heal", 11.08, false]], "curaleaf_rank": 16, "curaleaf_share": 1.32}, "topical": {"top3": [["ayrloom", 32.85, false], ["avexia", 11.42, false], ["papa_barkley", 10.8, false]], "curaleaf_rank": null, "curaleaf_share": null}, "beverage": {"top3": [["ayrloom", 34.53, false], ["layup", 5.87, false], ["harney_brothers", 5.8, false]], "curaleaf_rank": null, "curaleaf_share": null}}}, "IL": {"label": "Illinois", "curaleaf_overall_rank": 2, "curaleaf_overall_share": 4.26, "curaleaf_overall_n": 4209, "overall_top5": [{"rk": 1, "brand": "high_supply (Cresco)", "n": 4394, "share": 4.44, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n": 4209, "share": 4.26, "curaleaf": true}, {"rk": 3, "brand": "dogwalkers (GTI)", "n": 2758, "share": 2.79, "curaleaf": false}, {"rk": 4, "brand": "daze_off", "n": 2389, "share": 2.42, "curaleaf": false}, {"rk": 5, "brand": "savvy", "n": 2381, "share": 2.41, "curaleaf": false}], "by_category": {"flower": {"top3": [["high_supply", 10.36, false], ["good_green", 4.86, false], ["Curaleaf portfolio", 4.76, true]], "curaleaf_rank": 3, "curaleaf_share": 4.76}, "pre-roll": {"top3": [["dogwalkers", 15.03, false], ["Curaleaf portfolio", 9.74, true], ["high_supply", 7.54, false]], "curaleaf_rank": 2, "curaleaf_share": 9.74}, "vape": {"top3": [["joos", 8.92, false], ["savvy", 5.62, false], ["shine", 5.48, false]], "curaleaf_rank": 5, "curaleaf_share": 4.94}, "concentrate": {"top3": [["aeriz", 10.78, false], ["rythm", 7.38, false], ["floracal", 6.04, false]], "curaleaf_rank": 12, "curaleaf_share": 2.68}, "edible": {"top3": [["encore_edibles", 6.51, false], ["wyld", 5.32, false], ["incredibles", 5.09, false]], "curaleaf_rank": 17, "curaleaf_share": 1.67}, "tincture": {"top3": [["the_botanist", 21.23, false], ["dr_solomons", 20.79, false], ["remedi", 15.75, false]], "curaleaf_rank": 8, "curaleaf_share": 5.25}, "topical": {"top3": [["avexia", 44.72, false], ["zoi", 10.78, false], ["dr_solomons", 9.4, false]], "curaleaf_rank": null, "curaleaf_share": null}, "beverage": {"top3": [["keef", 13.14, false], ["journeyman", 8.57, false], ["uncle_arnies", 8.0, false]], "curaleaf_rank": null, "curaleaf_share": null}}}, "NJ": {"label": "New Jersey", "curaleaf_overall_rank": 2, "curaleaf_overall_share": 3.74, "curaleaf_overall_n": 1801, "overall_top5": [{"rk": 1, "brand": "rythm (GTI)", "n": 2454, "share": 5.1, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n": 1801, "share": 3.74, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n": 1369, "share": 2.84, "curaleaf": false}, {"rk": 4, "brand": "rove", "n": 1128, "share": 2.34, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n": 1004, "share": 2.09, "curaleaf": false}], "by_category": {"flower": {"top3": [["rythm", 6.51, false], ["good_green", 4.84, false], ["Curaleaf portfolio", 4.33, true]], "curaleaf_rank": 3, "curaleaf_share": 4.33}, "pre-roll": {"top3": [["dogwalkers", 7.52, false], ["ozone", 5.97, false], ["rove", 4.72, false]], "curaleaf_rank": 6, "curaleaf_share": 4.2}, "vape": {"top3": [["rythm", 7.27, false], ["legend", 6.17, false], ["rove", 5.99, false]], "curaleaf_rank": 5, "curaleaf_share": 5.75}, "concentrate": {"top3": [["rythm", 10.91, false], ["superflux", 6.35, false], ["illicit", 5.44, false]], "curaleaf_rank": 4, "curaleaf_share": 4.56}, "edible": {"top3": [["wyld", 6.41, false], ["gr_n", 6.17, false], ["ogeez", 5.6, false]], "curaleaf_rank": 9, "curaleaf_share": 2.96}, "tincture": {"top3": [["avexia", 17.06, false], ["canntica", 12.94, false], ["breakwater", 10.29, false]], "curaleaf_rank": 9, "curaleaf_share": 2.65}, "topical": {"top3": [["avexia", 31.58, false], ["drool", 9.57, false], ["escape_artists", 7.18, false]], "curaleaf_rank": null, "curaleaf_share": null}, "beverage": {"top3": [["smoking_dog", 14.93, false], ["smoking dog", 9.95, false], ["cbdmd", 9.05, false]], "curaleaf_rank": null, "curaleaf_share": null}}}, "NY": {"label": "New York", "curaleaf_overall_rank": 2, "curaleaf_overall_share": 2.82, "curaleaf_overall_n": 6831, "overall_top5": [{"rk": 1, "brand": "ayrloom", "n": 10813, "share": 4.47, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n": 6831, "share": 2.82, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n": 6213, "share": 2.57, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n": 6068, "share": 2.51, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n": 5191, "share": 2.14, "curaleaf": false}], "by_category": {"flower": {"top3": [["Curaleaf portfolio", 5.71, true], ["dank_by_definition", 4.74, false], ["revert", 3.61, false]], "curaleaf_rank": 1, "curaleaf_share": 5.71}, "pre-roll": {"top3": [["jetpacks", 6.65, false], ["ruby_farms", 4.88, false], ["jeeter", 3.94, false]], "curaleaf_rank": 4, "curaleaf_share": 3.51}, "vape": {"top3": [["jaunty", 8.28, false], ["ayrloom", 6.49, false], ["rove", 6.26, false]], "curaleaf_rank": 7, "curaleaf_share": 2.97}, "concentrate": {"top3": [["mfny", 12.92, false], ["jetpacks", 8.87, false], ["umamii", 5.84, false]], "curaleaf_rank": 22, "curaleaf_share": 0.89}, "edible": {"top3": [["ayrloom", 9.53, false], ["gr_n", 9.1, false], ["off_hours", 7.45, false]], "curaleaf_rank": 26, "curaleaf_share": 0.86}, "tincture": {"top3": [["ayrloom", 28.47, false], ["mfny", 18.98, false], ["head_heal", 13.75, false]], "curaleaf_rank": 19, "curaleaf_share": 0.63}, "topical": {"top3": [["ayrloom", 45.76, false], ["papa_barkley", 15.05, false], ["the_healing_rose", 9.08, false]], "curaleaf_rank": null, "curaleaf_share": null}, "beverage": {"top3": [["ayrloom", 47.53, false], ["layup", 8.08, false], ["harney_brothers", 7.98, false]], "curaleaf_rank": null, "curaleaf_share": null}}}};
+
+function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
+function fmtPct(p) { return p == null ? '—' : p.toFixed(2) + '%'; }
+function fmtBrand(b) {
+  if (!b) return '';
+  // Capitalize and de-underscore generic brand strings
+  if (b === 'Curaleaf portfolio') return b;
+  return b.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function render(view) {
+  const d = DIQ_DATA[view];
+  if (!d) return;
+  document.querySelector('[data-bind="hero-label"]').textContent = `Curaleaf portfolio rank · ${d.label}`;
+  document.querySelector('[data-bind="curaleaf-rank"]').textContent = d.curaleaf_overall_rank;
+  document.querySelector('[data-bind="curaleaf-share"]').textContent = d.curaleaf_overall_share.toFixed(2);
+  document.querySelector('[data-bind="curaleaf-n"]').textContent = d.curaleaf_overall_n.toLocaleString();
+  document.querySelector('[data-bind="overall-title"]').textContent = `Overall top 5 · ${d.label}`;
+  document.querySelector('[data-bind="cat-title"]').textContent = `By category · ${d.label}`;
+
+  // Overall top 5
+  const overallTbody = document.getElementById('diq-overall-tbody');
+  overallTbody.innerHTML = d.overall_top5.map(row => `
+    <tr class="${row.curaleaf ? 'diq-row-curaleaf' : ''}">
+      <td><strong>#${row.rk}</strong></td>
+      <td>${fmtBrand(row.brand)}${row.curaleaf ? ' <span class="diq-curaleaf-tag">Curaleaf</span>' : ''}</td>
+      <td class="r">${fmt(row.n)}</td>
+      <td class="r"><strong>${row.share.toFixed(2)}%</strong></td>
+    </tr>
+  `).join('');
+
+  // By category
+  const catTbody = document.getElementById('diq-cat-share-tbody');
+  const catOrder = ['flower', 'vape', 'pre-roll', 'edible', 'concentrate', 'tincture', 'topical', 'beverage'];
+  catTbody.innerHTML = catOrder.map(cat => {
+    const c = d.by_category[cat];
+    if (!c) return '';
+    const meta = DIQ_CAT_META[cat];
+    const top3Cells = [0, 1, 2].map(i => {
+      const t = c.top3[i];
+      if (!t) return '<td>—</td>';
+      const [brand, share, isCura] = t;
+      const tagClass = isCura ? 'diq-cell-curaleaf' : '';
+      return `<td class="${tagClass}">${fmtBrand(brand)} <span class="diq-share-paren">(${share.toFixed(2)}%)</span></td>`;
+    }).join('');
+    const curaRank = c.curaleaf_rank == null
+      ? '<span class="diq-na">absent</span>'
+      : (c.curaleaf_rank <= 3 ? `<strong>#${c.curaleaf_rank}</strong> (${c.curaleaf_share.toFixed(2)}%)` : `#${c.curaleaf_rank} (${c.curaleaf_share.toFixed(2)}%)`);
+    return `
+      <tr>
+        <td><span class="cat-pill" style="background:${meta.pill}"></span>${meta.label}</td>
+        ${top3Cells}
+        <td class="r">${curaRank}</td>
+      </tr>`;
+  }).join('');
+
+  document.querySelectorAll('.diq-toggle').forEach(btn => {
+    const isActive = btn.getAttribute('data-view') === view;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+}
+document.querySelectorAll('.diq-toggle').forEach(btn => {
+  btn.addEventListener('click', () => render(btn.getAttribute('data-view')));
+});
+render('PILOT');
+</script>
+
+</body>
+</html>

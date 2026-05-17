@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Product depth · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=5">
+  <link rel="stylesheet" href="assets/style.css?v=6">
 </head>
 <body>
 
@@ -16,8 +16,9 @@
       <a href="index.html" class="diq-nav-link">Overview</a>
       <a href="coverage.html" class="diq-nav-link">Coverage</a>
       <a href="products.html" class="diq-nav-link active">Product depth</a>
+      <a href="market-share.html" class="diq-nav-link">Market share</a>
+      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
       <a href="#" class="diq-nav-link disabled">Named accounts</a>
-      <a href="#" class="diq-nav-link disabled">Cohort shelf</a>
       <button onclick="window.print()" class="diq-print-btn" title="Print this page" aria-label="Print">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
@@ -31,7 +32,7 @@
 <main class="diq-main">
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Report 02 · Product depth</p>
+    <p class="diq-page-eyebrow">Report 02 &middot; Product depth</p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
@@ -46,7 +47,7 @@
     <div class="diq-toggle-bar" role="tablist" aria-label="Select market view">
       <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
         <span class="diq-toggle-label">Pilot total</span>
-        <span class="diq-toggle-sub">3 states · 1,006 disps</span>
+        <span class="diq-toggle-sub">3 states &middot; 1,006 disps</span>
       </button>
       <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #00B98E"></span>
@@ -65,6 +66,7 @@
       </button>
     </div>
   </section>
+
 
   <section class="diq-section">
     <div class="diq-hero-metric">
@@ -91,15 +93,13 @@
       <thead>
         <tr>
           <th>Category</th>
-          <th class="r">Products</th>
-          <th class="r">Priced</th>
+          <th class="r">Total products</th>
+          <th class="r">Median / disp</th>
           <th class="r">Median price</th>
           <th class="r">Avg THC %</th>
         </tr>
       </thead>
-      <tbody id="diq-cat-tbody">
-        <!-- Rows rendered by JS -->
-      </tbody>
+      <tbody id="diq-cat-tbody"></tbody>
     </table>
   </section>
 
@@ -113,84 +113,8 @@
 </footer>
 
 <script>
-const DIQ_DATA = {
-  PILOT: {
-    label: "Pilot",
-    n_disps: 1006,
-    avg: 391,
-    median: 46,
-    p90: 1342,
-    total_products: 393594,
-    total_priced: 352110,
-    categories: [
-      { name: "Flower",      pill: "#85E4FD", n: 81726, priced: 72087, median_price: 45.00, avg_thc: 28.1 },
-      { name: "Vape",        pill: "#00B98E", n: 81719, priced: 73698, median_price: 50.00, avg_thc: 83.1 },
-      { name: "Pre-roll",    pill: "#DB8C5E", n: 77766, priced: 72383, median_price: 22.00, avg_thc: 34.7 },
-      { name: "Edible",      pill: "#DB5461", n: 73819, priced: 63519, median_price: 22.00, avg_thc: 10.2 },
-      { name: "Concentrate", pill: "#1A2074", n: 20445, priced: 16706, median_price: 50.00, avg_thc: 76.5 },
-      { name: "Tincture",    pill: "#1FD4A8", n: 4146,  priced: 3822,  median_price: 50.00, avg_thc: 11.3 },
-      { name: "Topical",     pill: "#7A8099", n: 2298,  priced: 2094,  median_price: 49.99, avg_thc: 25.5 },
-      { name: "Beverage",    pill: "#4A4F58", n: 1570,  priced: 1536,  median_price: 6.00,  avg_thc: 11.3 },
-    ],
-  },
-  IL: {
-    label: "Illinois",
-    n_disps: 268,
-    avg: 373,
-    median: 60,
-    p90: 756,
-    total_products: 100082,
-    total_priced: 62974,
-    categories: [
-      { name: "Flower",      pill: "#85E4FD", n: 23656, priced: 14905, median_price: 40.00, avg_thc: 28.6 },
-      { name: "Edible",      pill: "#DB5461", n: 20915, priced: 11499, median_price: 15.00, avg_thc: 9.4 },
-      { name: "Vape",        pill: "#00B98E", n: 20394, priced: 13203, median_price: 42.00, avg_thc: 82.7 },
-      { name: "Pre-roll",    pill: "#DB8C5E", n: 15227, priced: 10324, median_price: 20.00, avg_thc: 36.1 },
-      { name: "Concentrate", pill: "#1A2074", n: 6972,  priced: 3614,  median_price: 43.00, avg_thc: 81.5 },
-      { name: "Tincture",    pill: "#1FD4A8", n: 467,   priced: 208,   median_price: 25.00, avg_thc: 1.0 },
-      { name: "Topical",     pill: "#7A8099", n: 447,   priced: 290,   median_price: 35.50, avg_thc: 4.1 },
-      { name: "Beverage",    pill: "#4A4F58", n: 201,   priced: 187,   median_price: 11.05, avg_thc: null },
-    ],
-  },
-  NJ: {
-    label: "New Jersey",
-    n_disps: 180,
-    avg: 277,
-    median: 56,
-    p90: 756,
-    total_products: 49943,
-    total_priced: 46972,
-    categories: [
-      { name: "Flower",      pill: "#85E4FD", n: 11399, priced: 10746, median_price: 50.00, avg_thc: 27.6 },
-      { name: "Vape",        pill: "#00B98E", n: 10235, priced: 9643,  median_price: 52.50, avg_thc: 83.7 },
-      { name: "Pre-roll",    pill: "#DB8C5E", n: 7789,  priced: 7413,  median_price: 21.00, avg_thc: 32.2 },
-      { name: "Edible",      pill: "#DB5461", n: 7427,  priced: 6719,  median_price: 20.00, avg_thc: 14.5 },
-      { name: "Concentrate", pill: "#1A2074", n: 2522,  priced: 2248,  median_price: 49.00, avg_thc: 74.8 },
-      { name: "Tincture",    pill: "#1FD4A8", n: 340,   priced: 312,   median_price: 35.00, avg_thc: 12.3 },
-      { name: "Beverage",    pill: "#4A4F58", n: 224,   priced: 218,   median_price: 29.95, avg_thc: null },
-      { name: "Topical",     pill: "#7A8099", n: 209,   priced: 193,   median_price: 44.00, avg_thc: 32.7 },
-    ],
-  },
-  NY: {
-    label: "New York",
-    n_disps: 558,
-    avg: 437,
-    median: 41,
-    p90: 1616,
-    total_products: 243569,
-    total_priced: 242164,
-    categories: [
-      { name: "Pre-roll",    pill: "#DB8C5E", n: 54750, priced: 54646, median_price: 22.40, avg_thc: 31.6 },
-      { name: "Vape",        pill: "#00B98E", n: 51090, priced: 50852, median_price: 51.00, avg_thc: 83.4 },
-      { name: "Flower",      pill: "#85E4FD", n: 46671, priced: 46436, median_price: 45.20, avg_thc: 27.6 },
-      { name: "Edible",      pill: "#DB5461", n: 45477, priced: 45301, median_price: 24.00, avg_thc: 8.8 },
-      { name: "Concentrate", pill: "#1A2074", n: 10951, priced: 10844, median_price: 59.29, avg_thc: 71.5 },
-      { name: "Tincture",    pill: "#1FD4A8", n: 3339,  priced: 3302,  median_price: 50.00, avg_thc: 12.1 },
-      { name: "Topical",     pill: "#7A8099", n: 1642,  priced: 1611,  median_price: 54.98, avg_thc: 34.0 },
-      { name: "Beverage",    pill: "#4A4F58", n: 1145,  priced: 1131,  median_price: 5.31,  avg_thc: 10.5 },
-    ],
-  },
-};
+const DIQ_CAT_META = {"flower": {"label": "Flower", "pill": "#85E4FD"}, "vape": {"label": "Vape", "pill": "#00B98E"}, "pre-roll": {"label": "Pre-roll", "pill": "#DB8C5E"}, "edible": {"label": "Edible", "pill": "#DB5461"}, "concentrate": {"label": "Concentrate", "pill": "#1A2074"}, "tincture": {"label": "Tincture", "pill": "#1FD4A8"}, "topical": {"label": "Topical", "pill": "#7A8099"}, "beverage": {"label": "Beverage", "pill": "#4A4F58"}};
+const DIQ_DATA = {"PILOT": {"label": "Pilot", "n_disps": 1006, "avg": 391, "median": 46, "p90": 1342, "total_products": 393594, "total_priced": 352110, "categories": [{"cat": "flower", "total": 81726, "median_per_disp": 23, "median_price": 45.0, "avg_thc": 28.1}, {"cat": "vape", "total": 81719, "median_per_disp": 19, "median_price": 50.0, "avg_thc": 83.1}, {"cat": "pre-roll", "total": 77766, "median_per_disp": 30, "median_price": 22.0, "avg_thc": 34.7}, {"cat": "edible", "total": 73819, "median_per_disp": 19, "median_price": 22.0, "avg_thc": 10.2}, {"cat": "concentrate", "total": 20445, "median_per_disp": 14, "median_price": 50.0, "avg_thc": 76.5}, {"cat": "tincture", "total": 4146, "median_per_disp": 5, "median_price": 50.0, "avg_thc": 11.3}, {"cat": "topical", "total": 2298, "median_per_disp": 4, "median_price": 49.99, "avg_thc": 25.5}, {"cat": "beverage", "total": 1570, "median_per_disp": 4, "median_price": 6.0, "avg_thc": 11.3}]}, "IL": {"label": "Illinois", "n_disps": 268, "avg": 373, "median": 60, "p90": 756, "total_products": 100082, "total_priced": 62974, "categories": [{"cat": "flower", "total": 23656, "median_per_disp": 34, "median_price": 40.0, "avg_thc": 28.6}, {"cat": "edible", "total": 20915, "median_per_disp": 33, "median_price": 15.0, "avg_thc": 9.4}, {"cat": "vape", "total": 20394, "median_per_disp": 34, "median_price": 42.0, "avg_thc": 82.7}, {"cat": "pre-roll", "total": 15227, "median_per_disp": 32, "median_price": 20.0, "avg_thc": 36.1}, {"cat": "concentrate", "total": 6972, "median_per_disp": 24, "median_price": 43.0, "avg_thc": 81.5}, {"cat": "tincture", "total": 467, "median_per_disp": 5, "median_price": 25.0, "avg_thc": 1.0}, {"cat": "topical", "total": 447, "median_per_disp": 3, "median_price": 35.5, "avg_thc": 4.1}, {"cat": "beverage", "total": 201, "median_per_disp": 2, "median_price": 11.05, "avg_thc": null}]}, "NJ": {"label": "New Jersey", "n_disps": 180, "avg": 277, "median": 56, "p90": 756, "total_products": 49943, "total_priced": 46972, "categories": [{"cat": "flower", "total": 11399, "median_per_disp": 23, "median_price": 50.0, "avg_thc": 27.6}, {"cat": "vape", "total": 10235, "median_per_disp": 16, "median_price": 52.5, "avg_thc": 83.7}, {"cat": "pre-roll", "total": 7789, "median_per_disp": 18, "median_price": 21.0, "avg_thc": 32.2}, {"cat": "edible", "total": 7427, "median_per_disp": 15, "median_price": 20.0, "avg_thc": 14.5}, {"cat": "concentrate", "total": 2522, "median_per_disp": 9, "median_price": 49.0, "avg_thc": 74.8}, {"cat": "tincture", "total": 340, "median_per_disp": 4, "median_price": 35.0, "avg_thc": 12.3}, {"cat": "beverage", "total": 224, "median_per_disp": 4, "median_price": 29.95, "avg_thc": null}, {"cat": "topical", "total": 209, "median_per_disp": 3, "median_price": 44.0, "avg_thc": 32.7}]}, "NY": {"label": "New York", "n_disps": 558, "avg": 437, "median": 41, "p90": 1616, "total_products": 243569, "total_priced": 242164, "categories": [{"cat": "pre-roll", "total": 54750, "median_per_disp": 113, "median_price": 22.4, "avg_thc": 31.6}, {"cat": "vape", "total": 51090, "median_per_disp": 16, "median_price": 51.0, "avg_thc": 83.4}, {"cat": "flower", "total": 46671, "median_per_disp": 20, "median_price": 45.2, "avg_thc": 27.6}, {"cat": "edible", "total": 45477, "median_per_disp": 17, "median_price": 24.0, "avg_thc": 8.8}, {"cat": "concentrate", "total": 10951, "median_per_disp": 14, "median_price": 59.29, "avg_thc": 71.5}, {"cat": "tincture", "total": 3339, "median_per_disp": 12, "median_price": 50.0, "avg_thc": 12.1}, {"cat": "topical", "total": 1642, "median_per_disp": 6, "median_price": 54.98, "avg_thc": 34.0}, {"cat": "beverage", "total": 1145, "median_per_disp": 5, "median_price": 5.31, "avg_thc": 10.5}]}};
 
 function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
 function fmtMoney(n) { return n == null ? '—' : '$' + n.toFixed(2); }
@@ -199,8 +123,6 @@ function fmtThc(n) { return n == null ? '—' : n.toFixed(1); }
 function render(view) {
   const d = DIQ_DATA[view];
   if (!d) return;
-
-  // Hero
   document.querySelector('[data-bind="hero-label"]').textContent = `Average products per dispensary · ${d.label}`;
   document.querySelector('[data-bind="hero-number"]').textContent = d.avg;
   document.querySelector('[data-bind="hero-sub-label"]').textContent = `Across ${d.n_disps.toLocaleString()} dispensaries`;
@@ -208,34 +130,31 @@ function render(view) {
   document.querySelector('[data-bind="p90"]').textContent = d.p90.toLocaleString();
   document.querySelector('[data-bind="total-products"]').textContent = d.total_products.toLocaleString();
   document.querySelector('[data-bind="total-priced"]').textContent = d.total_priced.toLocaleString();
-
-  // Table
   document.querySelector('[data-bind="table-title"]').textContent = `Products by category · ${d.label}`;
   document.querySelector('[data-bind="table-meta"]').textContent = `Across ${d.n_disps.toLocaleString()} dispensaries`;
 
   const tbody = document.getElementById('diq-cat-tbody');
-  tbody.innerHTML = d.categories.map(c => `
-    <tr>
-      <td><span class="cat-pill" style="background:${c.pill}"></span>${c.name}</td>
-      <td class="r">${fmt(c.n)}</td>
-      <td class="r">${fmt(c.priced)}</td>
-      <td class="r">${fmtMoney(c.median_price)}</td>
-      <td class="r">${fmtThc(c.avg_thc)}</td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = d.categories.map(c => {
+    const meta = DIQ_CAT_META[c.cat];
+    return `
+      <tr>
+        <td><span class="cat-pill" style="background:${meta.pill}"></span>${meta.label}</td>
+        <td class="r">${fmt(c.total)}</td>
+        <td class="r">${fmt(c.median_per_disp)}</td>
+        <td class="r">${fmtMoney(c.median_price)}</td>
+        <td class="r">${fmtThc(c.avg_thc)}</td>
+      </tr>`;
+  }).join('');
 
-  // Toggle button active state
   document.querySelectorAll('.diq-toggle').forEach(btn => {
     const isActive = btn.getAttribute('data-view') === view;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
   });
 }
-
 document.querySelectorAll('.diq-toggle').forEach(btn => {
   btn.addEventListener('click', () => render(btn.getAttribute('data-view')));
 });
-
 render('PILOT');
 </script>
 

@@ -650,6 +650,38 @@ a:hover { color: var(--teal-bright); }
 }
 .diq-toggle.active .diq-toggle-sub { color: var(--teal); }
 
+
+/* Curaleaf row + cell highlights (screen) */
+.diq-cat-table tr.diq-row-curaleaf td {
+  background: rgba(0, 185, 142, 0.08);
+}
+.diq-cat-table td.diq-cell-curaleaf {
+  color: var(--teal-bright);
+  font-weight: 600;
+}
+.diq-curaleaf-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px;
+  font-family: Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--teal);
+  color: var(--navy-deep);
+  border-radius: 3px;
+  vertical-align: 1px;
+  font-weight: 600;
+}
+.diq-share-paren {
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.diq-na {
+  color: var(--ink-faint);
+  font-style: italic;
+  font-size: 12px;
+}
 /* SVG MAP — dark-mode (screen) state-polygon styling */
 #diq-map .bg-state {
   fill: rgba(255, 255, 255, 0.025);
@@ -985,6 +1017,22 @@ a:hover { color: var(--teal-bright); }
     height: 10pt !important;
   }
 
+
+  /* Curaleaf row/cell highlight on print */
+  .diq-cat-table tr.diq-row-curaleaf td {
+    background: rgba(0, 185, 142, 0.12) !important;
+  }
+  .diq-cat-table td.diq-cell-curaleaf {
+    color: #007056 !important;
+    font-weight: 700 !important;
+  }
+  .diq-curaleaf-tag {
+    background: #007056 !important;
+    color: #ffffff !important;
+  }
+  .diq-share-paren {
+    color: #718096 !important;
+  }
   /* Smart page-break hints — one thought per page */
   .diq-hero-metric { page-break-after: always; }
   .diq-map-wrap { page-break-after: always; }
