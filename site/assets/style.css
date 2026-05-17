@@ -586,6 +586,20 @@ a:hover { color: var(--teal-bright); }
   .diq-prepared-for { width: 100%; max-width: 100%; }
 }
 
+
+/* SVG MAP — dark-mode (screen) state-polygon styling */
+#diq-map .bg-state {
+  fill: rgba(255, 255, 255, 0.025);
+  stroke: rgba(255, 255, 255, 0.10);
+  stroke-width: 0.5;
+}
+#diq-map .pilot-state {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+
 /* ============================================================
    PRINT STYLES — landscape, light theme, page-break aware
    ============================================================ */
@@ -754,16 +768,19 @@ a:hover { color: var(--teal-bright); }
   }
   .diq-tip { display: none !important; }
 
-  /* SVG state polygon recolor: white-on-dark → light navy on white */
-  #diq-map path[fill="rgba(255,255,255,0.025)"] {
+  /* SVG state recolor for paper — light navy on white */
+  #diq-map .bg-state {
     fill: rgba(6, 10, 87, 0.025) !important;
     stroke: rgba(6, 10, 87, 0.18) !important;
+    stroke-width: 0.4 !important;
   }
-  #diq-map path[fill="rgba(255,255,255,0.05)"] {
+  #diq-map .pilot-state {
     fill: rgba(6, 10, 87, 0.04) !important;
-    stroke: rgba(6, 10, 87, 0.50) !important;
+    stroke: #060A57 !important;
+    stroke-width: 2.4 !important;
+    stroke-linejoin: round !important;
   }
-  /* SVG dot stroke (was dark navy fill stroke) → white stroke on light paper */
+  /* Dot stroke on paper — flip from dark to white */
   #diq-map circle[stroke="#0A0E1C"] {
     stroke: #ffffff !important;
   }
@@ -866,8 +883,9 @@ a:hover { color: var(--teal-bright); }
     filter: invert(7%) sepia(83%) saturate(7150%) hue-rotate(243deg) brightness(40%) contrast(110%);
   }
 
-  /* Smart page-break hints */
+  /* Smart page-break hints — one thought per page */
   .diq-hero-metric { page-break-after: always; }
   .diq-map-wrap { page-break-after: always; }
-  .diq-dist-grid { page-break-after: avoid; }
+  .diq-dist-grid { page-break-after: always; }
+  .diq-cat-table { page-break-before: auto; }
 }
