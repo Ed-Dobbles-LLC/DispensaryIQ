@@ -165,7 +165,7 @@ a:hover { color: var(--teal-bright); }
   padding-right: 16px;
 }
 .diq-prepared-logo {
-  height: 26px;
+  height: 22px;
   width: auto;
   display: block;
 }
@@ -542,7 +542,7 @@ a:hover { color: var(--teal-bright); }
   letter-spacing: 0.08em;
 }
 .diq-footer-logo {
-  height: 18px;
+  height: 16px;
   width: auto;
   opacity: 0.55;
   transition: opacity 0.15s;
