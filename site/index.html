@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>DispensaryIQ — Cannabis Retail Intelligence</title>
-  <link rel="stylesheet" href="assets/style.css?v=6">
+  <title>Scorecard · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=8">
 </head>
 <body>
 
@@ -13,13 +13,18 @@
   <div class="diq-nav-inner">
     <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
     <div class="diq-nav-links">
-      <a href="index.html" class="diq-nav-link active">Overview</a>
+      <a href="index.html" class="diq-nav-link active">Scorecard</a>
       <a href="coverage.html" class="diq-nav-link">Coverage</a>
-      <a href="products.html" class="diq-nav-link">Product depth</a>
+      <a href="products.html" class="diq-nav-link">Products</a>
       <a href="market-share.html" class="diq-nav-link">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link">Shelf metrics</a>
       <a href="display-quality.html" class="diq-nav-link">Display quality</a>
-      <a href="#" class="diq-nav-link disabled">Named accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print this page" aria-label="Print">
+      <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link">Alerts</a>
+      <a href="territory.html" class="diq-nav-link phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
         </svg>
@@ -32,90 +37,81 @@
 <main class="diq-main">
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Pitch week 20 &middot; 2026-05-17</p>
+    <p class="diq-page-eyebrow">Monday morning &middot; Week of 2026-05-25</p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
       <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
     </div>
 
-    <h1 class="diq-page-title">Cannabis retail intelligence, anchored to fair share.</h1>
-    <p class="diq-page-subtitle">Brand-level shelf presence, pricing, and assortment across <strong>1,006 dispensaries</strong> in Illinois, New Jersey, and New York &mdash; refreshed weekly, license-reconciled, cohort-stratified.</p>
+    <h1 class="diq-page-title">Pilot scorecard <span data-bind="state-name">Pilot total</span></h1>
+    <p class="diq-page-subtitle">Five-dimension execution scorecard, modeled on the Diageo EDGE Perfect Store framework. One screen, one read: how is Curaleaf executing this week? Pages 02 through 11 are the supporting detail.</p>
   </header>
 
   <section class="diq-section">
-    <div class="diq-tiles">
-      <div class="diq-tile">
-        <p class="diq-tile-label">Dispensaries tracked</p>
-        <p class="diq-tile-value">1,006</p>
-        <p class="diq-tile-sub">with extraction data</p>
+    <div class="diq-toggle-bar" role="tablist" aria-label="Select state view">
+      <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">Pilot total</span><span class="diq-toggle-sub">3 states</span>
+      </button>
+      <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #00B98E"></span>
+        <span class="diq-toggle-label">Illinois</span>
+      </button>
+      <button class="diq-toggle" data-view="NJ" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #85E4FD"></span>
+        <span class="diq-toggle-label">New Jersey</span>
+      </button>
+      <button class="diq-toggle" data-view="NY" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
+        <span class="diq-toggle-label">New York</span>
+      </button>
+    </div>
+  </section>
+
+
+  <section class="diq-section">
+    <div class="diq-scorecard-hero">
+      <div class="diq-score-overall">
+        <p class="diq-score-overall-label">Overall execution index</p>
+        <div class="diq-score-overall-value">
+          <span data-bind="overall-score">64</span>
+          <span class="diq-score-overall-max">/ 100</span>
+        </div>
+        <p class="diq-score-overall-delta">
+          <span data-bind="overall-delta">▲ 1.2 pts WoW</span>
+        </p>
       </div>
-      <div class="diq-tile">
-        <p class="diq-tile-label">Products tracked</p>
-        <p class="diq-tile-value">393,594</p>
-        <p class="diq-tile-sub">352,110 priced</p>
-      </div>
-      <div class="diq-tile">
-        <p class="diq-tile-label">Curaleaf rank in pilot</p>
-        <p class="diq-tile-value">#1</p>
-        <p class="diq-tile-sub">3.30% shelf share</p>
-      </div>
-      <div class="diq-tile">
-        <p class="diq-tile-label">Refresh cadence</p>
-        <p class="diq-tile-value">Weekly</p>
-        <p class="diq-tile-sub">Monday delivery</p>
+      <div class="diq-score-traffic">
+        <span class="diq-traffic-dot" style="background:var(--coral)"></span>
+        <span class="diq-traffic-dot" style="background:#DB8C5E"></span>
+        <span class="diq-traffic-dot" style="background:var(--teal)"></span>
+        <span class="diq-traffic-dot" style="background:var(--teal-bright)"></span>
+        <span class="diq-traffic-dot diq-traffic-active" data-bind="traffic-pos"></span>
       </div>
     </div>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Reports</h2>
-      <span class="diq-section-meta">6 deliverables</span>
+      <h2 class="diq-section-title">Five dimensions (Perfect Dispensary)</h2>
+      <span class="diq-section-meta">Mapped to Diageo EDGE / Bain 5P retail-execution framework</span>
     </div>
-    <div class="diq-card-grid">
-      <a href="coverage.html" class="diq-card">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">01</p>
-        <h3 class="diq-card-title">Coverage</h3>
-        <p class="diq-card-desc">Where we have intelligence today. 912 mapped dispensaries across IL, NJ, NY, sized by product depth.</p>
-        <span class="diq-card-status live">▸ Live</span>
-      </a>
-      <a href="products.html" class="diq-card">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">02</p>
-        <h3 class="diq-card-title">Product depth</h3>
-        <p class="diq-card-desc">Average 391 products per dispensary, with category breakdown. Toggle by state.</p>
-        <span class="diq-card-status live">▸ Live</span>
-      </a>
-      <a href="market-share.html" class="diq-card">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">03</p>
-        <h3 class="diq-card-title">Market share</h3>
-        <p class="diq-card-desc">Who holds shelf space — overall and by category. Curaleaf portfolio is #1 in pilot total at 3.30%.</p>
-        <span class="diq-card-status live">▸ Live</span>
-      </a>
-      <a href="display-quality.html" class="diq-card">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">04</p>
-        <h3 class="diq-card-title">Display quality</h3>
-        <p class="diq-card-desc">Shelf prominence, promotional intensity, and featured share by brand. Where Curaleaf sits vs competitors.</p>
-        <span class="diq-card-status live">▸ Live</span>
-      </a>
-      <a href="#" class="diq-card disabled">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">05</p>
-        <h3 class="diq-card-title">Named accounts</h3>
-        <p class="diq-card-desc">Top 20 non-Curaleaf dispensaries by Curaleaf SKU count. Coming soon.</p>
-        <span class="diq-card-status soon">Coming soon</span>
-      </a>
-      <a href="#" class="diq-card disabled">
-        <svg class="diq-card-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11L11 3M11 3H5M11 3V9"/></svg>
-        <p class="diq-card-num">06</p>
-        <h3 class="diq-card-title">Methodology</h3>
-        <p class="diq-card-desc">License-registry reconciliation, cohort stratification, fair-share benchmark, twelve-measure DSPS portfolio. Coming soon.</p>
-        <span class="diq-card-status soon">Coming soon</span>
-      </a>
+    <div class="diq-dim-grid" id="diq-dim-grid"></div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">This week's top alerts</h2>
+      <span class="diq-section-meta">Auto-pulled from the Alerts page &middot; ranked by priority-brand weighting</span>
+    </div>
+    <div class="diq-alert-list" id="diq-top-alerts"></div>
+    <p style="text-align:right;margin-top:10px;font-size:12px"><a href="alerts.html" class="diq-link-arrow">All alerts &amp; active triggers &rarr;</a></p>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout">
+      <p class="diq-callout-label">&#9656; Architecture &middot; one thought per page</p>
+      <p style="margin:0">This scorecard is the Monday-morning landing &mdash; one screen, five dimensions, top alerts. Every dimension links to one or more pages of supporting detail. Availability lives on <strong>Coverage</strong>, <strong>Products</strong>, and <strong>Market share</strong>. Pricing lives on <strong>Price compliance</strong>. Promotion and Visibility live on <strong>Shelf metrics</strong> + <strong>Display quality</strong>. Competitive Position drives <strong>NY watchlist</strong> + <strong>Alerts</strong>. Territory and Account views arrive in Q3 and Q4.</p>
     </div>
   </section>
 
@@ -123,10 +119,83 @@
 
 <footer class="diq-footer">
   <div class="diq-footer-inner">
-    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    <div>
+      <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
+      <br/>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+
+<script>
+const DIQ_DATA = {"PILOT": {"label": "Pilot total", "overall": 64, "overall_delta": 1.2, "overall_trend": "up", "dims": [{"name": "Availability", "score": 67, "delta": 1.8, "trend": "up", "metric": "766 of 1,234 doors carry Curaleaf (62%)", "detail": "Distribution gap of 468 addressable doors. NY remains underpenetrated."}, {"name": "Pricing", "score": 42, "delta": -2.4, "trend": "down", "metric": "47 retailer-SKU cells off-band (>=\u00b115%)", "detail": "FIND in NY, Select 1g vape NY, Grassroots 1g pre-roll IL \u2014 all flagged."}, {"name": "Promotion", "score": 71, "delta": 0.0, "trend": "flat", "metric": "Promo penetration 17.7%", "detail": "Mid-pack vs competitor set. NJ promo penetration 49.8% \u2014 overheated."}, {"name": "Visibility", "score": 51, "delta": 0.6, "trend": "up", "metric": "Shelf score 48 / Featured share 1.03%", "detail": "Mid-page placement. Featured share modestly above category average."}, {"name": "Competitive Position", "score": 84, "delta": -1.1, "trend": "down", "metric": "#1 portfolio share at 3.30% (12,841 SKUs)", "detail": "#1 in flower & pre-roll. Trailing in vape (5th) & concentrate (11th)."}], "top_alerts": [{"pri": "P0", "title": "FIND under attack in NY", "body": "Leal (69 doors) + Rolling Green (100 doors) comp set now 169 doors vs Find's 89. 92 NY doors carry Leal/RG without Find \u2014 at-risk prospect pool."}, {"pri": "P0", "title": "Select 1g vape NY off-band", "body": "7 of 8 NY retailers pricing Select 1g vape at >25% above $35 Curaleaf-owned MSRP \u2014 average market price $59.65."}, {"pri": "P1", "title": "Grassroots IL price discipline strong", "body": "IL Grassroots 3.5g flower: 11 of 14 retailers in-band at $32.50 MSRP. Tightest discipline in pilot."}]}, "IL": {"label": "Illinois", "overall": 67, "overall_delta": 1.6, "overall_trend": "up", "dims": [{"name": "Availability", "score": 70, "delta": 1.2, "trend": "up", "metric": "191 of 299 doors (64%)", "detail": "Strong distribution. Mokena (1 store) + Naperville + Chicago corridor."}, {"name": "Pricing", "score": 63, "delta": -1.8, "trend": "down", "metric": "85 of 136 cells in-band (63%)", "detail": "Grassroots tight. Grassroots 1g pre-roll, Find 6.25g pre-roll flagged."}, {"name": "Promotion", "score": 65, "delta": 0.2, "trend": "up", "metric": "Promo penetration 12.2%", "detail": "Below state average \u2014 opportunity for activation."}, {"name": "Visibility", "score": 56, "delta": 0.4, "trend": "up", "metric": "Shelf score 52 / Featured 0.90%", "detail": "Above-pilot shelf performance. Featured-share modest."}, {"name": "Competitive Position", "score": 80, "delta": -0.5, "trend": "down", "metric": "#2 share at 4.26%", "detail": "Trailing Cresco high_supply (4.44%). #2 flower, #2 pre-roll."}], "top_alerts": [{"pri": "P1", "title": "Grassroots 1g pre-roll IL: 7/7 retailers above 25%", "body": "Curaleaf-owned anchor $10.35. All 7 tracked retailers pricing 25%+ above \u2014 market deviation systemic."}, {"pri": "P1", "title": "Find 6.25g pre-roll IL: 3/9 extreme above-band", "body": "MSRP $60.00 (market modal). 3 retailers pricing >25% above. Likely premium-positioning drift."}, {"pri": "P2", "title": "Anthem 2.5g pre-roll IL: 4 retailers extreme", "body": "17 retailers tracked, 11 in-band at $39 \u2014 but 4 with extreme excursions (severe or extreme bucket)."}]}, "NJ": {"label": "New Jersey", "overall": 58, "overall_delta": -0.8, "overall_trend": "down", "dims": [{"name": "Availability", "score": 75, "delta": 2.1, "trend": "up", "metric": "138 of 203 doors (68%)", "detail": "Highest distribution rate in pilot. 92% of NJ doors are independents."}, {"name": "Pricing", "score": 28, "delta": -5.2, "trend": "down", "metric": "4 of 31 cells in-band (13%)", "detail": "Find 1g pre-roll severe; Find 3.5g flower extreme; Find 28g extreme. Brand-wide signal."}, {"name": "Promotion", "score": 88, "delta": 0.5, "trend": "up", "metric": "Promo penetration 49.8%", "detail": "Highest in pilot \u2014 NJ is a discount-heavy market."}, {"name": "Visibility", "score": 54, "delta": 0.8, "trend": "up", "metric": "Shelf score 51 / Featured 1.05%", "detail": "Mid-pack shelf score. Featured share above category."}, {"name": "Competitive Position", "score": 78, "delta": -1.4, "trend": "down", "metric": "#2 share at 3.74%", "detail": "Trailing GTI Rythm (5.10%). Strong flower position; vapes contested."}], "top_alerts": [{"pri": "P0", "title": "Find 1g pre-roll NJ: 5/6 retailers severe below", "body": "Curaleaf-owned anchor $12.00 (4 stores). 5 of 6 retailers pricing 15-25% below \u2014 pricing chaos."}, {"pri": "P1", "title": "Find 3.5g flower NJ: 2/6 extreme", "body": "Synthetic MSRP $35.75. 2 retailers >25% off-band. Anchor confidence MEDIUM."}, {"pri": "P1", "title": "Anthem 3.5g pre-roll NJ: 2/5 severe", "body": "MSRP $40. 5 retailers tracked, 2 in severe band. Promo-driven excursion likely."}]}, "NY": {"label": "New York", "overall": 56, "overall_delta": 1.4, "overall_trend": "up", "dims": [{"name": "Availability", "score": 60, "delta": 2.4, "trend": "up", "metric": "437 of 732 doors (60%)", "detail": "+25 new Curaleaf doors WoW in matched 143-disp cohort."}, {"name": "Pricing", "score": 34, "delta": -3.6, "trend": "down", "metric": "30 of 88 cells in-band (34%)", "detail": "Find 3.5g flower: 10/12 retailers EXTREME above-band. Select 1g vape: 7/8 EXTREME."}, {"name": "Promotion", "score": 60, "delta": 0.1, "trend": "flat", "metric": "Promo penetration 12.6%", "detail": "Below pilot avg. Mid-pack vs competitors."}, {"name": "Visibility", "score": 45, "delta": 0.7, "trend": "up", "metric": "Shelf score 44 / Featured 1.11%", "detail": "Below pilot-average shelf score. Featured share modest gain."}, {"name": "Competitive Position", "score": 76, "delta": -1.8, "trend": "down", "metric": "#2 share at 2.82%", "detail": "#1 in flower (5.71%). Trailing Ayrloom (4.47% overall). Find under direct attack."}], "top_alerts": [{"pri": "P0", "title": "FIND under attack in NY", "body": "Leal (69 doors) + Rolling Green (100 doors) = 169 doors. Find at 89 doors. Q1 at-risk prospect pool: 92 stores with Leal/RG and no Find."}, {"pri": "P0", "title": "Find 3.5g flower NY: 10/12 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $19.50 (3 stores). 10 of 12 retailers pricing 25%+ above. Average market $30. Margin opportunity AND brand-equity risk."}, {"pri": "P0", "title": "Select 1g vape NY: 7/8 EXTREME above-band", "body": "Curaleaf-owned anchor $35 (7 stores). 7 of 8 retailers pricing 25%+ above. Average market $59.65 \u2014 70% premium."}, {"pri": "P1", "title": "Grassroots 3.5g flower NY: 4 extreme + 3 severe", "body": "16 retailers tracked at $40 modal. 7 off-band, split 3 below / 4 above. Mixed signal."}]}};
+let DIQ_STATE = 'PILOT';
+
+function classifyScore(s) {
+  if (s >= 80) return {cls: 'score-green-bright',  label: 'Strong'};
+  if (s >= 65) return {cls: 'score-green',         label: 'Good'};
+  if (s >= 50) return {cls: 'score-amber',         label: 'Watch'};
+  if (s >= 35) return {cls: 'score-orange',        label: 'Action'};
+  return                {cls: 'score-red',          label: 'Critical'};
+}
+function trendArrow(t, d) {
+  if (t === 'up')   return '<span class="diq-delta-up">▲ ' + Math.abs(d).toFixed(1) + '</span>';
+  if (t === 'down') return '<span class="diq-delta-down">▼ ' + Math.abs(d).toFixed(1) + '</span>';
+  return '<span style="color:var(--ink-faint)">→ 0.0</span>';
+}
+function priBadge(p) {
+  return `<span class="diq-pri diq-pri-${p.toLowerCase()}">${p}</span>`;
+}
+
+function render() {
+  const d = DIQ_DATA[DIQ_STATE];
+  if (!d) return;
+
+  document.querySelector('[data-bind="state-name"]').textContent = d.label;
+  document.querySelector('[data-bind="overall-score"]').textContent = d.overall;
+  document.querySelector('[data-bind="overall-delta"]').innerHTML = trendArrow(d.overall_trend, d.overall_delta) + ' pts WoW';
+  // traffic dots: position based on score (0–100)
+  const trafficDots = document.querySelectorAll('.diq-traffic-dot');
+  const cls = classifyScore(d.overall);
+
+  // dim grid
+  const grid = document.getElementById('diq-dim-grid');
+  grid.innerHTML = d.dims.map(dim => {
+    const c = classifyScore(dim.score);
+    return `
+      <div class="diq-dim-card">
+        <div class="diq-dim-head">
+          <h3 class="diq-dim-name">${dim.name}</h3>
+          <span class="diq-dim-band ${c.cls}">${c.label}</span>
+        </div>
+        <div class="diq-dim-score-row">
+          <span class="diq-dim-score">${dim.score}</span>
+          <span class="diq-dim-delta">${trendArrow(dim.trend, dim.delta)}</span>
+        </div>
+        <p class="diq-dim-metric">${dim.metric}</p>
+        <p class="diq-dim-detail">${dim.detail}</p>
+      </div>`;
+  }).join('');
+
+  // top alerts
+  document.getElementById('diq-top-alerts').innerHTML = d.top_alerts.map((a, i) => `
+    <div class="diq-alert">
+      ${priBadge(a.pri)}
+      <div>
+        <p style="margin:0 0 4px 0"><strong>${i+1}. ${a.title}</strong></p>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft)">${a.body}</p>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    const active = b.getAttribute('data-view') === DIQ_STATE;
+    b.classList.toggle('active', active); b.setAttribute('aria-selected', active ? 'true':'false');
+  });
+}
+document.querySelectorAll('.diq-toggle').forEach(b => b.addEventListener('click', () => { DIQ_STATE = b.getAttribute('data-view'); render(); }));
+render();
+</script>
 
 </body>
 </html>

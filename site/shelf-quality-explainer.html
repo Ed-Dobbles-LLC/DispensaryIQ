@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shelf metrics · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=8">
+</head>
+<body>
+
+<nav class="diq-nav">
+  <div class="diq-nav-inner">
+    <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
+    <div class="diq-nav-links">
+      <a href="index.html" class="diq-nav-link ">Scorecard</a>
+      <a href="coverage.html" class="diq-nav-link ">Coverage</a>
+      <a href="products.html" class="diq-nav-link ">Products</a>
+      <a href="market-share.html" class="diq-nav-link ">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link ">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link active">Shelf metrics</a>
+      <a href="display-quality.html" class="diq-nav-link ">Display quality</a>
+      <a href="ny-find.html" class="diq-nav-link ">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link ">Alerts</a>
+      <a href="territory.html" class="diq-nav-link phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
+        </svg>
+        <span>Print</span>
+      </button>
+    
+    </div>
+  </div>
+</nav>
+
+<main class="diq-main">
+
+  <header class="diq-page-header">
+    <p class="diq-page-eyebrow">Report 05 &middot; Methodology &middot; Shelf metrics</p>
+
+    <div class="diq-prepared-for">
+      <p class="diq-prepared-label">Prepared for</p>
+      <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
+    </div>
+
+    <h1 class="diq-page-title">What are shelf-quality metrics, and how do we measure them?</h1>
+    <p class="diq-page-subtitle">Three observable signals separate brands that bought distribution from brands that earn merchandising. Each metric is derived from dispensary-menu data &mdash; no survey input, no operator self-reporting. Here's exactly what each one measures, with worked examples on stylized menus.</p>
+  </header>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Metric 1 &middot; Shelf score</h2>
+      <span class="diq-section-meta">Where in the menu does the brand land?</span>
+    </div>
+
+    <div class="diq-explainer-grid">
+      <div class="diq-explainer-text">
+        <p><strong>Definition.</strong> For each Curaleaf product, we record its <em>position in section</em> (rank 1, 2, 3 ...) and the <em>section total</em> (how many products in that category). Shelf score = 100 &times; (1 &minus; position / section total). We average across every observed Curaleaf product.</p>
+        <p><strong>Reading.</strong> 100 = top of every section. 50 = middle. 1 = always at the bottom. Higher is better.</p>
+        <p><strong>Why it matters.</strong> Shoppers scroll. Above-the-fold and top-of-section position drives conversion. The brand at position 1 of 30 gets meaningfully more clicks than the brand at position 28 of 30 &mdash; even if the SKU is identical.</p>
+        <p><strong>Caveat.</strong> Some menus alphabetize, some sort by margin, some by featured-status, some by inventory. Across thousands of stores the noise averages out and the rank signal stays clean.</p>
+      </div>
+      <div class="diq-explainer-visual">
+        <svg viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg" class="diq-mock-menu">
+          <!-- Mock dispensary menu -->
+          <rect x="0" y="0" width="380" height="320" rx="8" fill="#11162A" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="28" fill="#F5F6FA" font-family="Calibri" font-size="13" font-weight="bold">FLOWER (10 products)</text>
+          <line x1="20" y1="36" x2="360" y2="36" stroke="#1A2074" stroke-width="1"/>
+
+          <!-- Rows: highlight position 1 (top) and position 8 (bottom) -->
+          <g font-family="Calibri" font-size="11" fill="#B4BACC">
+            <rect x="14" y="46" width="352" height="22" rx="3" fill="rgba(0, 185, 142, 0.18)"/>
+            <text x="22" y="61" fill="#00B98E" font-weight="bold">1.</text>
+            <text x="42" y="61" fill="#F5F6FA">Curaleaf: Select &mdash; OG Kush 3.5g</text>
+            <text x="320" y="61" fill="#00B98E" font-weight="bold">shelf 90</text>
+
+            <text x="22" y="84">2.</text><text x="42" y="84">Daze Off Indica</text>
+            <text x="22" y="103">3.</text><text x="42" y="103">High Supply Hybrid</text>
+            <text x="22" y="122">4.</text><text x="42" y="122">Rythm Sativa</text>
+            <text x="22" y="141">5.</text><text x="42" y="141">Cresco Reserve</text>
+            <text x="22" y="160">6.</text><text x="42" y="160">Good Green</text>
+            <text x="22" y="179">7.</text><text x="42" y="179">Aeriz Live Resin</text>
+
+            <rect x="14" y="189" width="352" height="22" rx="3" fill="rgba(219, 84, 97, 0.18)"/>
+            <text x="22" y="204" fill="#DB5461" font-weight="bold">8.</text>
+            <text x="42" y="204" fill="#F5F6FA">Curaleaf: Find &mdash; Indica 3.5g</text>
+            <text x="320" y="204" fill="#DB5461" font-weight="bold">shelf 20</text>
+
+            <text x="22" y="227">9.</text><text x="42" y="227">In-House Flower</text>
+            <text x="22" y="246">10.</text><text x="42" y="246">Bedford Grow</text>
+          </g>
+
+          <line x1="20" y1="265" x2="360" y2="265" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="285" fill="#7A8099" font-family="Consolas" font-size="10">
+            Average across these two: (90 + 20) / 2 = 55
+          </text>
+          <text x="20" y="302" fill="#7A8099" font-family="Consolas" font-size="10">
+            Real Curaleaf pilot shelf score: 48 (mid-page placement)
+          </text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Metric 2 &middot; Promo intensity</h2>
+      <span class="diq-section-meta">How aggressively is the brand discounted?</span>
+    </div>
+
+    <div class="diq-explainer-grid diq-explainer-grid-reverse">
+      <div class="diq-explainer-visual">
+        <svg viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg" class="diq-mock-menu">
+          <rect x="0" y="0" width="380" height="320" rx="8" fill="#11162A" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="28" fill="#F5F6FA" font-family="Calibri" font-size="13" font-weight="bold">Brand: Curaleaf: Anthem &middot; 10 SKUs</text>
+          <line x1="20" y1="36" x2="360" y2="36" stroke="#1A2074" stroke-width="1"/>
+
+          <g font-family="Calibri" font-size="11" fill="#B4BACC">
+            <!-- 2 discounted SKUs out of 10 -->
+            <text x="22" y="58">SKU 01 &middot; 1g vape</text>
+            <text x="220" y="58">$29.99</text>
+            <rect x="280" y="48" width="68" height="15" rx="3" fill="rgba(0, 185, 142, 0.18)" stroke="#00B98E"/>
+            <text x="285" y="59" fill="#00B98E" font-weight="bold">&minus;15% off</text>
+
+            <text x="22" y="80">SKU 02 &middot; 0.5g vape</text><text x="220" y="80">$22.00</text>
+            <text x="22" y="102">SKU 03 &middot; 1g vape</text><text x="220" y="102">$32.00</text>
+
+            <text x="22" y="124">SKU 04 &middot; 1g disposable</text>
+            <text x="220" y="124">$38.00</text>
+            <rect x="280" y="114" width="68" height="15" rx="3" fill="rgba(0, 185, 142, 0.18)" stroke="#00B98E"/>
+            <text x="285" y="125" fill="#00B98E" font-weight="bold">&minus;20% off</text>
+
+            <text x="22" y="146">SKU 05 &middot; 0.5g vape</text><text x="220" y="146">$22.00</text>
+            <text x="22" y="168">SKU 06 &middot; 1g vape</text><text x="220" y="168">$30.00</text>
+            <text x="22" y="190">SKU 07 &middot; 1g vape</text><text x="220" y="190">$31.00</text>
+            <text x="22" y="212">SKU 08 &middot; 0.5g vape</text><text x="220" y="212">$22.00</text>
+            <text x="22" y="234">SKU 09 &middot; 1g disposable</text><text x="220" y="234">$40.00</text>
+            <text x="22" y="256">SKU 10 &middot; 1g vape</text><text x="220" y="256">$29.00</text>
+          </g>
+
+          <line x1="20" y1="278" x2="360" y2="278" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="298" fill="#7A8099" font-family="Consolas" font-size="10">
+            Discounted / total = 2 / 10 = 20.0% promo intensity
+          </text>
+          <text x="20" y="314" fill="#7A8099" font-family="Consolas" font-size="10">
+            Real Curaleaf pilot promo intensity: 17.7%
+          </text>
+        </svg>
+      </div>
+      <div class="diq-explainer-text">
+        <p><strong>Definition.</strong> Percentage of a brand's SKUs that carry an active discount on capture day. We detect a discount whenever a menu displays an explicit % off, an MSRP-vs-sale split, or strikethrough pricing.</p>
+        <p><strong>Reading.</strong> Real numbers in the pilot range from 2% (premium brands like Off Hours) to 50%+ (NJ deep-discount operators like the_essence). Curaleaf pilot sits at 17.7% &mdash; moderate.</p>
+        <p><strong>Why it matters.</strong> Promo intensity reads two ways. Low intensity may be <em>premium positioning</em>, but it may also be <em>weak promotional activation</em>. High intensity may signal <em>aggressive market push</em>, but it can also mean <em>retailers discounting to move slow inventory</em>. The actionable read comes from comparing your brands to the field in the same state, same category, same week.</p>
+        <p><strong>Limitation.</strong> Discount data is populated on 14% of captured rows &mdash; some platforms surface promo info, some don't. Numbers are directional within state but not strictly comparable across all menus.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Metric 3 &middot; Featured share</h2>
+      <span class="diq-section-meta">Editorial endorsement &mdash; Staff Pick, Featured, Manager's Choice</span>
+    </div>
+
+    <div class="diq-explainer-grid">
+      <div class="diq-explainer-text">
+        <p><strong>Definition.</strong> Percentage of a brand's observed SKUs that carry an editorial flag on the menu &mdash; "Staff Pick," "Featured," "Manager's Choice," "Editor's Pick," or platform equivalents. The dispensary chose to surface this SKU above the algorithmic default.</p>
+        <p><strong>Reading.</strong> Rare signal. Pilot averages run 0.3&ndash;2% for most brands. Where it fires, it's strong evidence of <em>earned merchandising</em> &mdash; the budtenders or store managers picked this brand to promote.</p>
+        <p><strong>Why it matters.</strong> Featured share is one of the only observable signals that distinguishes <em>"brand we stock"</em> from <em>"brand we recommend."</em> Curaleaf brands featured in 1.03% of pilot observations &mdash; consistent with mid-tier endorsement, slightly above the field average.</p>
+        <p><strong>Phase 2 enhancement.</strong> We can mine the menu's section-header text to surface more editorial signal &mdash; promotional carousels, brand-of-the-month banners, custom category pages. That's a v2 feature: more signal, same architecture.</p>
+      </div>
+      <div class="diq-explainer-visual">
+        <svg viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg" class="diq-mock-menu">
+          <rect x="0" y="0" width="380" height="320" rx="8" fill="#11162A" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="28" fill="#F5F6FA" font-family="Calibri" font-size="13" font-weight="bold">★ Staff picks this week</text>
+          <line x1="20" y1="36" x2="360" y2="36" stroke="#1A2074" stroke-width="1"/>
+
+          <g font-family="Calibri" font-size="11" fill="#B4BACC">
+            <!-- 5 featured slots; Curaleaf gets 2 -->
+            <rect x="14" y="48" width="170" height="60" rx="4" fill="rgba(0, 185, 142, 0.18)" stroke="#00B98E"/>
+            <text x="22" y="64" fill="#00B98E" font-weight="bold">★ Featured</text>
+            <text x="22" y="80" fill="#F5F6FA">Curaleaf: Select</text>
+            <text x="22" y="96" fill="#7A8099">OG Kush 3.5g &middot; $58</text>
+
+            <rect x="196" y="48" width="170" height="60" rx="4" fill="#1A2074" stroke="#3a3f5c"/>
+            <text x="204" y="64" fill="#85E4FD">★ Featured</text>
+            <text x="204" y="80" fill="#F5F6FA">Ayrloom Edible</text>
+            <text x="204" y="96" fill="#7A8099">Cherry 10mg &middot; $28</text>
+
+            <rect x="14" y="118" width="170" height="60" rx="4" fill="rgba(0, 185, 142, 0.18)" stroke="#00B98E"/>
+            <text x="22" y="134" fill="#00B98E" font-weight="bold">★ Featured</text>
+            <text x="22" y="150" fill="#F5F6FA">Curaleaf: Anthem</text>
+            <text x="22" y="166" fill="#7A8099">1g vape &middot; $30</text>
+
+            <rect x="196" y="118" width="170" height="60" rx="4" fill="#1A2074" stroke="#3a3f5c"/>
+            <text x="204" y="134" fill="#85E4FD">★ Featured</text>
+            <text x="204" y="150" fill="#F5F6FA">Rythm Live Resin</text>
+            <text x="204" y="166" fill="#7A8099">1g cart &middot; $42</text>
+
+            <rect x="14" y="188" width="170" height="60" rx="4" fill="#1A2074" stroke="#3a3f5c"/>
+            <text x="22" y="204" fill="#85E4FD">★ Featured</text>
+            <text x="22" y="220" fill="#F5F6FA">MFNY Hash</text>
+            <text x="22" y="236" fill="#7A8099">1g rosin &middot; $65</text>
+          </g>
+
+          <line x1="20" y1="260" x2="360" y2="260" stroke="#1A2074" stroke-width="1"/>
+          <text x="20" y="278" fill="#7A8099" font-family="Consolas" font-size="10">
+            Curaleaf in 2 of 5 featured slots &middot; that store: 40% featured
+          </text>
+          <text x="20" y="295" fill="#7A8099" font-family="Consolas" font-size="10">
+            Averaged across the entire pilot: 1.03%
+          </text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout">
+      <p class="diq-callout-label">&#9656; Reading these on the next page</p>
+      <p style="margin:0">The Display Quality page shows real values for all three metrics, comparing Curaleaf to the top 8 brands by SKU count in each market. Use the chain-status toggle to isolate independents &mdash; the wholesale-addressable market &mdash; from chain stores, where Curaleaf's own retail can skew the picture.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="diq-footer">
+  <div class="diq-footer-inner">
+    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
+  </div>
+</footer>
+
+</body>
+</html>

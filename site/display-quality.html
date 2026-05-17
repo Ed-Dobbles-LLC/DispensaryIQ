@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Display quality · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=6">
+  <link rel="stylesheet" href="assets/style.css?v=8">
 </head>
 <body>
 
@@ -13,18 +13,24 @@
   <div class="diq-nav-inner">
     <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
     <div class="diq-nav-links">
-      <a href="index.html" class="diq-nav-link">Overview</a>
-      <a href="coverage.html" class="diq-nav-link">Coverage</a>
-      <a href="products.html" class="diq-nav-link">Product depth</a>
-      <a href="market-share.html" class="diq-nav-link">Market share</a>
+      <a href="index.html" class="diq-nav-link ">Scorecard</a>
+      <a href="coverage.html" class="diq-nav-link ">Coverage</a>
+      <a href="products.html" class="diq-nav-link ">Products</a>
+      <a href="market-share.html" class="diq-nav-link ">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link ">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link ">Shelf metrics</a>
       <a href="display-quality.html" class="diq-nav-link active">Display quality</a>
-      <a href="#" class="diq-nav-link disabled">Named accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print this page" aria-label="Print">
+      <a href="ny-find.html" class="diq-nav-link ">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link ">Alerts</a>
+      <a href="territory.html" class="diq-nav-link phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
         </svg>
         <span>Print</span>
       </button>
+    
     </div>
   </div>
 </nav>
@@ -32,7 +38,7 @@
 <main class="diq-main">
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Report 04 &middot; Display quality</p>
+    <p class="diq-page-eyebrow">Report 06 &middot; Display quality</p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
@@ -40,29 +46,35 @@
     </div>
 
     <h1 class="diq-page-title">How well is the shelf earned?</h1>
-    <p class="diq-page-subtitle">Three metrics that separate brands that bought distribution from brands that earn merchandising. Shelf score, promotional intensity, and featured share &mdash; all derived from observable menu data, not survey input.</p>
+    <p class="diq-page-subtitle">Real values for shelf score, promotional intensity, and featured share. For methodology and worked examples, see the <a href="shelf-quality-explainer.html">Shelf metrics</a> explainer.</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-toggle-bar" role="tablist" aria-label="Select market view">
       <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
         <span class="diq-toggle-label">Pilot total</span>
-        <span class="diq-toggle-sub">3 states &middot; 1,006 disps</span>
+        <span class="diq-toggle-sub">3 states</span>
       </button>
       <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #00B98E"></span>
         <span class="diq-toggle-label">Illinois</span>
-        <span class="diq-toggle-sub">268 disps</span>
       </button>
       <button class="diq-toggle" data-view="NJ" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #85E4FD"></span>
         <span class="diq-toggle-label">New Jersey</span>
-        <span class="diq-toggle-sub">180 disps</span>
       </button>
       <button class="diq-toggle" data-view="NY" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
         <span class="diq-toggle-label">New York</span>
-        <span class="diq-toggle-sub">558 disps</span>
+      </button>
+    </div>
+    <div class="diq-toggle-bar diq-toggle-secondary" role="tablist" aria-label="Filter dispensary universe">
+      <button class="diq-toggle-sm active" data-chain="all" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">All dispensaries</span>
+      </button>
+      <button class="diq-toggle-sm" data-chain="indie" role="tab" aria-selected="false">
+        <span class="diq-toggle-label">Independents only</span>
+        <span class="diq-toggle-sub">non-chain · wholesale-addressable</span>
       </button>
     </div>
   </section>
@@ -110,8 +122,8 @@
 
   <section class="diq-section">
     <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; How to read these metrics</p>
-      <p style="margin:0"><strong>Shelf score</strong> is computed from product position within its category section &mdash; 100 means the brand's SKUs sit at the top of every section, 1 means buried at the bottom. <strong>Promo intensity</strong> is observed at capture &mdash; high values mean the brand leans on discount mechanics; low values may mean premium positioning OR weak promotional activation. <strong>Featured share</strong> tracks editorial picks (Staff Pick, Featured, Manager's Choice) &mdash; signal of earned merchandising. The interesting Curaleaf insight: shelf score sits at <span data-bind="curaleaf-shelf-inline">48</span>, meaning portfolio products land mid-page rather than top-of-section &mdash; an addressable shelf-execution opportunity for the trade-marketing team.</p>
+      <p class="diq-callout-label">&#9656; The actionable read</p>
+      <p style="margin:0"><strong>Curaleaf shelf score sits at <span data-bind="curaleaf-shelf-inline">48</span></strong>, meaning portfolio products land mid-page rather than top-of-section &mdash; an addressable shelf-execution opportunity for the trade-marketing team. Jetpacks (shelf 31) and Rythm (shelf 38) sit lower; Shine (shelf 81) and Aeriz (shelf 67) earn top-of-section placement in IL. The store-level data is where the action list lives &mdash; coming with named accounts in Phase 2.</p>
     </div>
   </section>
 
@@ -125,7 +137,9 @@
 </footer>
 
 <script>
-const DIQ_DATA = {"PILOT": {"label": "Pilot", "curaleaf_shelf": 48, "curaleaf_promo": 17.7, "curaleaf_featured": 1.03, "top_brands": [{"rk": 1, "brand": "Curaleaf portfolio", "n_skus": 12841, "shelf": 48, "promo": 17.7, "featured": 1.03, "curaleaf": true}, {"rk": 2, "brand": "Ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 3, "brand": "Rythm", "n_skus": 6955, "shelf": 38, "promo": 25.4, "featured": 1.38, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n_skus": 6378, "shelf": 41, "promo": 21.1, "featured": 0.36, "curaleaf": false}, {"rk": 5, "brand": "MFNY", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 6, "brand": "Jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 7, "brand": "Jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 8, "brand": "Florist Farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}]}, "IL": {"label": "Illinois", "curaleaf_shelf": 52, "curaleaf_promo": 12.2, "curaleaf_featured": 0.9, "top_brands": [{"rk": 1, "brand": "high_supply", "n_skus": 4394, "shelf": 38, "promo": 35.3, "featured": 0.11, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 4209, "shelf": 52, "promo": 12.2, "featured": 0.9, "curaleaf": true}, {"rk": 3, "brand": "dogwalkers", "n_skus": 2758, "shelf": 51, "promo": 40.2, "featured": 0.25, "curaleaf": false}, {"rk": 4, "brand": "daze_off", "n_skus": 2389, "shelf": 58, "promo": 44.8, "featured": 0.25, "curaleaf": false}, {"rk": 5, "brand": "savvy", "n_skus": 2381, "shelf": 35, "promo": 11.7, "featured": 0.21, "curaleaf": false}, {"rk": 6, "brand": "aeriz", "n_skus": 2119, "shelf": 67, "promo": 44.5, "featured": 0.66, "curaleaf": false}, {"rk": 7, "brand": "rythm", "n_skus": 2081, "shelf": 32, "promo": 16.7, "featured": 2.26, "curaleaf": false}, {"rk": 8, "brand": "shine", "n_skus": 1997, "shelf": 81, "promo": 46.0, "featured": 0.0, "curaleaf": false}]}, "NJ": {"label": "New Jersey", "curaleaf_shelf": 51, "curaleaf_promo": 49.8, "curaleaf_featured": 1.05, "top_brands": [{"rk": 1, "brand": "rythm", "n_skus": 2454, "shelf": 44, "promo": 46.3, "featured": 0.49, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1801, "shelf": 51, "promo": 49.8, "featured": 1.05, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n_skus": 1369, "shelf": 52, "promo": 45.9, "featured": 0.73, "curaleaf": false}, {"rk": 4, "brand": "rove", "n_skus": 1128, "shelf": 36, "promo": 30.1, "featured": 0.53, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n_skus": 1004, "shelf": 49, "promo": 43.6, "featured": 0.3, "curaleaf": false}, {"rk": 6, "brand": "legend", "n_skus": 925, "shelf": 41, "promo": 39.6, "featured": 0.76, "curaleaf": false}, {"rk": 7, "brand": "the_essence", "n_skus": 846, "shelf": 57, "promo": 52.1, "featured": 2.6, "curaleaf": false}, {"rk": 8, "brand": "illicit", "n_skus": 786, "shelf": 51, "promo": 8.0, "featured": 0.51, "curaleaf": false}]}, "NY": {"label": "New York", "curaleaf_shelf": 44, "curaleaf_promo": 12.6, "curaleaf_featured": 1.11, "top_brands": [{"rk": 1, "brand": "ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 6831, "shelf": 44, "promo": 12.6, "featured": 1.11, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 6, "brand": "florist_farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 7, "brand": "off_hours", "n_skus": 4810, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}, {"rk": 8, "brand": "rove", "n_skus": 4430, "shelf": 41, "promo": 14.6, "featured": 0.29, "curaleaf": false}]}};
+const DIQ_DATA = {"PILOT": {"all": {"label": "Pilot \u00b7 all", "curaleaf_shelf": 48, "curaleaf_promo": 17.7, "curaleaf_featured": 1.03, "top_brands": [{"rk": 1, "brand": "Curaleaf portfolio", "n_skus": 12841, "shelf": 48, "promo": 17.7, "featured": 1.03, "curaleaf": true}, {"rk": 2, "brand": "Ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 3, "brand": "Rythm", "n_skus": 6955, "shelf": 38, "promo": 25.4, "featured": 1.38, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n_skus": 6378, "shelf": 41, "promo": 21.1, "featured": 0.36, "curaleaf": false}, {"rk": 5, "brand": "MFNY", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 6, "brand": "Jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 7, "brand": "Jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 8, "brand": "Florist Farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}]}, "indie": {"label": "Pilot \u00b7 independents", "curaleaf_shelf": 47, "curaleaf_promo": 21.5, "curaleaf_featured": 1.1, "top_brands": [{"rk": 1, "brand": "Ayrloom", "n_skus": 10754, "shelf": 51, "promo": 3.8, "featured": 0.53, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 9746, "shelf": 47, "promo": 21.5, "featured": 1.1, "curaleaf": true}, {"rk": 3, "brand": "MFNY", "n_skus": 6196, "shelf": 58, "promo": 14.5, "featured": 1.74, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n_skus": 6060, "shelf": 41, "promo": 20.0, "featured": 0.37, "curaleaf": false}, {"rk": 5, "brand": "Jaunty", "n_skus": 5984, "shelf": 53, "promo": 8.2, "featured": 0.42, "curaleaf": false}, {"rk": 6, "brand": "Jetpacks", "n_skus": 5190, "shelf": 31, "promo": 17.2, "featured": 0.25, "curaleaf": false}, {"rk": 7, "brand": "Florist Farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 8, "brand": "Off Hours", "n_skus": 4808, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}]}}, "IL": {"all": {"label": "Illinois \u00b7 all", "curaleaf_shelf": 52, "curaleaf_promo": 12.2, "curaleaf_featured": 0.9, "top_brands": [{"rk": 1, "brand": "high_supply", "n_skus": 4394, "shelf": 38, "promo": 35.3, "featured": 0.11, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 4209, "shelf": 52, "promo": 12.2, "featured": 0.9, "curaleaf": true}, {"rk": 3, "brand": "dogwalkers", "n_skus": 2758, "shelf": 51, "promo": 40.2, "featured": 0.25, "curaleaf": false}, {"rk": 4, "brand": "daze_off", "n_skus": 2389, "shelf": 58, "promo": 44.8, "featured": 0.25, "curaleaf": false}, {"rk": 5, "brand": "savvy", "n_skus": 2381, "shelf": 35, "promo": 11.7, "featured": 0.21, "curaleaf": false}, {"rk": 6, "brand": "aeriz", "n_skus": 2119, "shelf": 67, "promo": 44.5, "featured": 0.66, "curaleaf": false}, {"rk": 7, "brand": "rythm", "n_skus": 2081, "shelf": 32, "promo": 16.7, "featured": 2.26, "curaleaf": false}, {"rk": 8, "brand": "shine", "n_skus": 1997, "shelf": 81, "promo": 46.0, "featured": 0.0, "curaleaf": false}]}, "indie": {"label": "Illinois \u00b7 independents", "curaleaf_shelf": 52, "curaleaf_promo": 13.0, "curaleaf_featured": 1.44, "top_brands": [{"rk": 1, "brand": "high_supply", "n_skus": 2706, "shelf": 42, "promo": 41.2, "featured": 0.0, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1870, "shelf": 52, "promo": 13.0, "featured": 1.44, "curaleaf": true}, {"rk": 3, "brand": "daze_off", "n_skus": 1505, "shelf": 59, "promo": 47.1, "featured": 0.33, "curaleaf": false}, {"rk": 4, "brand": "dogwalkers", "n_skus": 1412, "shelf": 51, "promo": 45.4, "featured": 0.5, "curaleaf": false}, {"rk": 5, "brand": "aeriz", "n_skus": 1368, "shelf": 65, "promo": 48.4, "featured": 0.73, "curaleaf": false}, {"rk": 6, "brand": "shine", "n_skus": 1265, "shelf": 78, "promo": 41.9, "featured": 0.0, "curaleaf": false}, {"rk": 7, "brand": "rythm", "n_skus": 1167, "shelf": 31, "promo": 23.9, "featured": 3.6, "curaleaf": false}, {"rk": 8, "brand": "cresco", "n_skus": 1054, "shelf": 59, "promo": 45.6, "featured": 0.76, "curaleaf": false}]}}, "NJ": {"all": {"label": "New Jersey \u00b7 all", "curaleaf_shelf": 51, "curaleaf_promo": 49.8, "curaleaf_featured": 1.05, "top_brands": [{"rk": 1, "brand": "rythm", "n_skus": 2454, "shelf": 44, "promo": 46.3, "featured": 0.49, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1801, "shelf": 51, "promo": 49.8, "featured": 1.05, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n_skus": 1369, "shelf": 52, "promo": 45.9, "featured": 0.73, "curaleaf": false}, {"rk": 4, "brand": "rove", "n_skus": 1128, "shelf": 36, "promo": 30.1, "featured": 0.53, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n_skus": 1004, "shelf": 49, "promo": 43.6, "featured": 0.3, "curaleaf": false}, {"rk": 6, "brand": "legend", "n_skus": 925, "shelf": 41, "promo": 39.6, "featured": 0.76, "curaleaf": false}, {"rk": 7, "brand": "the_essence", "n_skus": 846, "shelf": 57, "promo": 52.1, "featured": 2.6, "curaleaf": false}, {"rk": 8, "brand": "illicit", "n_skus": 786, "shelf": 51, "promo": 8.0, "featured": 0.51, "curaleaf": false}]}, "indie": {"label": "New Jersey \u00b7 independents", "curaleaf_shelf": 50, "curaleaf_promo": 51.4, "curaleaf_featured": 1.14, "top_brands": [{"rk": 1, "brand": "rythm", "n_skus": 1863, "shelf": 50, "promo": 51.8, "featured": 0.64, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1661, "shelf": 50, "promo": 51.4, "featured": 1.14, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n_skus": 1308, "shelf": 52, "promo": 47.5, "featured": 0.76, "curaleaf": false}, {"rk": 4, "brand": "rove", "n_skus": 1091, "shelf": 36, "promo": 31.1, "featured": 0.55, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n_skus": 964, "shelf": 49, "promo": 44.5, "featured": 0.31, "curaleaf": false}, {"rk": 6, "brand": "legend", "n_skus": 873, "shelf": 40, "promo": 40.9, "featured": 0.8, "curaleaf": false}, {"rk": 7, "brand": "the_essence", "n_skus": 759, "shelf": 54, "promo": 53.4, "featured": 0.92, "curaleaf": false}, {"rk": 8, "brand": "illicit", "n_skus": 701, "shelf": 51, "promo": 7.4, "featured": 0.57, "curaleaf": false}]}}, "NY": {"all": {"label": "New York \u00b7 all", "curaleaf_shelf": 44, "curaleaf_promo": 12.6, "curaleaf_featured": 1.11, "top_brands": [{"rk": 1, "brand": "ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 6831, "shelf": 44, "promo": 12.6, "featured": 1.11, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 6, "brand": "florist_farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 7, "brand": "off_hours", "n_skus": 4810, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}, {"rk": 8, "brand": "rove", "n_skus": 4430, "shelf": 41, "promo": 14.6, "featured": 0.29, "curaleaf": false}]}, "indie": {"label": "New York \u00b7 independents", "curaleaf_shelf": 44, "curaleaf_promo": 13.9, "curaleaf_featured": 0.98, "top_brands": [{"rk": 1, "brand": "ayrloom", "n_skus": 10754, "shelf": 51, "promo": 3.8, "featured": 0.53, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 6215, "shelf": 44, "promo": 13.9, "featured": 0.98, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n_skus": 6196, "shelf": 58, "promo": 14.5, "featured": 1.74, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n_skus": 5984, "shelf": 53, "promo": 8.2, "featured": 0.42, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n_skus": 5190, "shelf": 31, "promo": 17.2, "featured": 0.25, "curaleaf": false}, {"rk": 6, "brand": "florist_farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 7, "brand": "off_hours", "n_skus": 4808, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}, {"rk": 8, "brand": "rove", "n_skus": 4430, "shelf": 41, "promo": 14.6, "featured": 0.29, "curaleaf": false}]}}};
+let DIQ_STATE = 'PILOT';
+let DIQ_CHAIN = 'all';
 
 function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
 function fmtBrand(b) {
@@ -134,8 +148,8 @@ function fmtBrand(b) {
   return b.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function render(view) {
-  const d = DIQ_DATA[view];
+function render() {
+  const d = DIQ_DATA[DIQ_STATE][DIQ_CHAIN];
   if (!d) return;
   document.querySelector('[data-bind="view-label"]').textContent = d.label;
   document.querySelector('[data-bind="curaleaf-shelf"]').textContent = d.curaleaf_shelf;
@@ -156,16 +170,18 @@ function render(view) {
     </tr>
   `).join('');
 
-  document.querySelectorAll('.diq-toggle').forEach(btn => {
-    const isActive = btn.getAttribute('data-view') === view;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    const a = b.getAttribute('data-view') === DIQ_STATE;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
+  });
+  document.querySelectorAll('.diq-toggle-sm').forEach(b => {
+    const a = b.getAttribute('data-chain') === DIQ_CHAIN;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
   });
 }
-document.querySelectorAll('.diq-toggle').forEach(btn => {
-  btn.addEventListener('click', () => render(btn.getAttribute('data-view')));
-});
-render('PILOT');
+document.querySelectorAll('.diq-toggle').forEach(b => b.addEventListener('click', () => { DIQ_STATE = b.getAttribute('data-view'); render(); }));
+document.querySelectorAll('.diq-toggle-sm').forEach(b => b.addEventListener('click', () => { DIQ_CHAIN = b.getAttribute('data-chain'); render(); }));
+render();
 </script>
 
 </body>

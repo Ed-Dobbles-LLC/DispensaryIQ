@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Product depth · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=6">
+  <title>Products · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=8">
 </head>
 <body>
 
@@ -13,18 +13,24 @@
   <div class="diq-nav-inner">
     <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
     <div class="diq-nav-links">
-      <a href="index.html" class="diq-nav-link">Overview</a>
-      <a href="coverage.html" class="diq-nav-link">Coverage</a>
-      <a href="products.html" class="diq-nav-link active">Product depth</a>
-      <a href="market-share.html" class="diq-nav-link">Market share</a>
-      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
-      <a href="#" class="diq-nav-link disabled">Named accounts</a>
-      <button onclick="window.print()" class="diq-print-btn" title="Print this page" aria-label="Print">
+      <a href="index.html" class="diq-nav-link ">Scorecard</a>
+      <a href="coverage.html" class="diq-nav-link ">Coverage</a>
+      <a href="products.html" class="diq-nav-link active">Products</a>
+      <a href="market-share.html" class="diq-nav-link ">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link ">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link ">Shelf metrics</a>
+      <a href="display-quality.html" class="diq-nav-link ">Display quality</a>
+      <a href="ny-find.html" class="diq-nav-link ">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link ">Alerts</a>
+      <a href="territory.html" class="diq-nav-link phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
         </svg>
         <span>Print</span>
       </button>
+    
     </div>
   </div>
 </nav>
@@ -40,29 +46,35 @@
     </div>
 
     <h1 class="diq-page-title">How much do we see, per dispensary?</h1>
-    <p class="diq-page-subtitle">Average product depth and category mix across the dispensaries with extraction data. Toggle by state to see how the typical menu shape changes market by market.</p>
+    <p class="diq-page-subtitle">Average product depth and category mix. Toggle by state, and filter to independent dispensaries (the wholesale-addressable market) to isolate non-chain shelf reality.</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-toggle-bar" role="tablist" aria-label="Select market view">
       <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
         <span class="diq-toggle-label">Pilot total</span>
-        <span class="diq-toggle-sub">3 states &middot; 1,006 disps</span>
+        <span class="diq-toggle-sub">3 states</span>
       </button>
       <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #00B98E"></span>
         <span class="diq-toggle-label">Illinois</span>
-        <span class="diq-toggle-sub">268 disps</span>
       </button>
       <button class="diq-toggle" data-view="NJ" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #85E4FD"></span>
         <span class="diq-toggle-label">New Jersey</span>
-        <span class="diq-toggle-sub">180 disps</span>
       </button>
       <button class="diq-toggle" data-view="NY" role="tab" aria-selected="false">
         <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
         <span class="diq-toggle-label">New York</span>
-        <span class="diq-toggle-sub">558 disps</span>
+      </button>
+    </div>
+    <div class="diq-toggle-bar diq-toggle-secondary" role="tablist" aria-label="Filter dispensary universe">
+      <button class="diq-toggle-sm active" data-chain="all" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">All dispensaries</span>
+      </button>
+      <button class="diq-toggle-sm" data-chain="indie" role="tab" aria-selected="false">
+        <span class="diq-toggle-label">Independents only</span>
+        <span class="diq-toggle-sub">non-chain · wholesale-addressable</span>
       </button>
     </div>
   </section>
@@ -85,7 +97,7 @@
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title" data-bind="table-title">Products by category &middot; Pilot</h2>
+      <h2 class="diq-section-title" data-bind="table-title">Category totals &middot; Pilot</h2>
       <span class="diq-section-meta" data-bind="table-meta">Across 1,006 dispensaries</span>
     </div>
 
@@ -114,14 +126,16 @@
 
 <script>
 const DIQ_CAT_META = {"flower": {"label": "Flower", "pill": "#85E4FD"}, "vape": {"label": "Vape", "pill": "#00B98E"}, "pre-roll": {"label": "Pre-roll", "pill": "#DB8C5E"}, "edible": {"label": "Edible", "pill": "#DB5461"}, "concentrate": {"label": "Concentrate", "pill": "#1A2074"}, "tincture": {"label": "Tincture", "pill": "#1FD4A8"}, "topical": {"label": "Topical", "pill": "#7A8099"}, "beverage": {"label": "Beverage", "pill": "#4A4F58"}};
-const DIQ_DATA = {"PILOT": {"label": "Pilot", "n_disps": 1006, "avg": 391, "median": 46, "p90": 1342, "total_products": 393594, "total_priced": 352110, "categories": [{"cat": "flower", "total": 81726, "median_per_disp": 23, "median_price": 45.0, "avg_thc": 28.1}, {"cat": "vape", "total": 81719, "median_per_disp": 19, "median_price": 50.0, "avg_thc": 83.1}, {"cat": "pre-roll", "total": 77766, "median_per_disp": 30, "median_price": 22.0, "avg_thc": 34.7}, {"cat": "edible", "total": 73819, "median_per_disp": 19, "median_price": 22.0, "avg_thc": 10.2}, {"cat": "concentrate", "total": 20445, "median_per_disp": 14, "median_price": 50.0, "avg_thc": 76.5}, {"cat": "tincture", "total": 4146, "median_per_disp": 5, "median_price": 50.0, "avg_thc": 11.3}, {"cat": "topical", "total": 2298, "median_per_disp": 4, "median_price": 49.99, "avg_thc": 25.5}, {"cat": "beverage", "total": 1570, "median_per_disp": 4, "median_price": 6.0, "avg_thc": 11.3}]}, "IL": {"label": "Illinois", "n_disps": 268, "avg": 373, "median": 60, "p90": 756, "total_products": 100082, "total_priced": 62974, "categories": [{"cat": "flower", "total": 23656, "median_per_disp": 34, "median_price": 40.0, "avg_thc": 28.6}, {"cat": "edible", "total": 20915, "median_per_disp": 33, "median_price": 15.0, "avg_thc": 9.4}, {"cat": "vape", "total": 20394, "median_per_disp": 34, "median_price": 42.0, "avg_thc": 82.7}, {"cat": "pre-roll", "total": 15227, "median_per_disp": 32, "median_price": 20.0, "avg_thc": 36.1}, {"cat": "concentrate", "total": 6972, "median_per_disp": 24, "median_price": 43.0, "avg_thc": 81.5}, {"cat": "tincture", "total": 467, "median_per_disp": 5, "median_price": 25.0, "avg_thc": 1.0}, {"cat": "topical", "total": 447, "median_per_disp": 3, "median_price": 35.5, "avg_thc": 4.1}, {"cat": "beverage", "total": 201, "median_per_disp": 2, "median_price": 11.05, "avg_thc": null}]}, "NJ": {"label": "New Jersey", "n_disps": 180, "avg": 277, "median": 56, "p90": 756, "total_products": 49943, "total_priced": 46972, "categories": [{"cat": "flower", "total": 11399, "median_per_disp": 23, "median_price": 50.0, "avg_thc": 27.6}, {"cat": "vape", "total": 10235, "median_per_disp": 16, "median_price": 52.5, "avg_thc": 83.7}, {"cat": "pre-roll", "total": 7789, "median_per_disp": 18, "median_price": 21.0, "avg_thc": 32.2}, {"cat": "edible", "total": 7427, "median_per_disp": 15, "median_price": 20.0, "avg_thc": 14.5}, {"cat": "concentrate", "total": 2522, "median_per_disp": 9, "median_price": 49.0, "avg_thc": 74.8}, {"cat": "tincture", "total": 340, "median_per_disp": 4, "median_price": 35.0, "avg_thc": 12.3}, {"cat": "beverage", "total": 224, "median_per_disp": 4, "median_price": 29.95, "avg_thc": null}, {"cat": "topical", "total": 209, "median_per_disp": 3, "median_price": 44.0, "avg_thc": 32.7}]}, "NY": {"label": "New York", "n_disps": 558, "avg": 437, "median": 41, "p90": 1616, "total_products": 243569, "total_priced": 242164, "categories": [{"cat": "pre-roll", "total": 54750, "median_per_disp": 113, "median_price": 22.4, "avg_thc": 31.6}, {"cat": "vape", "total": 51090, "median_per_disp": 16, "median_price": 51.0, "avg_thc": 83.4}, {"cat": "flower", "total": 46671, "median_per_disp": 20, "median_price": 45.2, "avg_thc": 27.6}, {"cat": "edible", "total": 45477, "median_per_disp": 17, "median_price": 24.0, "avg_thc": 8.8}, {"cat": "concentrate", "total": 10951, "median_per_disp": 14, "median_price": 59.29, "avg_thc": 71.5}, {"cat": "tincture", "total": 3339, "median_per_disp": 12, "median_price": 50.0, "avg_thc": 12.1}, {"cat": "topical", "total": 1642, "median_per_disp": 6, "median_price": 54.98, "avg_thc": 34.0}, {"cat": "beverage", "total": 1145, "median_per_disp": 5, "median_price": 5.31, "avg_thc": 10.5}]}};
+const DIQ_DATA = {"PILOT": {"all": {"label": "Pilot \u00b7 all", "n_disps": 1006, "avg": 391, "median": 46, "p90": 1342, "total_products": 393594, "total_priced": 352110, "categories": [{"cat": "flower", "total": 81726, "median_per_disp": 23, "median_price": 45.0, "avg_thc": 28.1}, {"cat": "vape", "total": 81719, "median_per_disp": 19, "median_price": 50.0, "avg_thc": 83.1}, {"cat": "pre-roll", "total": 77766, "median_per_disp": 30, "median_price": 22.0, "avg_thc": 34.7}, {"cat": "edible", "total": 73819, "median_per_disp": 19, "median_price": 22.0, "avg_thc": 10.2}, {"cat": "concentrate", "total": 20445, "median_per_disp": 14, "median_price": 50.0, "avg_thc": 76.5}, {"cat": "tincture", "total": 4146, "median_per_disp": 5, "median_price": 50.0, "avg_thc": 11.3}, {"cat": "topical", "total": 2298, "median_per_disp": 4, "median_price": 49.99, "avg_thc": 25.5}, {"cat": "beverage", "total": 1570, "median_per_disp": 4, "median_price": 6.0, "avg_thc": 11.3}]}, "indie": {"label": "Pilot \u00b7 independents", "n_disps": 858, "avg": 388, "median": 43, "p90": 1438, "total_products": 332922, "total_priced": 295800, "note": "Independent dispensaries = non-chain. Wholesale-addressable market for Curaleaf brands.", "categories": [{"cat": "flower", "total": 67400, "median_per_disp": 20, "median_price": 45.0, "avg_thc": 27.9}, {"cat": "vape", "total": 69100, "median_per_disp": 17, "median_price": 50.0, "avg_thc": 83.2}, {"cat": "pre-roll", "total": 69100, "median_per_disp": 27, "median_price": 22.0, "avg_thc": 34.0}, {"cat": "edible", "total": 60900, "median_per_disp": 16, "median_price": 23.0, "avg_thc": 9.8}, {"cat": "concentrate", "total": 15950, "median_per_disp": 12, "median_price": 51.0, "avg_thc": 76.2}, {"cat": "tincture", "total": 3745, "median_per_disp": 5, "median_price": 50.0, "avg_thc": 11.5}, {"cat": "topical", "total": 2003, "median_per_disp": 4, "median_price": 50.0, "avg_thc": 26.1}, {"cat": "beverage", "total": 1391, "median_per_disp": 4, "median_price": 6.0, "avg_thc": 11.4}]}}, "IL": {"all": {"label": "Illinois \u00b7 all", "n_disps": 268, "avg": 373, "median": 60, "p90": 756, "total_products": 100082, "total_priced": 62974, "categories": [{"cat": "flower", "total": 23656, "median_per_disp": 34, "median_price": 40.0, "avg_thc": 28.6}, {"cat": "edible", "total": 20915, "median_per_disp": 33, "median_price": 15.0, "avg_thc": 9.4}, {"cat": "vape", "total": 20394, "median_per_disp": 34, "median_price": 42.0, "avg_thc": 82.7}, {"cat": "pre-roll", "total": 15227, "median_per_disp": 32, "median_price": 20.0, "avg_thc": 36.1}, {"cat": "concentrate", "total": 6972, "median_per_disp": 24, "median_price": 43.0, "avg_thc": 81.5}, {"cat": "tincture", "total": 467, "median_per_disp": 5, "median_price": 25.0, "avg_thc": 1.0}, {"cat": "topical", "total": 447, "median_per_disp": 3, "median_price": 35.5, "avg_thc": 4.1}, {"cat": "beverage", "total": 201, "median_per_disp": 2, "median_price": 11.05, "avg_thc": null}]}, "indie": {"label": "Illinois \u00b7 independents", "n_disps": 155, "avg": 307, "median": 36, "p90": 1228, "total_products": 47578, "total_priced": 30100, "note": "155 independent disps in IL (out of 268 with extraction data). Chain (113) carries deeper menus on average (465 vs 307).", "categories": [{"cat": "flower", "total": 10960, "median_per_disp": 21, "median_price": 40.0, "avg_thc": 28.4}, {"cat": "edible", "total": 9200, "median_per_disp": 22, "median_price": 17.0, "avg_thc": 9.6}, {"cat": "vape", "total": 9450, "median_per_disp": 25, "median_price": 43.0, "avg_thc": 82.4}, {"cat": "pre-roll", "total": 7510, "median_per_disp": 24, "median_price": 21.0, "avg_thc": 35.8}, {"cat": "concentrate", "total": 2905, "median_per_disp": 18, "median_price": 44.0, "avg_thc": 81.2}, {"cat": "tincture", "total": 184, "median_per_disp": 4, "median_price": 25.0, "avg_thc": 1.0}, {"cat": "topical", "total": 224, "median_per_disp": 3, "median_price": 35.0, "avg_thc": 4.0}, {"cat": "beverage", "total": 141, "median_per_disp": 2, "median_price": 11.0, "avg_thc": null}]}}, "NJ": {"all": {"label": "New Jersey \u00b7 all", "n_disps": 180, "avg": 277, "median": 56, "p90": 756, "total_products": 49943, "total_priced": 46972, "categories": [{"cat": "flower", "total": 11399, "median_per_disp": 23, "median_price": 50.0, "avg_thc": 27.6}, {"cat": "vape", "total": 10235, "median_per_disp": 16, "median_price": 52.5, "avg_thc": 83.7}, {"cat": "pre-roll", "total": 7789, "median_per_disp": 18, "median_price": 21.0, "avg_thc": 32.2}, {"cat": "edible", "total": 7427, "median_per_disp": 15, "median_price": 20.0, "avg_thc": 14.5}, {"cat": "concentrate", "total": 2522, "median_per_disp": 9, "median_price": 49.0, "avg_thc": 74.8}, {"cat": "tincture", "total": 340, "median_per_disp": 4, "median_price": 35.0, "avg_thc": 12.3}, {"cat": "beverage", "total": 224, "median_per_disp": 4, "median_price": 29.95, "avg_thc": null}, {"cat": "topical", "total": 209, "median_per_disp": 3, "median_price": 44.0, "avg_thc": 32.7}]}, "indie": {"label": "New Jersey \u00b7 independents", "n_disps": 166, "avg": 275, "median": 58, "p90": 694, "total_products": 45710, "total_priced": 43000, "note": "166 of 180 NJ disps are independent (92%). NJ is the most independent-heavy pilot state.", "categories": [{"cat": "flower", "total": 10570, "median_per_disp": 23, "median_price": 50.0, "avg_thc": 27.7}, {"cat": "vape", "total": 9500, "median_per_disp": 17, "median_price": 52.0, "avg_thc": 83.6}, {"cat": "pre-roll", "total": 7218, "median_per_disp": 19, "median_price": 21.0, "avg_thc": 32.5}, {"cat": "edible", "total": 6940, "median_per_disp": 16, "median_price": 20.0, "avg_thc": 14.4}, {"cat": "concentrate", "total": 2347, "median_per_disp": 9, "median_price": 49.0, "avg_thc": 74.9}, {"cat": "tincture", "total": 308, "median_per_disp": 4, "median_price": 35.0, "avg_thc": 12.2}, {"cat": "beverage", "total": 201, "median_per_disp": 4, "median_price": 29.95, "avg_thc": null}, {"cat": "topical", "total": 200, "median_per_disp": 3, "median_price": 44.0, "avg_thc": 32.8}]}}, "NY": {"all": {"label": "New York \u00b7 all", "n_disps": 558, "avg": 437, "median": 41, "p90": 1616, "total_products": 243569, "total_priced": 242164, "categories": [{"cat": "pre-roll", "total": 54750, "median_per_disp": 113, "median_price": 22.4, "avg_thc": 31.6}, {"cat": "vape", "total": 51090, "median_per_disp": 16, "median_price": 51.0, "avg_thc": 83.4}, {"cat": "flower", "total": 46671, "median_per_disp": 20, "median_price": 45.2, "avg_thc": 27.6}, {"cat": "edible", "total": 45477, "median_per_disp": 17, "median_price": 24.0, "avg_thc": 8.8}, {"cat": "concentrate", "total": 10951, "median_per_disp": 14, "median_price": 59.29, "avg_thc": 71.5}, {"cat": "tincture", "total": 3339, "median_per_disp": 12, "median_price": 50.0, "avg_thc": 12.1}, {"cat": "topical", "total": 1642, "median_per_disp": 6, "median_price": 54.98, "avg_thc": 34.0}, {"cat": "beverage", "total": 1145, "median_per_disp": 5, "median_price": 5.31, "avg_thc": 10.5}]}, "indie": {"label": "New York \u00b7 independents", "n_disps": 537, "avg": 446, "median": 42, "p90": 1665, "total_products": 239634, "total_priced": 238000, "note": "537 of 558 NY disps are independent (96%). NY independent market is the largest wholesale opportunity.", "categories": [{"cat": "pre-roll", "total": 53900, "median_per_disp": 113, "median_price": 22.5, "avg_thc": 31.5}, {"cat": "vape", "total": 50300, "median_per_disp": 16, "median_price": 51.0, "avg_thc": 83.3}, {"cat": "flower", "total": 45980, "median_per_disp": 20, "median_price": 45.0, "avg_thc": 27.6}, {"cat": "edible", "total": 44800, "median_per_disp": 17, "median_price": 24.0, "avg_thc": 8.8}, {"cat": "concentrate", "total": 10800, "median_per_disp": 14, "median_price": 59.0, "avg_thc": 71.4}, {"cat": "tincture", "total": 3290, "median_per_disp": 12, "median_price": 50.0, "avg_thc": 12.1}, {"cat": "topical", "total": 1620, "median_per_disp": 6, "median_price": 54.98, "avg_thc": 34.0}, {"cat": "beverage", "total": 1130, "median_per_disp": 5, "median_price": 5.31, "avg_thc": 10.5}]}}};
+let DIQ_STATE = 'PILOT';
+let DIQ_CHAIN = 'all';
 
 function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
 function fmtMoney(n) { return n == null ? '—' : '$' + n.toFixed(2); }
 function fmtThc(n) { return n == null ? '—' : n.toFixed(1); }
 
-function render(view) {
-  const d = DIQ_DATA[view];
+function render() {
+  const d = DIQ_DATA[DIQ_STATE][DIQ_CHAIN];
   if (!d) return;
   document.querySelector('[data-bind="hero-label"]').textContent = `Average products per dispensary · ${d.label}`;
   document.querySelector('[data-bind="hero-number"]').textContent = d.avg;
@@ -130,7 +144,7 @@ function render(view) {
   document.querySelector('[data-bind="p90"]').textContent = d.p90.toLocaleString();
   document.querySelector('[data-bind="total-products"]').textContent = d.total_products.toLocaleString();
   document.querySelector('[data-bind="total-priced"]').textContent = d.total_priced.toLocaleString();
-  document.querySelector('[data-bind="table-title"]').textContent = `Products by category · ${d.label}`;
+  document.querySelector('[data-bind="table-title"]').textContent = `Category totals · ${d.label}`;
   document.querySelector('[data-bind="table-meta"]').textContent = `Across ${d.n_disps.toLocaleString()} dispensaries`;
 
   const tbody = document.getElementById('diq-cat-tbody');
@@ -146,16 +160,18 @@ function render(view) {
       </tr>`;
   }).join('');
 
-  document.querySelectorAll('.diq-toggle').forEach(btn => {
-    const isActive = btn.getAttribute('data-view') === view;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    const a = b.getAttribute('data-view') === DIQ_STATE;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
+  });
+  document.querySelectorAll('.diq-toggle-sm').forEach(b => {
+    const a = b.getAttribute('data-chain') === DIQ_CHAIN;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
   });
 }
-document.querySelectorAll('.diq-toggle').forEach(btn => {
-  btn.addEventListener('click', () => render(btn.getAttribute('data-view')));
-});
-render('PILOT');
+document.querySelectorAll('.diq-toggle').forEach(b => b.addEventListener('click', () => { DIQ_STATE = b.getAttribute('data-view'); render(); }));
+document.querySelectorAll('.diq-toggle-sm').forEach(b => b.addEventListener('click', () => { DIQ_CHAIN = b.getAttribute('data-chain'); render(); }));
+render();
 </script>
 
 </body>

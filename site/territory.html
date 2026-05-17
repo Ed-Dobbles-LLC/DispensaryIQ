@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Territory · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=8">
+</head>
+<body>
+
+<nav class="diq-nav">
+  <div class="diq-nav-inner">
+    <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
+    <div class="diq-nav-links">
+      <a href="index.html" class="diq-nav-link">Scorecard</a>
+      <a href="coverage.html" class="diq-nav-link">Coverage</a>
+      <a href="products.html" class="diq-nav-link">Products</a>
+      <a href="market-share.html" class="diq-nav-link">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link">Shelf metrics</a>
+      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
+      <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link">Alerts</a>
+      <a href="territory.html" class="diq-nav-link active phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
+        </svg>
+        <span>Print</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="diq-main">
+
+  <header class="diq-page-header">
+    <p class="diq-page-eyebrow">Phase 2 wireframe &middot; Q3 2026 &middot; <span class="diq-preview-pill">Roadmapped</span></p>
+
+    <div class="diq-prepared-for">
+      <p class="diq-prepared-label">Prepared for</p>
+      <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
+    </div>
+
+    <h1 class="diq-page-title">Territory view — RVP heatmap</h1>
+    <p class="diq-page-subtitle">The territory layer rolls up the five-dimension execution scorecard into RVP territory boundaries with traffic-light status. Modeled on Diageo's EDGE territory-management view. This is the bridge between Brooke's market-level scorecard and the account-level action list (Phase 3).</p>
+  </header>
+
+  <section class="diq-section">
+    <div class="diq-callout" style="border-color: #DB8C5E; background: rgba(219, 140, 94, 0.06)">
+      <p class="diq-callout-label" style="color: #DB8C5E">&#9656; Phase 2 — Q3 2026</p>
+      <p style="margin:0">Territory-level execution roll-up requires (a) Curaleaf RVP territory definitions for IL/NJ/NY, (b) shared cohort definition with field sales, (c) account-owner assignment data. Wireframe below is illustrative — the actual map populates with real territory boundaries and live data once the dependencies are provided.</p>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Wireframe &middot; NY territory roll-up</h2>
+      <span class="diq-section-meta">Illustrative layout &middot; not live data</span>
+    </div>
+    <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" class="diq-mock-menu">
+      <rect x="0" y="0" width="900" height="360" rx="8" fill="#11162A" stroke="#1A2074" stroke-width="1"/>
+
+      <!-- Territory cells (NY split into rough boroughs/regions, illustrative) -->
+      <g font-family="Calibri" font-size="11" fill="#F5F6FA">
+        <!-- Upstate -->
+        <rect x="40" y="40" width="220" height="90" rx="6" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E" stroke-width="1.5"/>
+        <text x="60" y="62" font-weight="bold" font-size="13">UPSTATE NY (RVP 1)</text>
+        <text x="60" y="84" fill="#00B98E" font-weight="bold" font-size="18">72 / 100</text>
+        <text x="60" y="103" fill="#B4BACC" font-size="11">62 doors · Find at 18 · ▲ 1.2</text>
+        <text x="60" y="118" fill="#7A8099" font-size="10">Top alert: Grassroots 3.5g IL-mirror discipline</text>
+
+        <!-- Hudson Valley -->
+        <rect x="280" y="40" width="220" height="90" rx="6" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E" stroke-width="1.5"/>
+        <text x="300" y="62" font-weight="bold" font-size="13">HUDSON VALLEY (RVP 2)</text>
+        <text x="300" y="84" fill="#DB8C5E" font-weight="bold" font-size="18">54 / 100</text>
+        <text x="300" y="103" fill="#B4BACC" font-size="11">87 doors · Find at 26 · ▼ 0.4</text>
+        <text x="300" y="118" fill="#7A8099" font-size="10">Top alert: 4 Q1 at-risk Leal/RG stores</text>
+
+        <!-- Brooklyn / Queens -->
+        <rect x="520" y="40" width="220" height="90" rx="6" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461" stroke-width="1.5"/>
+        <text x="540" y="62" font-weight="bold" font-size="13">BROOKLYN/QUEENS (RVP 3)</text>
+        <text x="540" y="84" fill="#DB5461" font-weight="bold" font-size="18">38 / 100</text>
+        <text x="540" y="103" fill="#B4BACC" font-size="11">141 doors · Find at 19 · ▼ 2.1</text>
+        <text x="540" y="118" fill="#7A8099" font-size="10">Top alert: 31 Q1 at-risk Leal/RG concentration</text>
+
+        <!-- Manhattan -->
+        <rect x="40" y="170" width="220" height="90" rx="6" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E" stroke-width="1.5"/>
+        <text x="60" y="192" font-weight="bold" font-size="13">MANHATTAN (RVP 4)</text>
+        <text x="60" y="214" fill="#00B98E" font-weight="bold" font-size="18">71 / 100</text>
+        <text x="60" y="233" fill="#B4BACC" font-size="11">98 doors · Find at 16 · ▲ 0.8</text>
+        <text x="60" y="248" fill="#7A8099" font-size="10">Top alert: Select 1g vape 4 retailers extreme</text>
+
+        <!-- Bronx -->
+        <rect x="280" y="170" width="220" height="90" rx="6" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E" stroke-width="1.5"/>
+        <text x="300" y="192" font-weight="bold" font-size="13">BRONX/WESTCHESTER (RVP 5)</text>
+        <text x="300" y="214" fill="#DB8C5E" font-weight="bold" font-size="18">52 / 100</text>
+        <text x="300" y="233" fill="#B4BACC" font-size="11">76 doors · Find at 6 · ▼ 0.2</text>
+        <text x="300" y="248" fill="#7A8099" font-size="10">Top alert: Find absent from 17 Leal-carried doors</text>
+
+        <!-- Long Island -->
+        <rect x="520" y="170" width="220" height="90" rx="6" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461" stroke-width="1.5"/>
+        <text x="540" y="192" font-weight="bold" font-size="13">LONG ISLAND (RVP 6)</text>
+        <text x="540" y="214" fill="#DB5461" font-weight="bold" font-size="18">41 / 100</text>
+        <text x="540" y="233" fill="#B4BACC" font-size="11">94 doors · Find at 4 · ▼ 1.5</text>
+        <text x="540" y="248" fill="#7A8099" font-size="10">Top alert: 23 Q1 prospects · Rolling Green dominance</text>
+
+        <!-- Legend -->
+        <line x1="40" y1="290" x2="860" y2="290" stroke="#1A2074" stroke-width="1"/>
+        <text x="40" y="312" fill="#B4BACC" font-size="11">Legend &nbsp;</text>
+        <rect x="100" y="302" width="14" height="14" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E"/>
+        <text x="120" y="313" fill="#7A8099" font-size="11">Strong (70+)</text>
+        <rect x="220" y="302" width="14" height="14" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E"/>
+        <text x="240" y="313" fill="#7A8099" font-size="11">Watch (50-69)</text>
+        <rect x="340" y="302" width="14" height="14" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461"/>
+        <text x="360" y="313" fill="#7A8099" font-size="11">Critical (&lt;50)</text>
+        <text x="500" y="313" fill="#7A8099" font-size="10">Phase 2 — illustrative wireframe with sample territory definitions</text>
+      </g>
+    </svg>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout">
+      <p class="diq-callout-label">&#9656; What this unlocks</p>
+      <p style="margin:0">Once live, each RVP owns their territory's five-dimension scorecard. A Monday-morning view answers "which territories are red, which are green, which are trending wrong direction?" Drill-down from any territory lands on the account-level action list (Phase 3). The state scorecard then aggregates territories instead of summing dispensaries. This is the operational layer Diageo's EDGE works through; we adopt the same pattern.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="diq-footer">
+  <div class="diq-footer-inner">
+    <div>
+      <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
+      <br/>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    </div>
+    <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
+  </div>
+</footer>
+
+</body>
+</html>

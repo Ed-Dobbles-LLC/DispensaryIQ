@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Alerts · DispensaryIQ</title>
+  <link rel="stylesheet" href="assets/style.css?v=8">
+</head>
+<body>
+
+<nav class="diq-nav">
+  <div class="diq-nav-inner">
+    <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
+    <div class="diq-nav-links">
+      <a href="index.html" class="diq-nav-link">Scorecard</a>
+      <a href="coverage.html" class="diq-nav-link">Coverage</a>
+      <a href="products.html" class="diq-nav-link">Products</a>
+      <a href="market-share.html" class="diq-nav-link">Market share</a>
+      <a href="price-compliance.html" class="diq-nav-link">Price compliance</a>
+      <a href="shelf-quality-explainer.html" class="diq-nav-link">Shelf metrics</a>
+      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
+      <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
+      <a href="alerts.html" class="diq-nav-link active">Alerts</a>
+      <a href="territory.html" class="diq-nav-link phase">Territory</a>
+      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
+      <button onclick="window.print()" class="diq-print-btn" title="Print" aria-label="Print">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/>
+        </svg>
+        <span>Print</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="diq-main">
+
+  <header class="diq-page-header">
+    <p class="diq-page-eyebrow">Report 11 &middot; All dimensions &middot; What needs your attention</p>
+
+    <div class="diq-prepared-for">
+      <p class="diq-prepared-label">Prepared for</p>
+      <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
+    </div>
+
+    <h1 class="diq-page-title">Alerts: highlights and active triggers</h1>
+    <p class="diq-page-subtitle">Two sections, in this order: <strong>Highlights</strong> (top 5-10 things that moved this week, ranked by priority-brand weighting and magnitude) and <strong>Active Triggers</strong> (threshold-defined alerts that fire automatically, with lifecycle status). Modeled on Diageo EDGE field-execution alerts.</p>
+  </header>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Highlights</h2>
+      <span class="diq-section-meta">Top items this week &middot; ranked by importance to Curaleaf</span>
+    </div>
+    <div class="diq-alert-list" id="diq-highlights"></div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Active triggers</h2>
+      <span class="diq-section-meta">Threshold-defined alerts in their lifecycle &middot; auditable trail</span>
+    </div>
+    <table class="diq-cat-table">
+      <thead>
+        <tr>
+          <th style="width:60px">Pri</th>
+          <th style="width:64px">ID</th>
+          <th>Dim</th>
+          <th>Brand &middot; State</th>
+          <th>Threshold</th>
+          <th>Observed</th>
+          <th>Status</th>
+          <th class="r">Age</th>
+          <th>Assignee</th>
+        </tr>
+      </thead>
+      <tbody id="diq-triggers-tbody"></tbody>
+    </table>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Trigger taxonomy</h2>
+      <span class="diq-section-meta">Thresholds across the five Perfect Dispensary dimensions</span>
+    </div>
+    <table class="diq-cat-table">
+      <thead><tr><th>Dimension</th><th>Trigger</th><th>Threshold</th><th>Severity</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><strong>Availability</strong></td><td>Door loss (brand)</td><td>&ge; 5% doors WoW OR &ge; 10 absolute doors in-state</td><td>P1</td></tr>
+        <tr><td>%ACV erosion</td><td>Brand %ACV dropped &ge; 3 pp WoW</td><td>P1</td></tr>
+        <tr><td>Distribution void</td><td>Curaleaf absent at retailer carrying &ge; 3 direct competitors</td><td>P2</td></tr>
+
+        <tr><td rowspan="4"><strong>Pricing</strong></td><td>Severe excursion</td><td>Retailer-SKU at &ge; &plusmn;25% from Synthetic MSRP</td><td>P0</td></tr>
+        <tr><td>Hard excursion at scale</td><td>&ge; 5 retailers &ge; &plusmn;15% off for same SKU</td><td>P1</td></tr>
+        <tr><td>Brand pricing chaos</td><td>&ge; 30% of retailers off-band for a brand</td><td>P1</td></tr>
+        <tr><td>Permanent reprice (drift)</td><td>New modal persists 8 weeks (MSRP reclassification)</td><td>P2</td></tr>
+
+        <tr><td rowspan="2"><strong>Promotion</strong></td><td>Promo penetration surge</td><td>Brand promo % jumped &ge; 10 pp WoW</td><td>P1</td></tr>
+        <tr><td>Featured-share collapse</td><td>Featured-share dropped &ge; 5 pp for 2 consecutive weeks</td><td>P1</td></tr>
+
+        <tr><td rowspan="3"><strong>Visibility</strong></td><td>Shelf-position drop</td><td>Avg position dropped &ge; 3 slots WoW at &ge; 10 retailers</td><td>P1</td></tr>
+        <tr><td>Wrong photo flag</td><td>Image-hash mismatch vs Curaleaf master PDP image</td><td>P2 &middot; Phase 2</td></tr>
+        <tr><td>Description mismatch</td><td>&lt; 70% string similarity to Curaleaf master description</td><td>P3 &middot; Phase 2</td></tr>
+
+        <tr><td rowspan="3"><strong>Competitive position</strong></td><td>Comp-set door gain</td><td>Tracked competitor gained &ge; 10 doors in priority comp set</td><td>P0</td></tr>
+        <tr><td>Category SOV erosion</td><td>Brand category share dropped &ge; 2 pp WoW</td><td>P1</td></tr>
+        <tr><td>Fair-share underperformance</td><td>Fair-share index &lt; 0.85 for 2 consecutive weeks</td><td>P1</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout">
+      <p class="diq-callout-label">&#9656; Alert lifecycle</p>
+      <p style="margin:0">States: <strong>NEW</strong> &rarr; <strong>ACK</strong> &rarr; <strong>WATCHING</strong> &rarr; <strong>CLOSED</strong> &rarr; (REACTIVATED). NEW alerts surface in Highlights if score-ranked top 10. ACK'd alerts move to the trigger table with age counter. WATCHING = ACK'd but threshold still breached. CLOSED when underlying condition resolves OR manual close with reason code. REACTIVATED if CLOSED alert re-fires within 4 weeks (anti-flapping). Each alert carries brand, state, dimension, severity, threshold, observed value, cohort, age, last-actioned-by, last-actioned-when. Format mirrors Salesforce case management conventions.</p>
+    </div>
+  </section>
+
+  <section class="diq-section">
+    <div class="diq-callout" style="border-color: var(--ink-faint); background: rgba(122,128,153,0.04)">
+      <p class="diq-callout-label">Week-1 false-positive containment</p>
+      <p style="margin:0">Capture-engine improvements (SweedPOS adapter, wrong-page recovery, anti-bot stealth) all landed week of May 11. Distribution / SKU-count triggers are suppressed for the first two weekly cycles (through 2026-06-01 delivery). Pricing and content triggers fire normally because they don't depend on a stable cohort. This protocol mirrors Nielsen RMS panel-rebase practice — flag, footnote, suppress until parallel-period stabilization.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="diq-footer">
+  <div class="diq-footer-inner">
+    <div>
+      <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
+      <br/>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    </div>
+    <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
+  </div>
+</footer>
+
+<script>
+const DIQ_HIGHLIGHTS = [{"pri": "P0", "dim": "COMPETITIVE", "title": "FIND under attack in NY \u2014 Leal + Rolling Green now 169 doors vs Find's 89", "body": "Leal (69 doors) and Rolling Green (100 doors) combined cover 169 of 558 tracked NY dispensaries. Find. is in 89. The two competitor brands jointly outdistribute Find by 1.9x in the NY adult-use market. Q1 at-risk prospect cohort (Leal/RG carried, no Find): 92 stores. Q2 contest zone (all three brands present): 45 stores. Recommend trade-marketing engagement at the 92 Q1 doors before Leal locks in shelf presence. Drill-down: NY watchlist page.", "cohort": "NY adult-use \u2022 558 disps", "action": "Trade marketing follow-up \u2022 92 Q1 prospect doors"}, {"pri": "P0", "dim": "PRICING", "title": "Find 3.5g flower NY: 10 of 12 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $19.50 (3 stores). 10 of 12 tracked retailers in NY are pricing Find 3.5g flower 25%+ above the Curaleaf retail anchor \u2014 average market price $30.00. Margin upside for Curaleaf-owned but brand-equity risk if consumers perceive Find as priced inconsistently with the Curaleaf retail experience. HIGH-confidence anchor.", "cohort": "NY \u2022 Find 3.5g flower \u2022 12 retailers", "action": "Review pricing strategy with Curaleaf NY retail leadership"}, {"pri": "P0", "dim": "PRICING", "title": "Select 1g vape NY: 7 of 8 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $35.00 (7 stores). 7 of 8 tracked NY retailers pricing Select 1g vape 25%+ above \u2014 average market $59.65, a 70% market premium over Curaleaf-owned. Same pattern as Find. flagged above. HIGH-confidence anchor across 7 Curaleaf-owned stores.", "cohort": "NY \u2022 Select 1g vape \u2022 8 retailers", "action": "Review pricing strategy with retail leadership"}, {"pri": "P0", "dim": "PRICING", "title": "Find 1g pre-roll NJ: 5 of 6 retailers SEVERE below-band", "body": "Curaleaf-owned anchor $12.00 (4 stores). 5 of 6 tracked NJ retailers pricing 15-25% below \u2014 4 below 15%. Opposite direction from NY: NJ retailers underpricing Find. Brand-wide signal that Find pricing discipline is inconsistent across the pilot footprint. HIGH-confidence anchor.", "cohort": "NJ \u2022 Find 1g pre-roll \u2022 6 retailers", "action": "Investigate NJ Find pricing \u2014 promotional or systemic?"}, {"pri": "P1", "dim": "PRICING", "title": "Grassroots 1g pre-roll IL: 7 of 7 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $10.35 (4 stores). All 7 tracked IL retailers pricing 25%+ above. Average market 41% above Curaleaf-retail anchor. Either a value-positioned house brand priced as premium elsewhere, or systematic markup. HIGH-confidence anchor.", "cohort": "IL \u2022 Grassroots 1g pre-roll \u2022 7 retailers", "action": "Trade strategy review \u2014 value positioning intent?"}, {"pri": "P1", "dim": "AVAILABILITY", "title": "+35 new Curaleaf doors opened in 243-disp matched cohort", "body": "Across the 243-dispensary matched-week cohort (5-10 day gap), 35 doors that had zero Curaleaf SKUs last week now stock the portfolio. 10 doors lost it. Net +25. NY leads with 23 new doors against 2 lost. Caveated by engine-improvement; directional read is positive.", "cohort": "Pilot \u2022 243-disp matched cohort", "action": "Validate next week with clean baseline"}, {"pri": "P1", "dim": "COMPETITIVE", "title": "Grassroots 3.5g flower IL: TIGHT discipline \u2014 11/14 in-band", "body": "Curaleaf-owned anchor $32.50 (24 stores). Market median $32.00 across 82 observations at 14 retailers. 11 of 14 retailers in-band within \u00b15%. The strongest MSRP discipline anywhere in the pilot. Reference case for what good looks like.", "cohort": "IL \u2022 Grassroots 3.5g flower \u2022 14 retailers", "action": "Highlight as discipline benchmark in trade reviews"}, {"pri": "P2", "dim": "VISIBILITY", "title": "Curaleaf NY shelf score 44 \u2014 below pilot average of 48", "body": "Across NY tracked menus, Curaleaf portfolio average shelf position is 44/100 (44% of way from top), vs pilot 48. Featured share 1.11% \u2014 above category average. Position drag concentrated in Brooklyn and Long Island independents per shelf-quality detail page.", "cohort": "NY \u2022 all Curaleaf SKUs", "action": "Promotion / merchandising follow-up in NY indies"}];
+const DIQ_TRIGGERS = [{"id": "T-1041", "pri": "P0", "dim": "PRICING", "brand": "Find", "state": "NY", "threshold": ">= \u00b125% off, >= 5 retailers", "observed": "10 of 12 above-band", "status": "NEW", "age": "0d", "assignee": "Brooke + Scott"}, {"id": "T-1042", "pri": "P0", "dim": "PRICING", "brand": "Select", "state": "NY", "threshold": ">= \u00b125% off, >= 5 retailers", "observed": "7 of 8 above-band", "status": "NEW", "age": "0d", "assignee": "Brooke + Scott"}, {"id": "T-1043", "pri": "P0", "dim": "PRICING", "brand": "Find", "state": "NJ", "threshold": ">= \u00b115% off, >= 5 retailers", "observed": "4 of 6 below-band", "status": "NEW", "age": "0d", "assignee": "Brooke + Scott"}, {"id": "T-1044", "pri": "P0", "dim": "COMPETITIVE", "brand": "Find", "state": "NY", "threshold": "Comp gain >=10 doors", "observed": "Leal +14 / RG +9 doors (4-wk)", "status": "NEW", "age": "0d", "assignee": "Brooke + Bobby"}, {"id": "T-1038", "pri": "P1", "dim": "PRICING", "brand": "Grassroots", "state": "IL", "threshold": ">= \u00b125% off, >= 5 retailers", "observed": "7 of 7 above-band", "status": "WATCHING", "age": "7d", "assignee": "Brooke"}, {"id": "T-1031", "pri": "P1", "dim": "AVAILABILITY", "brand": "Curaleaf", "state": "NY", "threshold": "Door net change >= +10", "observed": "+25 net new doors (matched cohort)", "status": "ACK", "age": "2d", "assignee": "Brooke"}, {"id": "T-1028", "pri": "P1", "dim": "COMPETITIVE", "brand": "Grassroots", "state": "NJ", "threshold": "Comp gain >=10 SKUs", "observed": "GTI Rythm +23 pre-roll SKUs", "status": "WATCHING", "age": "5d", "assignee": "Brooke + Scott"}, {"id": "T-1019", "pri": "P2", "dim": "VISIBILITY", "brand": "Curaleaf", "state": "NY", "threshold": "Shelf score < pilot avg \u2212 3", "observed": "44 vs pilot 48", "status": "ACK", "age": "4d", "assignee": "Brooke"}, {"id": "T-1015", "pri": "P2", "dim": "PROMOTION", "brand": "Curaleaf", "state": "NJ", "threshold": "Promo penetration > 45%", "observed": "49.8% penetration", "status": "ACK", "age": "7d", "assignee": "Brooke"}, {"id": "T-1011", "pri": "P3", "dim": "VISIBILITY", "brand": "Curaleaf", "state": "IL", "threshold": "Featured share gain >= 5pp", "observed": "+5.2pp WoW (cohort)", "status": "NEW", "age": "1d", "assignee": "Brooke"}];
+
+const PRI_CLS = { 'P0':'diq-pri-p0', 'P1':'diq-pri-p1', 'P2':'diq-pri-p2', 'P3':'diq-pri-p3' };
+const STATUS_CLS = { 'NEW':'diq-status-new', 'ACK':'diq-status-ack', 'WATCHING':'diq-status-watch', 'CLOSED':'diq-status-closed' };
+
+function priBadge(p) {
+  return `<span class="diq-pri ${PRI_CLS[p]}">${p}</span>`;
+}
+
+function render() {
+  const hl = document.getElementById('diq-highlights');
+  hl.innerHTML = DIQ_HIGHLIGHTS.map((a, i) => `
+    <div class="diq-alert">
+      ${priBadge(a.pri)}
+      <div style="flex: 1">
+        <p style="margin:0 0 4px 0">
+          <strong>${i+1}. ${a.title}</strong>
+          <span class="diq-alert-tag" style="background:rgba(122,128,153,0.12);color:var(--ink-faint);margin-left:6px">${a.dim}</span>
+        </p>
+        <p style="margin:0 0 6px 0;font-size:13px;color:var(--ink-soft);line-height:1.5">${a.body}</p>
+        <p style="margin:0;font-size:11px;font-family:'Consolas',monospace;color:var(--ink-faint)">
+          <strong>COHORT</strong> ${a.cohort} &nbsp; · &nbsp; <strong>ACTION</strong> ${a.action}
+        </p>
+      </div>
+    </div>`).join('');
+
+  const tbody = document.getElementById('diq-triggers-tbody');
+  tbody.innerHTML = DIQ_TRIGGERS.map(t => `
+    <tr>
+      <td>${priBadge(t.pri)}</td>
+      <td><code style="font-family:'Consolas',monospace;font-size:11px">${t.id}</code></td>
+      <td><span class="diq-alert-tag" style="background:rgba(122,128,153,0.12);color:var(--ink-soft)">${t.dim}</span></td>
+      <td><strong>${t.brand}</strong> · ${t.state}</td>
+      <td style="font-size:12px;color:var(--ink-soft)">${t.threshold}</td>
+      <td style="font-size:12px"><strong>${t.observed}</strong></td>
+      <td><span class="diq-status ${STATUS_CLS[t.status]}">${t.status}</span></td>
+      <td class="r" style="font-family:'Consolas',monospace;color:var(--ink-faint);font-size:11px">${t.age}</td>
+      <td style="font-size:12px;color:var(--ink-soft)">${t.assignee}</td>
+    </tr>`).join('');
+}
+render();
+</script>
+
+</body>
+</html>
