@@ -1,6 +1,6 @@
-/* DispensaryIQ — shared styles
-   Palette: navy #060A57, teal #00B98E, coral #DB5461 (insight only)
-   Fonts: Calibri body, Montserrat logo, Consolas mono */
+/* DispensaryIQ — dark mode, dobbles.ai palette
+   Navy #060A57 · Teal #00B98E · Coral #DB5461 · Sky #85E4FD
+   Calibri body, Montserrat display, Consolas mono */
 
 @font-face {
   font-family: 'Montserrat';
@@ -13,21 +13,23 @@
 
 :root {
   --navy: #060A57;
-  --navy-light: #1a2074;
-  --navy-darker: #03052e;
+  --navy-deep: #03052E;
+  --navy-bright: #1A2074;
+  --bg: #0A0E1C;
+  --surface: #11162A;
+  --surface-soft: #1A2138;
   --teal: #00B98E;
-  --teal-light: #1FD4A8;
-  --teal-bg: #E5F8F3;
+  --teal-bright: #1FD4A8;
+  --sky: #85E4FD;
+  --sky-soft: rgba(133, 228, 253, 0.16);
   --coral: #DB5461;
-  --coral-bg: #FBEEF0;
-  --paper: #FAFAF7;
-  --ink: #0F1115;
-  --ink-soft: #4A4F58;
-  --ink-faint: #8A8F97;
-  --rule: #E3E1DA;
-  --rule-soft: #EFEDE6;
-  --hairline: rgba(6, 10, 87, 0.08);
-  --hairline-strong: rgba(6, 10, 87, 0.18);
+  --coral-bg: rgba(219, 84, 97, 0.10);
+  --ink: #F5F6FA;
+  --ink-soft: #B4BACC;
+  --ink-faint: #7A8099;
+  --rule: rgba(255, 255, 255, 0.08);
+  --rule-strong: rgba(255, 255, 255, 0.18);
+  --hairline: rgba(255, 255, 255, 0.05);
 }
 
 * { box-sizing: border-box; }
@@ -35,7 +37,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: Calibri, 'Calibri Light', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 16px;
@@ -43,14 +45,12 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--navy); text-decoration: none; }
-a:hover { color: var(--teal); }
+a { color: var(--sky); text-decoration: none; }
+a:hover { color: var(--teal-bright); }
 
-/* TOP NAV */
 .diq-nav {
-  background: var(--navy);
-  color: #fff;
-  border-bottom: 1px solid var(--navy-darker);
+  background: var(--navy-deep);
+  border-bottom: 1px solid var(--rule);
 }
 .diq-nav-inner {
   max-width: 1240px;
@@ -66,13 +66,13 @@ a:hover { color: var(--teal); }
   font-weight: 700;
   font-size: 18px;
   letter-spacing: 0.02em;
-  color: #fff;
+  color: var(--ink);
   display: flex;
   align-items: baseline;
   gap: 2px;
 }
 .diq-logo .accent { color: var(--teal); }
-.diq-logo:hover { color: #fff; }
+.diq-logo:hover { color: var(--ink); }
 .diq-nav-links {
   display: flex;
   gap: 28px;
@@ -80,19 +80,19 @@ a:hover { color: var(--teal); }
   font-size: 14px;
 }
 .diq-nav-link {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-soft);
   text-decoration: none;
   padding: 6px 0;
   border-bottom: 2px solid transparent;
   transition: color 0.15s, border-color 0.15s;
 }
-.diq-nav-link:hover { color: #fff; }
+.diq-nav-link:hover { color: var(--ink); }
 .diq-nav-link.active {
-  color: #fff;
+  color: var(--ink);
   border-bottom-color: var(--teal);
 }
 .diq-nav-link.disabled {
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--ink-faint);
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -108,7 +108,6 @@ a:hover { color: var(--teal); }
   top: -1px;
 }
 
-/* MAIN LAYOUT */
 .diq-main {
   max-width: 1240px;
   margin: 0 auto;
@@ -128,11 +127,11 @@ a:hover { color: var(--teal); }
   margin: 0 0 12px;
 }
 .diq-page-title {
-  font-family: Calibri, sans-serif;
+  font-family: 'Montserrat', Calibri, sans-serif;
   font-size: 38px;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  color: var(--navy);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
   margin: 0 0 8px;
   line-height: 1.15;
 }
@@ -143,10 +142,35 @@ a:hover { color: var(--teal); }
   max-width: 720px;
 }
 
-/* SECTION HEADERS */
-.diq-section {
-  margin: 0 0 56px;
+/* PREPARED FOR — Curaleaf wordmark treatment */
+.diq-prepared-for {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 28px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  max-width: max-content;
 }
+.diq-prepared-label {
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0;
+  border-right: 1px solid var(--rule);
+  padding-right: 16px;
+}
+.diq-prepared-logo {
+  height: 26px;
+  width: auto;
+  display: block;
+}
+
+.diq-section { margin: 0 0 56px; }
 .diq-section-head {
   display: flex;
   align-items: baseline;
@@ -156,10 +180,10 @@ a:hover { color: var(--teal); }
   margin-bottom: 24px;
 }
 .diq-section-title {
-  font-family: Calibri, sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--navy);
+  font-family: 'Montserrat', Calibri, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
   margin: 0;
   letter-spacing: -0.005em;
 }
@@ -171,17 +195,15 @@ a:hover { color: var(--teal); }
   color: var(--ink-faint);
 }
 
-/* STAT TILES */
 .diq-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
-  margin-bottom: 8px;
 }
 .diq-tile {
-  background: #fff;
+  background: var(--surface);
   padding: 24px 22px;
 }
 .diq-tile-label {
@@ -193,14 +215,14 @@ a:hover { color: var(--teal); }
   margin: 0 0 10px;
 }
 .diq-tile-value {
-  font-family: Calibri, sans-serif;
-  font-size: 38px;
-  font-weight: 300;
-  color: var(--navy);
+  font-family: 'Montserrat', Calibri, sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
   margin: 0;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 .diq-tile-sub {
   font-size: 13px;
@@ -208,52 +230,65 @@ a:hover { color: var(--teal); }
   margin: 8px 0 0;
 }
 
-/* HERO METRIC (single big number) */
 .diq-hero-metric {
-  background: var(--navy);
-  color: #fff;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
   padding: 56px 48px;
   display: grid;
   grid-template-columns: 1fr 1.3fr;
   gap: 56px;
   align-items: center;
-  margin-bottom: 24px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.diq-hero-metric::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(circle, var(--sky-soft) 0%, transparent 70%);
+  pointer-events: none;
 }
 .diq-hero-number {
-  font-family: Calibri, sans-serif;
+  font-family: 'Montserrat', Calibri, sans-serif;
   font-size: 96px;
-  font-weight: 200;
+  font-weight: 700;
   line-height: 0.95;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   margin: 0;
-  color: #fff;
+  color: var(--ink);
+  position: relative;
+  z-index: 1;
 }
-.diq-hero-number .accent {
-  color: var(--teal);
-  font-weight: 300;
-}
+.diq-hero-number .accent { color: var(--teal-bright); }
 .diq-hero-label {
   font-family: Consolas, monospace;
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
+  color: var(--sky);
   margin: 0 0 16px;
 }
 .diq-hero-body {
   font-size: 17px;
   line-height: 1.55;
-  color: rgba(255,255,255,0.92);
+  color: var(--ink-soft);
   margin: 0;
+  position: relative;
+  z-index: 1;
 }
-.diq-hero-body strong { color: var(--teal); font-weight: 600; }
+.diq-hero-body strong { color: var(--teal-bright); font-weight: 600; }
 
-/* MAP WRAPPER */
 .diq-map-wrap {
   position: relative;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--rule);
   padding: 24px;
+  border-radius: 6px;
 }
 .diq-map-legend {
   display: flex;
@@ -273,8 +308,9 @@ a:hover { color: var(--teal); }
 .diq-tip {
   position: absolute;
   pointer-events: none;
-  background: var(--navy);
-  color: #fff;
+  background: var(--navy-deep);
+  color: var(--ink);
+  border: 1px solid var(--teal);
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 12px;
@@ -283,30 +319,30 @@ a:hover { color: var(--teal); }
   transition: opacity 0.1s;
   z-index: 10;
   max-width: 260px;
-  box-shadow: 0 4px 14px rgba(6, 10, 87, 0.18);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
-.diq-tip-name { font-weight: 600; }
-.diq-tip-meta { color: rgba(255,255,255,0.75); }
+.diq-tip-name { font-weight: 700; color: var(--ink); font-family: 'Montserrat', sans-serif; font-size: 12px; }
+.diq-tip-meta { color: var(--sky); }
 
-/* DISTRIBUTION CARD (avg products per disp) */
 .diq-dist-grid {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 32px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--rule);
   padding: 32px;
+  border-radius: 6px;
 }
 .diq-dist-summary { border-right: 1px solid var(--rule); padding-right: 32px; }
 .diq-dist-summary-bignum {
-  font-family: Calibri, sans-serif;
+  font-family: 'Montserrat', Calibri, sans-serif;
   font-size: 72px;
-  font-weight: 200;
-  color: var(--navy);
+  font-weight: 700;
+  color: var(--ink);
   line-height: 1;
   margin: 0;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 .diq-dist-summary-label {
   font-family: Consolas, monospace;
@@ -330,17 +366,13 @@ a:hover { color: var(--teal); }
 }
 .diq-dist-mini-value {
   font-size: 24px;
-  font-weight: 400;
-  color: var(--navy);
+  font-weight: 700;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
+  font-family: 'Montserrat', Calibri, sans-serif;
 }
 
-/* HORIZONTAL BAR DISTRIBUTION */
-.diq-buckets {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+.diq-buckets { display: flex; flex-direction: column; gap: 14px; }
 .diq-bucket {
   display: grid;
   grid-template-columns: 100px 1fr 56px;
@@ -357,26 +389,22 @@ a:hover { color: var(--teal); }
 .diq-bucket-bar {
   position: relative;
   height: 22px;
-  background: var(--rule-soft);
+  background: rgba(255,255,255,0.04);
   border-radius: 2px;
   overflow: hidden;
   display: flex;
 }
-.diq-bucket-seg {
-  height: 100%;
-  transition: opacity 0.15s;
-}
+.diq-bucket-seg { height: 100%; }
 .diq-bucket-seg.il { background: var(--teal); }
-.diq-bucket-seg.nj { background: var(--navy); opacity: 0.85; }
-.diq-bucket-seg.ny { background: #C77A4E; }
+.diq-bucket-seg.nj { background: var(--sky); }
+.diq-bucket-seg.ny { background: #DB8C5E; }
 .diq-bucket-count {
   font-size: 14px;
-  color: var(--navy);
-  font-weight: 500;
+  color: var(--ink);
+  font-weight: 600;
   text-align: right;
 }
 
-/* CALLOUT — coral, used sparingly */
 .diq-callout {
   border-left: 3px solid var(--coral);
   background: var(--coral-bg);
@@ -384,6 +412,7 @@ a:hover { color: var(--teal); }
   margin: 24px 0;
   font-size: 14px;
   color: var(--ink);
+  border-radius: 0 6px 6px 0;
 }
 .diq-callout-label {
   font-family: Consolas, monospace;
@@ -395,12 +424,13 @@ a:hover { color: var(--teal); }
   font-weight: 600;
 }
 
-/* CATEGORY TABLE */
 .diq-cat-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
 }
 .diq-cat-table th {
   text-align: left;
@@ -412,20 +442,18 @@ a:hover { color: var(--teal); }
   padding: 14px 20px;
   font-weight: 500;
   border-bottom: 1px solid var(--rule);
-  background: var(--paper);
+  background: var(--navy-deep);
 }
 .diq-cat-table th.r { text-align: right; }
 .diq-cat-table td {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--hairline);
   font-size: 15px;
   color: var(--ink);
 }
-.diq-cat-table td.r {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
+.diq-cat-table td.r { text-align: right; font-variant-numeric: tabular-nums; }
 .diq-cat-table tr:last-child td { border-bottom: none; }
+.diq-cat-table tr:hover td { background: var(--surface-soft); }
 .diq-cat-table .cat-pill {
   display: inline-block;
   width: 8px;
@@ -435,7 +463,6 @@ a:hover { color: var(--teal); }
   vertical-align: 1px;
 }
 
-/* LANDING PAGE CARDS */
 .diq-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -444,7 +471,7 @@ a:hover { color: var(--teal); }
   border: 1px solid var(--rule);
 }
 .diq-card {
-  background: #fff;
+  background: var(--surface);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -454,13 +481,8 @@ a:hover { color: var(--teal); }
   position: relative;
   min-height: 200px;
 }
-.diq-card:hover {
-  background: var(--paper);
-}
-.diq-card.disabled {
-  opacity: 0.55;
-  pointer-events: none;
-}
+.diq-card:hover { background: var(--surface-soft); }
+.diq-card.disabled { opacity: 0.5; pointer-events: none; }
 .diq-card-num {
   font-family: Consolas, monospace;
   font-size: 11px;
@@ -469,10 +491,10 @@ a:hover { color: var(--teal); }
   margin: 0 0 16px;
 }
 .diq-card-title {
-  font-family: Calibri, sans-serif;
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--navy);
+  font-family: 'Montserrat', Calibri, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
   margin: 0 0 8px;
   line-height: 1.25;
 }
@@ -500,12 +522,11 @@ a:hover { color: var(--teal); }
   color: var(--ink-faint);
   transition: color 0.15s, transform 0.15s;
 }
-.diq-card:hover .diq-card-arrow { color: var(--teal); transform: translate(2px, -2px); }
+.diq-card:hover .diq-card-arrow { color: var(--sky); transform: translate(2px, -2px); }
 
-/* FOOTER */
 .diq-footer {
   border-top: 1px solid var(--rule);
-  background: #fff;
+  background: var(--navy-deep);
   padding: 32px;
   margin-top: 64px;
 }
@@ -514,13 +535,20 @@ a:hover { color: var(--teal); }
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-family: Consolas, monospace;
   font-size: 11px;
   color: var(--ink-faint);
   letter-spacing: 0.08em;
 }
+.diq-footer-logo {
+  height: 18px;
+  width: auto;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+.diq-footer-logo:hover { opacity: 1; }
 
-/* RESPONSIVE */
 @media (max-width: 880px) {
   .diq-nav-inner { padding: 14px 20px; }
   .diq-nav-links { gap: 16px; font-size: 13px; }
@@ -531,4 +559,5 @@ a:hover { color: var(--teal); }
   .diq-dist-grid { grid-template-columns: 1fr; padding: 20px; }
   .diq-dist-summary { border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; padding-bottom: 24px; }
   .diq-bucket { grid-template-columns: 84px 1fr 48px; gap: 10px; }
+  .diq-prepared-for { width: 100%; max-width: 100%; }
 }
