@@ -587,6 +587,69 @@ a:hover { color: var(--teal-bright); }
 }
 
 
+
+/* TOGGLE BAR — state-view selector */
+.diq-toggle-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.diq-toggle {
+  background: var(--surface);
+  border: 0;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+.diq-toggle:hover {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+.diq-toggle.active {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+.diq-toggle.active::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: var(--teal);
+}
+.diq-toggle-dot {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.diq-toggle-label {
+  font-family: 'Montserrat', Calibri, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: inherit;
+}
+.diq-toggle-sub {
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.diq-toggle.active .diq-toggle-sub { color: var(--teal); }
+
 /* SVG MAP — dark-mode (screen) state-polygon styling */
 #diq-map .bg-state {
   fill: rgba(255, 255, 255, 0.025);
@@ -883,9 +946,48 @@ a:hover { color: var(--teal-bright); }
     filter: invert(7%) sepia(83%) saturate(7150%) hue-rotate(243deg) brightness(40%) contrast(110%);
   }
 
+
+  /* Toggle bar on print: hide inactive options, show only the active one as context */
+  .diq-toggle-bar {
+    background: transparent !important;
+    border: 0 !important;
+    display: block !important;
+  }
+  .diq-toggle {
+    display: none !important;
+  }
+  .diq-toggle.active {
+    display: inline-flex !important;
+    background: #f5f6fa !important;
+    border: 0.5pt solid rgba(6, 10, 87, 0.18) !important;
+    color: #060A57 !important;
+    padding: 8pt 12pt !important;
+    border-radius: 3pt !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10pt !important;
+  }
+  .diq-toggle.active::after { display: none !important; }
+  .diq-toggle.active .diq-toggle-label {
+    color: #060A57 !important;
+    font-size: 12pt !important;
+  }
+  .diq-toggle.active .diq-toggle-sub {
+    color: #00B98E !important;
+    font-size: 9pt !important;
+    position: relative !important;
+  }
+  .diq-toggle.active .diq-toggle-dot {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    width: 10pt !important;
+    height: 10pt !important;
+  }
+
   /* Smart page-break hints — one thought per page */
   .diq-hero-metric { page-break-after: always; }
   .diq-map-wrap { page-break-after: always; }
-  .diq-dist-grid { page-break-after: always; }
+  .diq-toggle-bar { page-break-after: avoid; }
   .diq-cat-table { page-break-before: auto; }
 }

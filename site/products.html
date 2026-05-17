@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Product depth · DispensaryIQ</title>
-  <link rel="stylesheet" href="assets/style.css?v=4">
+  <link rel="stylesheet" href="assets/style.css?v=5">
 </head>
 <body>
 
@@ -39,19 +39,43 @@
     </div>
 
     <h1 class="diq-page-title">How much do we see, per dispensary?</h1>
-    <p class="diq-page-subtitle">Average product depth across the 1,006 dispensaries with extraction data. Mean and median diverge meaningfully &mdash; the typical store and the deepest hubs are different kinds of intelligence.</p>
+    <p class="diq-page-subtitle">Average product depth and category mix across the dispensaries with extraction data. Toggle by state to see how the typical menu shape changes market by market.</p>
   </header>
+
+  <section class="diq-section">
+    <div class="diq-toggle-bar" role="tablist" aria-label="Select market view">
+      <button class="diq-toggle active" data-view="PILOT" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">Pilot total</span>
+        <span class="diq-toggle-sub">3 states · 1,006 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="IL" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #00B98E"></span>
+        <span class="diq-toggle-label">Illinois</span>
+        <span class="diq-toggle-sub">268 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="NJ" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #85E4FD"></span>
+        <span class="diq-toggle-label">New Jersey</span>
+        <span class="diq-toggle-sub">180 disps</span>
+      </button>
+      <button class="diq-toggle" data-view="NY" role="tab" aria-selected="false">
+        <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
+        <span class="diq-toggle-label">New York</span>
+        <span class="diq-toggle-sub">558 disps</span>
+      </button>
+    </div>
+  </section>
 
   <section class="diq-section">
     <div class="diq-hero-metric">
       <div>
-        <p class="diq-hero-label">Average products per dispensary</p>
-        <p class="diq-hero-number">391</p>
+        <p class="diq-hero-label" data-bind="hero-label">Average products per dispensary &middot; Pilot</p>
+        <p class="diq-hero-number" data-bind="hero-number">391</p>
       </div>
       <div>
-        <p class="diq-hero-label">Median dispensary carries 46</p>
-        <p class="diq-hero-body">
-          <strong>Mean diverges from median by 8.5x</strong> because the top decile of dispensaries (Dutchie / iHeartJane / Verano API hubs) carry 1,800+ products each &mdash; full catalog coverage. The bottom half are LLM-extracted captures where typical menu depth surfaces. Both are real intelligence, but they answer different questions.
+        <p class="diq-hero-label" data-bind="hero-sub-label">Across 1,006 dispensaries</p>
+        <p class="diq-hero-body" data-bind="hero-body">
+          <strong>Median dispensary carries <span data-bind="median">46</span> products</strong>; the top decile carries <span data-bind="p90">1,342</span>+. Mean diverges from median because the deepest stores (full-catalog API hubs) skew the average upward. <span data-bind="total-products">393,594</span> total products tracked, <span data-bind="total-priced">352,110</span> of those with a verified price.
         </p>
       </div>
     </div>
@@ -59,112 +83,8 @@
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Distribution by depth</h2>
-      <span class="diq-section-meta">All 1,006 dispensaries · 6 buckets</span>
-    </div>
-
-    <div class="diq-dist-grid">
-
-      <div class="diq-dist-summary">
-        <p class="diq-dist-summary-bignum">391</p>
-        <p class="diq-dist-summary-label">Average products / dispensary</p>
-
-        <div class="diq-dist-secondary">
-          <div>
-            <p class="diq-dist-mini-label">Median</p>
-            <p class="diq-dist-mini-value">46</p>
-          </div>
-          <div>
-            <p class="diq-dist-mini-label">Top decile</p>
-            <p class="diq-dist-mini-value">1,800+</p>
-          </div>
-          <div>
-            <p class="diq-dist-mini-label">IL average</p>
-            <p class="diq-dist-mini-value">373</p>
-          </div>
-          <div>
-            <p class="diq-dist-mini-label">NJ average</p>
-            <p class="diq-dist-mini-value">277</p>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <p style="font-family: Consolas, monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 16px;">Dispensaries in each depth bucket</p>
-        <div class="diq-buckets">
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">1,000+</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 5.6%"></span>
-              <span class="diq-bucket-seg nj" style="width: 3.5%"></span>
-              <span class="diq-bucket-seg ny" style="width: 18.7%"></span>
-            </div>
-            <span class="diq-bucket-count">119</span>
-          </div>
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">500&ndash;999</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 11.0%"></span>
-              <span class="diq-bucket-seg nj" style="width: 1.2%"></span>
-              <span class="diq-bucket-seg ny" style="width: 3.0%"></span>
-            </div>
-            <span class="diq-bucket-count">65</span>
-          </div>
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">100&ndash;499</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 8.4%"></span>
-              <span class="diq-bucket-seg nj" style="width: 9.6%"></span>
-              <span class="diq-bucket-seg ny" style="width: 16.4%"></span>
-            </div>
-            <span class="diq-bucket-count">147</span>
-          </div>
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">50&ndash;99</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 7.2%"></span>
-              <span class="diq-bucket-seg nj" style="width: 8.4%"></span>
-              <span class="diq-bucket-seg ny" style="width: 20.8%"></span>
-            </div>
-            <span class="diq-bucket-count">156</span>
-          </div>
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">10&ndash;49</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 12.9%"></span>
-              <span class="diq-bucket-seg nj" style="width: 9.4%"></span>
-              <span class="diq-bucket-seg ny" style="width: 39.1%"></span>
-            </div>
-            <span class="diq-bucket-count">262</span>
-          </div>
-          <div class="diq-bucket">
-            <span class="diq-bucket-label">1&ndash;9</span>
-            <div class="diq-bucket-bar">
-              <span class="diq-bucket-seg il" style="width: 17.6%"></span>
-              <span class="diq-bucket-seg nj" style="width: 10.1%"></span>
-              <span class="diq-bucket-seg ny" style="width: 32.6%"></span>
-            </div>
-            <span class="diq-bucket-count">257</span>
-          </div>
-        </div>
-        <div style="display:flex; gap:20px; margin-top:18px; font-size:12px; color:var(--ink-faint); font-family: Consolas, monospace;">
-          <span><span class="diq-legend-dot" style="background: #00B98E; width:10px; height:10px;"></span>IL</span>
-          <span><span class="diq-legend-dot" style="background: #85E4FD; width:10px; height:10px;"></span>NJ</span>
-          <span><span class="diq-legend-dot" style="background: #DB8C5E; width:10px; height:10px;"></span>NY</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; Reading this chart</p>
-      <p style="margin:0">For pitch-quality reporting, use the <strong>median (46) as the typical dispensary</strong>; use the <strong>mean (391) only when describing total intelligence depth</strong>. The two right-hand buckets together hold 519 dispensaries (52%) where we see typical menu breadth. The 1,000+ bucket (119 dispensaries, 12%) is where we see full catalog SKU range, which is what powers cohort-stratified fair-share index.</p>
-    </div>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">Products by category</h2>
-      <span class="diq-section-meta">Median price &amp; avg THC across IL, NJ, NY</span>
+      <h2 class="diq-section-title" data-bind="table-title">Products by category &middot; Pilot</h2>
+      <span class="diq-section-meta" data-bind="table-meta">Across 1,006 dispensaries</span>
     </div>
 
     <table class="diq-cat-table">
@@ -177,15 +97,8 @@
           <th class="r">Avg THC %</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td><span class="cat-pill" style="background:#00B98E"></span>Vape</td><td class="r">81,202</td><td class="r">73,195</td><td class="r">$50.00</td><td class="r">83.1</td></tr>
-        <tr><td><span class="cat-pill" style="background:#85E4FD"></span>Flower</td><td class="r">81,156</td><td class="r">71,525</td><td class="r">$45.00</td><td class="r">28.1</td></tr>
-        <tr><td><span class="cat-pill" style="background:#DB8C5E"></span>Pre-roll</td><td class="r">80,430</td><td class="r">74,995</td><td class="r">$22.00</td><td class="r">33.8</td></tr>
-        <tr><td><span class="cat-pill" style="background:#DB5461"></span>Edible</td><td class="r">73,695</td><td class="r">63,401</td><td class="r">$22.00</td><td class="r">9.7</td></tr>
-        <tr><td><span class="cat-pill" style="background:#1A2074"></span>Concentrate</td><td class="r">20,132</td><td class="r">16,393</td><td class="r">$50.00</td><td class="r">76.5</td></tr>
-        <tr><td><span class="cat-pill" style="background:#1FD4A8"></span>Tincture</td><td class="r">4,119</td><td class="r">3,795</td><td class="r">$50.00</td><td class="r">11.3</td></tr>
-        <tr><td><span class="cat-pill" style="background:#7A8099"></span>Topical</td><td class="r">2,289</td><td class="r">2,085</td><td class="r">$49.99</td><td class="r">&mdash;</td></tr>
-        <tr><td><span class="cat-pill" style="background:#4A4F58"></span>Beverage</td><td class="r">1,496</td><td class="r">1,462</td><td class="r">$6.00</td><td class="r">11.3</td></tr>
+      <tbody id="diq-cat-tbody">
+        <!-- Rows rendered by JS -->
       </tbody>
     </table>
   </section>
@@ -198,6 +111,133 @@
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+
+<script>
+const DIQ_DATA = {
+  PILOT: {
+    label: "Pilot",
+    n_disps: 1006,
+    avg: 391,
+    median: 46,
+    p90: 1342,
+    total_products: 393594,
+    total_priced: 352110,
+    categories: [
+      { name: "Flower",      pill: "#85E4FD", n: 81726, priced: 72087, median_price: 45.00, avg_thc: 28.1 },
+      { name: "Vape",        pill: "#00B98E", n: 81719, priced: 73698, median_price: 50.00, avg_thc: 83.1 },
+      { name: "Pre-roll",    pill: "#DB8C5E", n: 77766, priced: 72383, median_price: 22.00, avg_thc: 34.7 },
+      { name: "Edible",      pill: "#DB5461", n: 73819, priced: 63519, median_price: 22.00, avg_thc: 10.2 },
+      { name: "Concentrate", pill: "#1A2074", n: 20445, priced: 16706, median_price: 50.00, avg_thc: 76.5 },
+      { name: "Tincture",    pill: "#1FD4A8", n: 4146,  priced: 3822,  median_price: 50.00, avg_thc: 11.3 },
+      { name: "Topical",     pill: "#7A8099", n: 2298,  priced: 2094,  median_price: 49.99, avg_thc: 25.5 },
+      { name: "Beverage",    pill: "#4A4F58", n: 1570,  priced: 1536,  median_price: 6.00,  avg_thc: 11.3 },
+    ],
+  },
+  IL: {
+    label: "Illinois",
+    n_disps: 268,
+    avg: 373,
+    median: 60,
+    p90: 756,
+    total_products: 100082,
+    total_priced: 62974,
+    categories: [
+      { name: "Flower",      pill: "#85E4FD", n: 23656, priced: 14905, median_price: 40.00, avg_thc: 28.6 },
+      { name: "Edible",      pill: "#DB5461", n: 20915, priced: 11499, median_price: 15.00, avg_thc: 9.4 },
+      { name: "Vape",        pill: "#00B98E", n: 20394, priced: 13203, median_price: 42.00, avg_thc: 82.7 },
+      { name: "Pre-roll",    pill: "#DB8C5E", n: 15227, priced: 10324, median_price: 20.00, avg_thc: 36.1 },
+      { name: "Concentrate", pill: "#1A2074", n: 6972,  priced: 3614,  median_price: 43.00, avg_thc: 81.5 },
+      { name: "Tincture",    pill: "#1FD4A8", n: 467,   priced: 208,   median_price: 25.00, avg_thc: 1.0 },
+      { name: "Topical",     pill: "#7A8099", n: 447,   priced: 290,   median_price: 35.50, avg_thc: 4.1 },
+      { name: "Beverage",    pill: "#4A4F58", n: 201,   priced: 187,   median_price: 11.05, avg_thc: null },
+    ],
+  },
+  NJ: {
+    label: "New Jersey",
+    n_disps: 180,
+    avg: 277,
+    median: 56,
+    p90: 756,
+    total_products: 49943,
+    total_priced: 46972,
+    categories: [
+      { name: "Flower",      pill: "#85E4FD", n: 11399, priced: 10746, median_price: 50.00, avg_thc: 27.6 },
+      { name: "Vape",        pill: "#00B98E", n: 10235, priced: 9643,  median_price: 52.50, avg_thc: 83.7 },
+      { name: "Pre-roll",    pill: "#DB8C5E", n: 7789,  priced: 7413,  median_price: 21.00, avg_thc: 32.2 },
+      { name: "Edible",      pill: "#DB5461", n: 7427,  priced: 6719,  median_price: 20.00, avg_thc: 14.5 },
+      { name: "Concentrate", pill: "#1A2074", n: 2522,  priced: 2248,  median_price: 49.00, avg_thc: 74.8 },
+      { name: "Tincture",    pill: "#1FD4A8", n: 340,   priced: 312,   median_price: 35.00, avg_thc: 12.3 },
+      { name: "Beverage",    pill: "#4A4F58", n: 224,   priced: 218,   median_price: 29.95, avg_thc: null },
+      { name: "Topical",     pill: "#7A8099", n: 209,   priced: 193,   median_price: 44.00, avg_thc: 32.7 },
+    ],
+  },
+  NY: {
+    label: "New York",
+    n_disps: 558,
+    avg: 437,
+    median: 41,
+    p90: 1616,
+    total_products: 243569,
+    total_priced: 242164,
+    categories: [
+      { name: "Pre-roll",    pill: "#DB8C5E", n: 54750, priced: 54646, median_price: 22.40, avg_thc: 31.6 },
+      { name: "Vape",        pill: "#00B98E", n: 51090, priced: 50852, median_price: 51.00, avg_thc: 83.4 },
+      { name: "Flower",      pill: "#85E4FD", n: 46671, priced: 46436, median_price: 45.20, avg_thc: 27.6 },
+      { name: "Edible",      pill: "#DB5461", n: 45477, priced: 45301, median_price: 24.00, avg_thc: 8.8 },
+      { name: "Concentrate", pill: "#1A2074", n: 10951, priced: 10844, median_price: 59.29, avg_thc: 71.5 },
+      { name: "Tincture",    pill: "#1FD4A8", n: 3339,  priced: 3302,  median_price: 50.00, avg_thc: 12.1 },
+      { name: "Topical",     pill: "#7A8099", n: 1642,  priced: 1611,  median_price: 54.98, avg_thc: 34.0 },
+      { name: "Beverage",    pill: "#4A4F58", n: 1145,  priced: 1131,  median_price: 5.31,  avg_thc: 10.5 },
+    ],
+  },
+};
+
+function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
+function fmtMoney(n) { return n == null ? '—' : '$' + n.toFixed(2); }
+function fmtThc(n) { return n == null ? '—' : n.toFixed(1); }
+
+function render(view) {
+  const d = DIQ_DATA[view];
+  if (!d) return;
+
+  // Hero
+  document.querySelector('[data-bind="hero-label"]').textContent = `Average products per dispensary · ${d.label}`;
+  document.querySelector('[data-bind="hero-number"]').textContent = d.avg;
+  document.querySelector('[data-bind="hero-sub-label"]').textContent = `Across ${d.n_disps.toLocaleString()} dispensaries`;
+  document.querySelector('[data-bind="median"]').textContent = d.median;
+  document.querySelector('[data-bind="p90"]').textContent = d.p90.toLocaleString();
+  document.querySelector('[data-bind="total-products"]').textContent = d.total_products.toLocaleString();
+  document.querySelector('[data-bind="total-priced"]').textContent = d.total_priced.toLocaleString();
+
+  // Table
+  document.querySelector('[data-bind="table-title"]').textContent = `Products by category · ${d.label}`;
+  document.querySelector('[data-bind="table-meta"]').textContent = `Across ${d.n_disps.toLocaleString()} dispensaries`;
+
+  const tbody = document.getElementById('diq-cat-tbody');
+  tbody.innerHTML = d.categories.map(c => `
+    <tr>
+      <td><span class="cat-pill" style="background:${c.pill}"></span>${c.name}</td>
+      <td class="r">${fmt(c.n)}</td>
+      <td class="r">${fmt(c.priced)}</td>
+      <td class="r">${fmtMoney(c.median_price)}</td>
+      <td class="r">${fmtThc(c.avg_thc)}</td>
+    </tr>
+  `).join('');
+
+  // Toggle button active state
+  document.querySelectorAll('.diq-toggle').forEach(btn => {
+    const isActive = btn.getAttribute('data-view') === view;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+}
+
+document.querySelectorAll('.diq-toggle').forEach(btn => {
+  btn.addEventListener('click', () => render(btn.getAttribute('data-view')));
+});
+
+render('PILOT');
+</script>
 
 </body>
 </html>
