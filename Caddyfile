@@ -1,0 +1,26 @@
+{
+	# Disable Caddy's automatic HTTPS — Railway terminates TLS at its edge
+	auto_https off
+	admin off
+}
+
+:{$PORT:8080} {
+	root * /srv
+	encode gzip zstd
+	file_server
+
+	# Friendly 404
+	handle_errors {
+		respond "{err.status_code} {err.status_text}" {err.status_code}
+	}
+
+	# Long cache on static assets, no cache on HTML
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=604800, immutable"
+
+	@html path *.html
+	header @html Cache-Control "no-cache, must-revalidate"
+
+	# Discourage indexing
+	header X-Robots-Tag "noindex, nofollow"
+}
