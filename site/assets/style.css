@@ -2790,3 +2790,153 @@ html[data-theme="light"] .diq-footer-meta {
     filter: brightness(0) saturate(100%) !important;
   }
 }
+
+/* ============================================================
+   v16 — Top alerts BLUF strip on the Scorecard
+   ============================================================
+   Surfaces top alerts above the fold, right after the score hero.
+   State-aware: filters when toggle changes. Each row is a click-
+   through to alerts.html#T-XXXX which auto-expands the trigger.
+*/
+.diq-alert-strip {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--pri-p0);
+  border-radius: 6px;
+  padding: 0;
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.diq-alert-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 12px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: linear-gradient(180deg, rgba(196,65,80,0.04), transparent);
+}
+html[data-theme="dark"] .diq-alert-strip-head {
+  background: linear-gradient(180deg, rgba(219,84,97,0.06), transparent);
+}
+.diq-alert-strip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  background: var(--coral-bg);
+  color: var(--coral);
+  border-radius: 4px;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 16px;
+}
+.diq-alert-strip-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+.diq-alert-strip-counts {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.diq-alert-strip-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.diq-alert-strip-count.new      { background: rgba(196,65,80,0.10); color: var(--pri-p0); }
+.diq-alert-strip-count.ack      { background: rgba(30,110,138,0.10); color: var(--pri-p2); }
+.diq-alert-strip-count.watching { background: rgba(184,116,26,0.10); color: var(--pri-p1); }
+html[data-theme="dark"] .diq-alert-strip-count.new      { background: rgba(219,84,97,0.18); }
+html[data-theme="dark"] .diq-alert-strip-count.ack      { background: rgba(133,228,253,0.14); }
+html[data-theme="dark"] .diq-alert-strip-count.watching { background: rgba(219,140,94,0.18); }
+
+.diq-alert-strip-body {
+  padding: 0;
+}
+.diq-alert-strip-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--ink);
+  transition: background 0.12s ease;
+}
+.diq-alert-strip-row:last-child { border-bottom: none; }
+.diq-alert-strip-row:hover {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+.diq-alert-strip-row-pri {
+  text-align: center;
+}
+.diq-alert-strip-row-title {
+  font-family: Calibri, sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.diq-alert-strip-row-meta {
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.diq-alert-strip-row-arrow {
+  color: var(--ink-faint);
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+.diq-alert-strip-row:hover .diq-alert-strip-row-arrow {
+  color: var(--teal-bright);
+  transform: translateX(3px);
+}
+.diq-alert-strip-foot {
+  padding: 10px 18px;
+  text-align: right;
+  background: var(--surface-soft);
+  border-top: 1px solid var(--rule);
+}
+.diq-alert-strip-foot a {
+  font-family: Calibri, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sky);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.diq-alert-strip-foot a:hover { color: var(--teal-bright); }
+
+.diq-alert-strip-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--ink-faint);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* On mobile, compress the meta column */
+@media (max-width: 720px) {
+  .diq-alert-strip-row { grid-template-columns: 36px 1fr auto; }
+  .diq-alert-strip-row-meta { display: none; }
+}
