@@ -1,10 +1,9 @@
-/* DispensaryIQ — export.js v1
-   Three modes:
-     diqExportPDF()  — single page via window.print() with clean filename
-     diqExportPNG()  — single page snapshot, dark theme as-displayed
-     diqExportAll()  — combined PDF of all 11 pages (dark, multi-page handling)
+/* DispensaryIQ — export.js v3
+   Two modes, both all-pages:
+     diqExportPDF()  — all 11 pages combined into one landscape PDF
+     diqExportPNG()  — all 11 pages packaged as individual PNGs in a ZIP
 
-   Libraries lazy-loaded on first non-print export call.
+   Libraries lazy-loaded on first click: html2canvas, jsPDF, JSZip.
 */
 
 (function() {
@@ -16,7 +15,7 @@
     {file: 'products.html',               name: 'Products'},
     {file: 'market-share.html',           name: 'Market-share'},
     {file: 'price-compliance.html',       name: 'Price-compliance'},
-    {file: 'shelf-quality-explainer.html',name: 'Shelf-metrics'},
+    {file: 'shelf-quality-explainer.html',name: 'Methodology'},
     {file: 'display-quality.html',        name: 'Display-quality'},
     {file: 'ny-find.html',                name: 'NY-watchlist'},
     {file: 'alerts.html',                 name: 'Alerts'},
@@ -26,17 +25,12 @@
 
   const HTML2CANVAS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   const JSPDF_CDN       = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  const JSZIP_CDN       = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
 
   function dateStr() {
     const d = new Date();
     const pad = n => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  }
-
-  function currentPageSlug() {
-    const path = (window.location.pathname.split('/').pop() || 'index.html');
-    const found = PAGES.find(p => p.file === path);
-    return found ? found.name : 'Page';
   }
 
   function loadScript(src) {
@@ -50,9 +44,10 @@
     });
   }
 
-  async function ensureLibs() {
+  async function ensureLibs(needZip) {
     if (!window.html2canvas) await loadScript(HTML2CANVAS_CDN);
     if (!window.jspdf)       await loadScript(JSPDF_CDN);
+    if (needZip && !window.JSZip) await loadScript(JSZIP_CDN);
   }
 
   // ----- Progress modal -----
@@ -160,68 +155,37 @@
     });
   }
 
-  // ----- Single page: PDF via print -----
+  // ----- Capture a page in an iframe and return a canvas -----
+  async function captureIframePage(stage, pageUrl) {
+    await new Promise((resolve, reject) => {
+      stage.onload = () => resolve();
+      stage.onerror = reject;
+      stage.src = pageUrl;
+    });
+    // Let JS and fonts settle
+    await new Promise(r => setTimeout(r, 1800));
 
-  window.diqExportPDF = function() {
-    // Browser uses document.title as default filename for "Save as PDF"
-    const originalTitle = document.title;
-    document.title = `DispensaryIQ-${currentPageSlug()}-${dateStr()}`;
-    window.print();
-    // Restore after a tick (print dialog reads title at time of call)
-    setTimeout(() => { document.title = originalTitle; }, 1000);
-  };
+    const doc = stage.contentDocument;
+    const body = doc.body;
+    stage.style.height = body.scrollHeight + 'px';
 
-  // ----- Single page: PNG via html2canvas -----
+    return await window.html2canvas(body, {
+      backgroundColor: null,         // use the page's own background (theme-aware)
+      useCORS: true,
+      allowTaint: true,
+      scale: 1.5,
+      width: 1400,
+      height: body.scrollHeight,
+      windowWidth: 1400,
+      windowHeight: body.scrollHeight,
+    });
+  }
 
-  window.diqExportPNG = async function() {
-    showModal('Generating image', 'Capturing this page as PNG…');
-    try {
-      await ensureLibs();
-      updateProgress(40, 'Rendering DOM');
-
-      // Hide modal and any sticky/fixed elements during capture
-      const navEl = document.querySelector('.diq-nav');
-      const wasNavVisible = navEl ? navEl.style.visibility : null;
-      if (modalEl) modalEl.style.visibility = 'hidden';
-
-      const target = document.body;
-      const canvas = await window.html2canvas(target, {
-        backgroundColor: '#0A0E1F',
-        useCORS: true,
-        allowTaint: true,
-        scale: 2,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: document.documentElement.scrollWidth,
-        windowHeight: document.documentElement.scrollHeight,
-        ignoreElements: el => el.classList && el.classList.contains('diq-export-modal-backdrop'),
-      });
-
-      if (modalEl) modalEl.style.visibility = 'visible';
-      updateProgress(90, 'Encoding PNG');
-
-      const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `DispensaryIQ-${currentPageSlug()}-${dateStr()}.png`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-      updateProgress(100, 'Complete');
-      finishModal(`Downloaded <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:3px;font-family:Consolas,monospace;font-size:11px">${a.download}</code>`);
-    } catch (e) {
-      console.error(e);
-      failModal(e.message || 'Unknown error during PNG export.');
-    }
-  };
-
-  // ----- All pages: combined PDF via iframes + jsPDF -----
-
-  window.diqExportAll = async function() {
+  // ----- PDF: all 11 pages combined -----
+  window.diqExportPDF = async function() {
     showModal('Generating combined PDF', `Capturing all ${PAGES.length} pages and stitching into one PDF. This takes ~30–60 seconds.`);
     try {
-      await ensureLibs();
+      await ensureLibs(false);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1400, 900], hotfixes: ['px_scaling'] });
 
@@ -231,37 +195,10 @@
 
       for (let i = 0; i < PAGES.length; i++) {
         const page = PAGES[i];
-        const pct = Math.round((i / PAGES.length) * 92);
-        updateProgress(pct, `Capturing ${i+1} of ${PAGES.length}: ${page.name}`);
+        updateProgress(Math.round((i / PAGES.length) * 92), `Capturing ${i+1} of ${PAGES.length}: ${page.name}`);
 
-        // Load page into iframe
-        await new Promise((resolve, reject) => {
-          stage.onload = () => resolve();
-          stage.onerror = reject;
-          stage.src = page.file;
-        });
+        const canvas = await captureIframePage(stage, page.file);
 
-        // Wait for fonts + JS to render
-        await new Promise(r => setTimeout(r, 1800));
-
-        // Capture
-        const doc = stage.contentDocument;
-        const body = doc.body;
-        // Match outer viewport
-        stage.style.height = body.scrollHeight + 'px';
-
-        const canvas = await window.html2canvas(body, {
-          backgroundColor: '#0A0E1F',
-          useCORS: true,
-          allowTaint: true,
-          scale: 1.5,
-          width: 1400,
-          height: body.scrollHeight,
-          windowWidth: 1400,
-          windowHeight: body.scrollHeight,
-        });
-
-        // Add to PDF, splitting if taller than one PDF page
         const pdfW = pdf.internal.pageSize.getWidth();
         const pdfH = pdf.internal.pageSize.getHeight();
         const imgW = pdfW;
@@ -284,13 +221,59 @@
       stage.remove();
       updateProgress(96, 'Building PDF file');
 
-      const filename = `DispensaryIQ-CompletePack-${dateStr()}.pdf`;
+      const filename = `DispensaryIQ-${dateStr()}.pdf`;
       pdf.save(filename);
       updateProgress(100, 'Complete');
       finishModal(`Downloaded <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:3px;font-family:Consolas,monospace;font-size:11px">${filename}</code> — ${PAGES.length} pages.`);
     } catch (e) {
       console.error(e);
-      failModal(e.message || 'Unknown error during combined PDF export.');
+      failModal(e.message || 'Unknown error during PDF export.');
     }
   };
+
+  // ----- PNG: all 11 pages as individual PNGs zipped together -----
+  window.diqExportPNG = async function() {
+    showModal('Generating image pack', `Capturing all ${PAGES.length} pages as individual PNGs and bundling into a ZIP. This takes ~30–60 seconds.`);
+    try {
+      await ensureLibs(true);
+      const zip = new window.JSZip();
+
+      const stage = document.createElement('iframe');
+      stage.className = 'diq-export-iframe-stage';
+      document.body.appendChild(stage);
+
+      for (let i = 0; i < PAGES.length; i++) {
+        const page = PAGES[i];
+        updateProgress(Math.round((i / PAGES.length) * 88), `Capturing ${i+1} of ${PAGES.length}: ${page.name}`);
+
+        const canvas = await captureIframePage(stage, page.file);
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        const seq = String(i+1).padStart(2, '0');
+        zip.file(`${seq}-${page.name}.png`, blob);
+      }
+
+      stage.remove();
+      updateProgress(94, 'Building ZIP archive');
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+        updateProgress(94 + Math.round(meta.percent * 0.06), 'Compressing');
+      });
+
+      const filename = `DispensaryIQ-${dateStr()}.zip`;
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      updateProgress(100, 'Complete');
+      finishModal(`Downloaded <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:3px;font-family:Consolas,monospace;font-size:11px">${filename}</code> — ${PAGES.length} PNGs.`);
+    } catch (e) {
+      console.error(e);
+      failModal(e.message || 'Unknown error during PNG export.');
+    }
+  };
+
+  // Legacy alias — anywhere still wired to "diqExportAll" gets the same all-pages PDF
+  window.diqExportAll = window.diqExportPDF;
 })();

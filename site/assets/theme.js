@@ -1,5 +1,5 @@
-/* DispensaryIQ — theme.js v1
-   Light-default, dark-toggle. localStorage-backed.
+/* DispensaryIQ — theme.js v2
+   Dark-default, light-toggle. localStorage-backed.
    Loaded synchronously before paint to avoid flash-of-wrong-theme.
 */
 (function() {
@@ -14,13 +14,13 @@
   function apply(t) {
     document.documentElement.setAttribute('data-theme', t);
   }
-  // Initial: stored > default light
-  const init = getStored() || 'light';
+  // Initial: stored > default DARK
+  const init = getStored() || 'dark';
   apply(init);
 
   window.diqToggleTheme = function() {
-    const cur = document.documentElement.getAttribute('data-theme') || 'light';
-    const nxt = cur === 'light' ? 'dark' : 'light';
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    const nxt = cur === 'dark' ? 'light' : 'dark';
     apply(nxt);
     setStored(nxt);
   };

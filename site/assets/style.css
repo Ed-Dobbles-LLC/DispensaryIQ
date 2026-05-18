@@ -2626,3 +2626,167 @@ html[data-theme="dark"] .diq-status-reactivated { background: rgba(219, 84, 97, 
   }
   .diq-trigger-row.is-closed { opacity: 1; }
 }
+
+
+/* ============================================================
+   v15 — Dark default restored + logo/wordmark fixes
+   ============================================================
+   - Dark is the default theme (overrides v13's light-default decision)
+   - DispensaryIQ logo and nav links use hardcoded light colors
+     regardless of theme (because the nav stays brand-navy in both)
+   - Curaleaf wordmark (white-fill SVG) gets a filter in light mode
+     to flip white -> black so it remains visible
+*/
+
+/* Default theme = DARK (override v13's light-default) */
+:root,
+html:not([data-theme]),
+html[data-theme="dark"] {
+  --bg: #0A0E1C;
+  --surface: #11162A;
+  --surface-soft: #1A2138;
+  --surface-elevated: #1A2138;
+
+  --ink: #F5F6FA;
+  --ink-soft: #B4BACC;
+  --ink-faint: #7A8099;
+
+  --navy: #060A57;
+  --navy-deep: #03052E;
+  --navy-bright: #1A2074;
+
+  --teal: #00B98E;
+  --teal-bright: #1FD4A8;
+  --sky: #85E4FD;
+  --sky-soft: rgba(133, 228, 253, 0.16);
+  --coral: #DB5461;
+  --coral-bg: rgba(219, 84, 97, 0.10);
+
+  --status-strong: #00B98E;
+  --status-strong-bg: rgba(0, 185, 142, 0.12);
+  --status-watch: #DB8C5E;
+  --status-watch-bg: rgba(219, 140, 94, 0.12);
+  --status-action: #DB5461;
+  --status-action-bg: rgba(219, 84, 97, 0.12);
+
+  --pri-p0: #DB5461;
+  --pri-p1: #DB8C5E;
+  --pri-p2: #85E4FD;
+  --pri-p3: #7A8099;
+
+  --rule: rgba(255, 255, 255, 0.08);
+  --rule-strong: rgba(255, 255, 255, 0.18);
+  --hairline: rgba(255, 255, 255, 0.05);
+
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-hero: 0 0 0 rgba(0,0,0,0);
+}
+
+/* Light is now the explicit override */
+html[data-theme="light"] {
+  --bg: #FAFBFC;
+  --surface: #FFFFFF;
+  --surface-soft: #F1F3F8;
+  --surface-elevated: #FFFFFF;
+
+  --ink: #0A0E1F;
+  --ink-soft: #3B4258;
+  --ink-faint: #6B7280;
+
+  --navy: #060A57;
+  --navy-deep: #060A57;
+  --navy-bright: #1A2074;
+
+  --teal: #008064;
+  --teal-bright: #00B98E;
+  --sky: #1E6E8A;
+  --sky-soft: rgba(30, 110, 138, 0.10);
+  --coral: #C44150;
+  --coral-bg: rgba(196, 65, 80, 0.06);
+
+  --status-strong: #00875A;
+  --status-strong-bg: rgba(0, 135, 90, 0.08);
+  --status-watch: #B8741A;
+  --status-watch-bg: rgba(184, 116, 26, 0.08);
+  --status-action: #C44150;
+  --status-action-bg: rgba(196, 65, 80, 0.08);
+
+  --pri-p0: #C44150;
+  --pri-p1: #B8741A;
+  --pri-p2: #1E6E8A;
+  --pri-p3: #6B7280;
+
+  --rule: rgba(10, 14, 28, 0.08);
+  --rule-strong: rgba(10, 14, 28, 0.16);
+  --hairline: rgba(10, 14, 28, 0.04);
+
+  --shadow-card: 0 1px 3px rgba(10, 14, 28, 0.06), 0 1px 2px rgba(10, 14, 28, 0.04);
+  --shadow-hero: 0 4px 16px rgba(10, 14, 28, 0.08);
+}
+
+/* ----- Nav logo & link colors are THEME-INDEPENDENT -----
+   The nav background stays brand-navy in both themes, so its
+   text must stay light regardless of which theme is active. */
+.diq-nav {
+  background: var(--navy-deep);
+}
+html[data-theme="light"] .diq-nav {
+  background: var(--navy);  /* brand navy in light mode (no near-black) */
+}
+.diq-logo,
+.diq-logo:hover {
+  color: #FFFFFF !important;
+}
+.diq-logo .accent {
+  color: #1FD4A8 !important;
+}
+.diq-nav-link {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+.diq-nav-link:hover {
+  color: #FFFFFF !important;
+}
+.diq-nav-link.active {
+  color: #FFFFFF !important;
+  border-bottom-color: #1FD4A8 !important;
+}
+.diq-nav-link.phase {
+  color: rgba(255, 255, 255, 0.50) !important;
+}
+
+/* ----- Curaleaf wordmark SVG is white-fill -----
+   In light mode flip it to black via brightness filter so it stays visible
+   against the now-light "prepared for" card and footer. */
+html[data-theme="light"] .diq-prepared-logo,
+html[data-theme="light"] .diq-footer-logo {
+  filter: brightness(0) saturate(100%);
+}
+
+/* Prepared-for card: in light mode, give it a navy frame so it visually frames
+   the curaleaf wordmark even after the SVG flips dark */
+html[data-theme="light"] .diq-prepared-for {
+  background: #FFFFFF;
+  border: 1px solid var(--rule-strong);
+}
+html[data-theme="light"] .diq-prepared-label {
+  color: var(--ink-faint);
+}
+
+/* Footer logo: same fix */
+html[data-theme="light"] .diq-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+}
+html[data-theme="light"] .diq-footer-pillars,
+html[data-theme="light"] .diq-footer-meta {
+  color: var(--ink-faint);
+}
+
+/* ----- v15: print mode keeps both logos visible -----
+   In print, prepared-for / footer are forced light; flip SVG fills. */
+@media print {
+  .diq-prepared-logo,
+  .diq-footer-logo {
+    filter: brightness(0) saturate(100%) !important;
+  }
+}

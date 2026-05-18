@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Alerts · DispensaryIQ</title>
-  <script src="assets/theme.js?v=12"></script>
-  <link rel="stylesheet" href="assets/style.css?v=12">
+  <script src="assets/theme.js?v=13"></script>
+  <link rel="stylesheet" href="assets/style.css?v=13">
 </head>
 <body>
 
@@ -35,17 +35,13 @@
         <svg class="diq-theme-icon-sun"  viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.4 1.4M11.55 11.55l1.4 1.4M3.05 12.95l1.4-1.4M11.55 4.45l1.4-1.4"/></svg>
       </button>
       <div class="diq-export-group" role="group" aria-label="Export options">
-        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save this page as PDF">
+        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save all 11 pages as one combined PDF">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/></svg>
           <span>PDF</span>
         </button>
-        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download this page as a PNG image">
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download all 11 pages as individual PNGs in a ZIP">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/></svg>
           <span>PNG</span>
-        </button>
-        <button onclick="diqExportAll()" class="diq-export-btn diq-export-btn-all" title="Bundle all 11 pages into one combined PDF">
-          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="2" width="9" height="11" rx="0.8"/><rect x="5" y="4" width="9" height="11" rx="0.8" fill="none"/></svg>
-          <span>All pages</span>
         </button>
       </div>
     </div>
@@ -186,7 +182,7 @@
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
-<script src="assets/export.js?v=12"></script>
+<script src="assets/export.js?v=13"></script>
 
 <script>
 const DIQ_HIGHLIGHTS = [{"pri": "P0", "dim": "COMPETITIVE", "title": "FIND under attack in NY \u2014 Leal + Rolling Green now 169 doors vs Find 89", "body": "Leal (69 doors) and Rolling Green (100 doors) combined cover 169 of 558 tracked NY dispensaries. Find is in 89. The two competitor brands jointly outdistribute Find by 1.9x in the NY adult-use market. Q1 at-risk prospect cohort (Leal/RG carried, no Find): 92 dispensaries. Q2 contest zone (all three brands present): 45 dispensaries. Recommend trade-marketing engagement at the 92 Q1 dispensaries before Leal locks in shelf presence. Drill-down: NY watchlist page.", "cohort": "NY adult-use \u2022 558 tracked dispensaries", "action": "Trade-marketing follow-up \u2022 92 Q1 prospect dispensaries"}, {"pri": "P0", "dim": "PRICING", "title": "Find 3.5g flower NY: 10 of 12 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $19.50 (3 stores). 10 of 12 tracked retailers in NY are pricing Find 3.5g flower 25%+ above the Curaleaf retail anchor \u2014 average market price $30.00. Margin upside for Curaleaf-owned but brand-equity risk if consumers perceive Find as priced inconsistently with the Curaleaf retail experience. HIGH-confidence anchor.", "cohort": "NY \u2022 Find 3.5g flower \u2022 12 retailers", "action": "Review pricing strategy with Curaleaf NY retail leadership"}, {"pri": "P0", "dim": "PRICING", "title": "Select 1g vape NY: 7 of 8 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $35.00 (7 stores). 7 of 8 tracked NY retailers pricing Select 1g vape 25%+ above \u2014 average market $59.65, a 70% premium over Curaleaf-owned. Worst offenders: Good Company NYC ($78, +123%), ZenZest NYC ($68, +94%), RISE Dispensary NY ($60, +71%, n=26). HIGH-confidence anchor.", "cohort": "NY \u2022 Select 1g vape \u2022 8 retailers", "action": "Review pricing strategy with retail leadership"}, {"pri": "P0", "dim": "PRICING", "title": "Find 1g pre-roll NJ: 5 of 6 retailers SEVERE below-band", "body": "Curaleaf-owned anchor $12.00 (4 stores). 5 of 6 tracked NJ retailers pricing 15-25% below \u2014 4 below 15%. Opposite direction from NY: NJ retailers underpricing Find. Brand-wide signal that Find pricing discipline is inconsistent across the pilot footprint. HIGH-confidence anchor.", "cohort": "NJ \u2022 Find 1g pre-roll \u2022 6 retailers", "action": "Investigate NJ Find pricing \u2014 promotional or systemic?"}, {"pri": "P1", "dim": "PRICING", "title": "Grassroots 1g pre-roll IL: 7 of 7 retailers EXTREME above-band", "body": "Curaleaf-owned anchor $10.35 (4 stores). All 7 tracked IL retailers pricing 25%+ above. Average market 41% above Curaleaf-retail anchor. Either a value-positioned house brand priced as premium elsewhere, or systematic markup. HIGH-confidence anchor.", "cohort": "IL \u2022 Grassroots 1g pre-roll \u2022 7 retailers", "action": "Trade strategy review \u2014 value positioning intent?"}, {"pri": "P1", "dim": "PRICING", "title": "NJ Curaleaf promo penetration 50% \u2014 overheated", "body": "NJ Curaleaf SKUs discounted at 49.92% rate this week vs NJ market average 31.53%. Could indicate (a) promotional response to competitor push, (b) inventory clearance, or (c) systemic discount strategy. Investigate root cause; the depth of discount in NJ undermines Synthetic-MSRP discipline.", "cohort": "NJ \u2022 all Curaleaf SKUs \u2022 1,795 observations", "action": "Promo strategy investigation with NJ trade leadership"}, {"pri": "P1", "dim": "COMPETITIVE", "title": "Grassroots 3.5g flower IL: TIGHT discipline \u2014 11 of 14 in-band", "body": "Curaleaf-owned anchor $32.50 (24 stores). Market median $32.00 across 82 observations at 14 retailers. 11 of 14 retailers in-band within +/-5%. The strongest MSRP discipline anywhere in the pilot. Reference case for what good looks like.", "cohort": "IL \u2022 Grassroots 3.5g flower \u2022 14 retailers", "action": "Highlight as discipline benchmark in trade reviews"}, {"pri": "P2", "dim": "VISIBILITY", "title": "Curaleaf NY shelf score 44.5 \u2014 below pilot average of 47.5", "body": "Across NY tracked menus, Curaleaf portfolio average shelf position is 44.5 of 100, vs pilot 47.5. Featured share 1.04% \u2014 at category average. Position drag concentrated in Brooklyn and Long Island independents per shelf-quality detail page.", "cohort": "NY \u2022 all Curaleaf SKUs \u2022 7,606 observations", "action": "Promotion / merchandising follow-up in NY independents"}];
