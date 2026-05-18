@@ -1705,3 +1705,924 @@ a:hover { color: var(--teal-bright); }
 .diq-cat-table td.r {
   text-align: center;
 }
+
+
+/* ============================================================
+   v13 — Theme system: LIGHT default, DARK toggle, hardened PRINT
+   ============================================================
+   Light is the published-grade default for an executive audience
+   (Brooke / Damian-style readers, print-first review pattern).
+   Dark survives as a toggle for live demos and Ed-internal use.
+   Print is a hardened light variant: white bg, true black ink,
+   no shadows, page-break-inside avoided on cards & rows.
+*/
+
+/* -------- LIGHT THEME (default) -------- */
+:root,
+html[data-theme="light"] {
+  /* Surfaces — flipped from dark */
+  --bg: #FAFBFC;
+  --surface: #FFFFFF;
+  --surface-soft: #F1F3F8;
+  --surface-elevated: #FFFFFF;
+
+  /* Ink — flipped */
+  --ink: #0A0E1F;
+  --ink-soft: #3B4258;
+  --ink-faint: #6B7280;
+
+  /* Brand — navy stays as the brand; nav rendered on navy regardless of theme */
+  --navy: #060A57;
+  --navy-deep: #060A57;
+  --navy-bright: #1A2074;
+
+  /* Accents — darkened for AA contrast on white */
+  --teal: #008064;
+  --teal-bright: #00B98E;
+  --sky: #1E6E8A;
+  --sky-soft: rgba(30, 110, 138, 0.10);
+  --coral: #C44150;
+  --coral-bg: rgba(196, 65, 80, 0.06);
+
+  /* Three-step severity, single hue family */
+  --status-strong: #00875A;
+  --status-strong-bg: rgba(0, 135, 90, 0.08);
+  --status-watch: #B8741A;
+  --status-watch-bg: rgba(184, 116, 26, 0.08);
+  --status-action: #C44150;
+  --status-action-bg: rgba(196, 65, 80, 0.08);
+
+  /* Four-step priority (alerts only) — shared hue family */
+  --pri-p0: #C44150;
+  --pri-p1: #B8741A;
+  --pri-p2: #1E6E8A;
+  --pri-p3: #6B7280;
+
+  /* Rules */
+  --rule: rgba(10, 14, 28, 0.08);
+  --rule-strong: rgba(10, 14, 28, 0.16);
+  --hairline: rgba(10, 14, 28, 0.04);
+
+  --shadow-card: 0 1px 3px rgba(10, 14, 28, 0.06), 0 1px 2px rgba(10, 14, 28, 0.04);
+  --shadow-hero: 0 4px 16px rgba(10, 14, 28, 0.08);
+}
+
+/* -------- DARK THEME -------- */
+html[data-theme="dark"] {
+  --bg: #0A0E1C;
+  --surface: #11162A;
+  --surface-soft: #1A2138;
+  --surface-elevated: #1A2138;
+
+  --ink: #F5F6FA;
+  --ink-soft: #B4BACC;
+  --ink-faint: #7A8099;
+
+  --navy: #060A57;
+  --navy-deep: #03052E;
+  --navy-bright: #1A2074;
+
+  --teal: #00B98E;
+  --teal-bright: #1FD4A8;
+  --sky: #85E4FD;
+  --sky-soft: rgba(133, 228, 253, 0.16);
+  --coral: #DB5461;
+  --coral-bg: rgba(219, 84, 97, 0.10);
+
+  --status-strong: #00B98E;
+  --status-strong-bg: rgba(0, 185, 142, 0.12);
+  --status-watch: #DB8C5E;
+  --status-watch-bg: rgba(219, 140, 94, 0.12);
+  --status-action: #DB5461;
+  --status-action-bg: rgba(219, 84, 97, 0.12);
+
+  --pri-p0: #DB5461;
+  --pri-p1: #DB8C5E;
+  --pri-p2: #85E4FD;
+  --pri-p3: #7A8099;
+
+  --rule: rgba(255, 255, 255, 0.08);
+  --rule-strong: rgba(255, 255, 255, 0.18);
+  --hairline: rgba(255, 255, 255, 0.05);
+
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-hero: 0 0 0 rgba(0,0,0,0);
+}
+
+/* -------- LIGHT-mode overrides for legacy rules -------- */
+html[data-theme="light"] body,
+:root body {
+  background: var(--bg);
+}
+html[data-theme="light"] .diq-section,
+:root .diq-section {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .diq-cat-table,
+:root .diq-cat-table {
+  background: var(--surface);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+html[data-theme="light"] .diq-cat-table thead,
+:root .diq-cat-table thead {
+  background: var(--surface-soft);
+}
+html[data-theme="light"] .diq-cat-table thead th,
+:root .diq-cat-table thead th {
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 2px solid var(--rule-strong);
+}
+html[data-theme="light"] .diq-cat-table tbody tr:nth-child(even),
+:root .diq-cat-table tbody tr:nth-child(even) {
+  background: rgba(10, 14, 28, 0.018);
+}
+html[data-theme="light"] .diq-cat-table tbody tr:hover td,
+:root .diq-cat-table tbody tr:hover td {
+  background: var(--surface-soft);
+}
+html[data-theme="light"] .diq-cat-table td,
+:root .diq-cat-table td {
+  border-bottom: 1px solid var(--rule);
+}
+html[data-theme="light"] .diq-callout,
+:root .diq-callout {
+  background: var(--surface-soft);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+html[data-theme="light"] .diq-dim-card,
+:root .diq-dim-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .diq-scorecard-hero,
+:root .diq-scorecard-hero {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-hero);
+}
+html[data-theme="light"] .diq-toggle-bar,
+:root .diq-toggle-bar {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+}
+html[data-theme="light"] .diq-toggle,
+:root .diq-toggle {
+  color: var(--ink-soft);
+}
+html[data-theme="light"] .diq-toggle.active,
+:root .diq-toggle.active {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+html[data-theme="light"] .diq-page-eyebrow,
+:root .diq-page-eyebrow {
+  font-family: Calibri, 'Calibri Light', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+html[data-theme="light"] .diq-alert,
+:root .diq-alert {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+html[data-theme="light"] .diq-alert + .diq-alert,
+:root .diq-alert + .diq-alert {
+  margin-top: 8px;
+}
+
+/* Prepared-for badge in light mode */
+html[data-theme="light"] .diq-prepared-for,
+:root .diq-prepared-for {
+  background: var(--surface-soft);
+  border: 1px solid var(--rule);
+}
+html[data-theme="light"] .diq-prepared-label,
+:root .diq-prepared-label {
+  color: var(--ink-faint);
+}
+
+/* Coverage map background — handled per-page */
+html[data-theme="light"] .diq-map-canvas,
+:root .diq-map-canvas {
+  background: #F4F6FA;
+}
+
+/* -------- TYPOGRAPHY — restrict monospace to data labels only -------- */
+/* Page eyebrows are NO LONGER mono; only IDs/timestamps/methodology tags */
+.diq-section-meta,
+.diq-toggle-sub {
+  font-family: Calibri, 'Calibri Light', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* -------- TOP-RIGHT PILLAR STAMP -------- */
+.diq-nav-aside {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  padding-left: 14px;
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+}
+.diq-pillar-stamp {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: right;
+  line-height: 1.25;
+}
+.diq-pillar-line {
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.diq-pillar-meta {
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.42);
+}
+.diq-pillar-meta a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
+}
+.diq-pillar-meta a:hover {
+  color: var(--teal-bright);
+}
+
+/* -------- THEME TOGGLE -------- */
+.diq-theme-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.78);
+  transition: all 0.15s ease;
+}
+.diq-theme-toggle:hover {
+  border-color: rgba(133, 228, 253, 0.50);
+  color: var(--teal-bright);
+}
+.diq-theme-toggle .diq-theme-icon-moon { display: inline-flex; }
+.diq-theme-toggle .diq-theme-icon-sun  { display: none; }
+html[data-theme="dark"] .diq-theme-toggle .diq-theme-icon-moon { display: none; }
+html[data-theme="dark"] .diq-theme-toggle .diq-theme-icon-sun  { display: inline-flex; }
+
+/* -------- SCORECARD: three-step severity (replaces 5-band) -------- */
+.diq-score-track {
+  width: 100%;
+  margin-top: 16px;
+}
+.diq-score-track-bar {
+  position: relative;
+  height: 10px;
+  background: var(--surface-soft);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+}
+.diq-score-band {
+  height: 100%;
+}
+.diq-score-band-action { background: var(--status-action); width: 40%; opacity: 0.85; }
+.diq-score-band-watch  { background: var(--status-watch);  width: 30%; opacity: 0.85; }
+.diq-score-band-strong { background: var(--status-strong); width: 30%; opacity: 0.85; }
+.diq-score-needle {
+  position: relative;
+  width: 0;
+  margin-top: -16px;
+  margin-bottom: 4px;
+  height: 18px;
+}
+.diq-score-needle::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ink);
+  border-radius: 1px;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.diq-score-track-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: 'Consolas', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+.diq-score-track-labels span:nth-child(1) { width: 0; }
+.diq-score-track-labels span:nth-child(5) { width: 0; }
+
+/* Inline band pill on overall score */
+.diq-score-band-pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-family: Calibri, sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+.diq-score-band-pill.strong { background: var(--status-strong-bg); color: var(--status-strong); }
+.diq-score-band-pill.watch  { background: var(--status-watch-bg);  color: var(--status-watch); }
+.diq-score-band-pill.action { background: var(--status-action-bg); color: var(--status-action); }
+
+/* Dim-card severity badges — three-step */
+.diq-dim-band {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: Calibri, sans-serif;
+  font-weight: 700;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.diq-dim-band.dim-strong { background: var(--status-strong-bg); color: var(--status-strong); }
+.diq-dim-band.dim-watch  { background: var(--status-watch-bg);  color: var(--status-watch); }
+.diq-dim-band.dim-action { background: var(--status-action-bg); color: var(--status-action); }
+
+/* Hide legacy 5-band classes — they now resolve via the 3-band system */
+.score-green-bright,
+.score-green     { background: var(--status-strong-bg) !important; color: var(--status-strong) !important; }
+.score-amber     { background: var(--status-watch-bg)  !important; color: var(--status-watch)  !important; }
+.score-orange,
+.score-red       { background: var(--status-action-bg) !important; color: var(--status-action) !important; }
+
+/* WoW delta placeholder slot — always present, even when blank */
+.diq-dim-delta-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  padding-left: 8px;
+  border-left: 1px solid var(--rule);
+  margin-left: 8px;
+}
+.diq-dim-delta-slot .placeholder {
+  opacity: 0.4;
+  font-size: 13px;
+}
+
+/* -------- ALERT PRIORITY — four-step P0/P1/P2/P3 -------- */
+.diq-pri.diq-pri-p0 { background: rgba(196, 65, 80, 0.12); color: var(--pri-p0); border: 1px solid rgba(196, 65, 80, 0.30); }
+.diq-pri.diq-pri-p1 { background: rgba(184, 116, 26, 0.12); color: var(--pri-p1); border: 1px solid rgba(184, 116, 26, 0.30); }
+.diq-pri.diq-pri-p2 { background: rgba(30, 110, 138, 0.10); color: var(--pri-p2); border: 1px solid rgba(30, 110, 138, 0.28); }
+.diq-pri.diq-pri-p3 { background: rgba(107, 114, 128, 0.10); color: var(--pri-p3); border: 1px solid rgba(107, 114, 128, 0.24); }
+
+html[data-theme="dark"] .diq-pri.diq-pri-p0 { background: rgba(219, 84, 97, 0.18); border-color: rgba(219, 84, 97, 0.40); }
+html[data-theme="dark"] .diq-pri.diq-pri-p1 { background: rgba(219, 140, 94, 0.18); border-color: rgba(219, 140, 94, 0.40); }
+html[data-theme="dark"] .diq-pri.diq-pri-p2 { background: rgba(133, 228, 253, 0.14); border-color: rgba(133, 228, 253, 0.32); }
+html[data-theme="dark"] .diq-pri.diq-pri-p3 { background: rgba(180, 186, 204, 0.14); border-color: rgba(180, 186, 204, 0.28); }
+
+/* -------- PRICE COMPLIANCE — worst-offenders BLUF strip -------- */
+.diq-bluf-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0 0 20px 0;
+}
+.diq-bluf-card {
+  background: var(--surface);
+  border-left: 4px solid var(--status-action);
+  border-top: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+.diq-bluf-card .rank {
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+.diq-bluf-card .title {
+  font-family: Calibri, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  margin: 4px 0 6px 0;
+}
+.diq-bluf-card .stat {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--status-action);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.diq-bluf-card .stat-sub {
+  font-size: 11px;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+/* -------- LIGHT-mode contrast tweaks for hero/buttons/links -------- */
+html[data-theme="light"] .diq-export-btn,
+:root .diq-export-btn {
+  color: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+html[data-theme="light"] .diq-export-btn:hover,
+:root .diq-export-btn:hover {
+  color: var(--teal-bright);
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="light"] .diq-link-arrow,
+:root .diq-link-arrow {
+  color: var(--sky);
+}
+
+/* Light-mode chart text */
+html[data-theme="light"] svg text,
+:root svg text {
+  fill: var(--ink-soft);
+}
+
+/* -------- @media print — hardened light variant -------- */
+@media print {
+  /* Force light mode for print regardless of toggle state */
+  :root, html, html[data-theme] {
+    --bg: white;
+    --surface: white;
+    --surface-soft: #F4F6FA;
+    --ink: #000000;
+    --ink-soft: #2A2D38;
+    --ink-faint: #555B6B;
+    --rule: rgba(0, 0, 0, 0.18);
+    --rule-strong: rgba(0, 0, 0, 0.40);
+    --shadow-card: none;
+    --shadow-hero: none;
+  }
+  body { background: white !important; color: black !important; }
+
+  /* Drop chrome */
+  .diq-nav, .diq-footer, .diq-export-group, .diq-theme-toggle { display: none !important; }
+  .diq-nav-aside { display: none !important; }
+
+  /* Print-only pillar stamp at top */
+  body::before {
+    content: 'DispensaryIQ  ·  COHORT-STRATIFIED  ·  LICENSE-RECONCILED  ·  FAIR-SHARE-ANCHORED  ·  CPG-NATIVE  ·  Week 20';
+    display: block;
+    font-family: 'Consolas', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 1px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+
+  /* Keep sections together where possible */
+  .diq-page-header { page-break-after: avoid; }
+  .diq-section { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+  .diq-dim-card { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+  .diq-callout  { page-break-inside: avoid; }
+  .diq-alert    { page-break-inside: avoid; }
+  .diq-cat-table { page-break-inside: auto; }
+  .diq-cat-table tr { page-break-inside: avoid; page-break-after: auto; }
+
+  /* Patterned cell-fills for mono printers (heatmap survival) */
+  .diq-cell-bad   { background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 6px) !important; color: #000 !important; }
+  .diq-cell-warn  { background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.04) 5px, rgba(0,0,0,0.04) 10px) !important; color: #000 !important; }
+  .diq-cell-good  { background: rgba(0,135,90,0.06) !important; color: #000 !important; }
+
+  /* All borders solid + visible */
+  .diq-cat-table td, .diq-cat-table th { border: 1px solid #888 !important; }
+
+  /* Theme-specific overrides off */
+  .diq-prepared-for { background: white !important; border: 1px solid #888 !important; }
+
+  /* Status pills as outlines (not filled) for ink saving */
+  .diq-pri, .diq-dim-band, .diq-score-band-pill {
+    background: white !important;
+    border: 1.5px solid currentColor !important;
+  }
+  .diq-pri-p0, .dim-action, .diq-score-band-pill.action { color: #A0202E !important; }
+  .diq-pri-p1, .dim-watch,  .diq-score-band-pill.watch  { color: #8A5510 !important; }
+  .diq-pri-p2 { color: #155A78 !important; }
+  .diq-pri-p3 { color: #444 !important; }
+  .dim-strong, .diq-score-band-pill.strong { color: #006443 !important; }
+}
+
+/* Hide pillar stamp on narrow screens */
+@media (max-width: 1100px) {
+  .diq-pillar-stamp { display: none; }
+}
+
+
+/* ============================================================
+   v14 — Alert lifecycle UI
+   ============================================================
+   Status pipeline: NEW > ACK > WATCHING > CLOSED > (REACTIVATED if re-fires within 4 weeks)
+   Demo-grade workflow with localStorage persistence.
+*/
+
+/* ---- Filter tab bar ---- */
+.diq-filter-bar {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 14px 0;
+  padding: 6px;
+  background: var(--surface-soft);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+.diq-filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  font-family: Calibri, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.12s ease;
+}
+.diq-filter-tab:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+.diq-filter-tab.active {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--rule-strong);
+  box-shadow: var(--shadow-card);
+}
+.diq-filter-tab .diq-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  padding: 1px 7px;
+  background: var(--rule);
+  border-radius: 10px;
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.diq-filter-tab.active .diq-filter-count {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---- Status badges ---- */
+.diq-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.diq-status::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.diq-status-new       { background: rgba(196, 65, 80, 0.12); color: var(--pri-p0); }
+.diq-status-ack       { background: rgba(30, 110, 138, 0.10); color: var(--pri-p2); }
+.diq-status-watching  { background: rgba(184, 116, 26, 0.10); color: var(--pri-p1); }
+.diq-status-closed    { background: rgba(107, 114, 128, 0.10); color: var(--pri-p3); }
+.diq-status-reactivated { background: rgba(196, 65, 80, 0.18); color: var(--pri-p0); border: 1px solid var(--pri-p0); }
+.diq-status-reactivated::before {
+  content: '\21BB';  /* clockwise reload arrow */
+  background: transparent;
+  width: auto; height: auto;
+  border-radius: 0;
+  font-weight: 700;
+}
+
+html[data-theme="dark"] .diq-status-new       { background: rgba(219, 84, 97, 0.18); }
+html[data-theme="dark"] .diq-status-ack       { background: rgba(133, 228, 253, 0.14); }
+html[data-theme="dark"] .diq-status-watching  { background: rgba(219, 140, 94, 0.18); }
+html[data-theme="dark"] .diq-status-closed    { background: rgba(180, 186, 204, 0.14); }
+html[data-theme="dark"] .diq-status-reactivated { background: rgba(219, 84, 97, 0.22); }
+
+/* ---- Action buttons (per row) ---- */
+.diq-row-actions {
+  display: inline-flex;
+  gap: 4px;
+}
+.diq-action-btn {
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  font-family: Calibri, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+.diq-action-btn:hover {
+  background: var(--surface-soft);
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+.diq-action-btn.diq-action-ack:hover    { color: var(--pri-p2); border-color: var(--pri-p2); }
+.diq-action-btn.diq-action-watch:hover  { color: var(--pri-p1); border-color: var(--pri-p1); }
+.diq-action-btn.diq-action-close:hover  { color: var(--pri-p3); border-color: var(--pri-p3); }
+.diq-action-btn.diq-action-reopen:hover { color: var(--pri-p0); border-color: var(--pri-p0); }
+.diq-action-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
+
+/* ---- Expandable row detail ---- */
+.diq-trigger-detail {
+  background: var(--surface-soft);
+  border-left: 3px solid var(--pri-p2);
+  padding: 16px 20px;
+}
+.diq-trigger-detail h4 {
+  font-family: Calibri, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 6px 0;
+}
+.diq-trigger-detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 20px;
+}
+
+/* ---- History timeline ---- */
+.diq-history {
+  position: relative;
+  padding-left: 14px;
+}
+.diq-history::before {
+  content: '';
+  position: absolute;
+  left: 3px; top: 4px; bottom: 4px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+.diq-history-event {
+  position: relative;
+  padding-bottom: 10px;
+  font-size: 12px;
+}
+.diq-history-event::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 5px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  border: 1px solid var(--surface-soft);
+}
+.diq-history-event.is-current::before {
+  background: var(--pri-p0);
+  width: 9px; height: 9px;
+  left: -15px;
+  top: 4px;
+}
+.diq-history-event .when {
+  font-family: 'Consolas', monospace;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.diq-history-event .who {
+  font-weight: 600;
+  color: var(--ink);
+}
+.diq-history-event .what {
+  display: inline-block;
+  margin: 0 4px;
+}
+.diq-history-event .note {
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-top: 2px;
+  padding-left: 0;
+}
+
+/* ---- Action form (note + commit) ---- */
+.diq-action-form {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 12px;
+}
+.diq-action-form label {
+  display: block;
+  font-family: Calibri, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.diq-action-form textarea {
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  font-family: Calibri, sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  resize: vertical;
+}
+.diq-action-form textarea:focus {
+  outline: none;
+  border-color: var(--pri-p2);
+}
+.diq-action-form-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.diq-action-commit {
+  padding: 6px 14px;
+  background: var(--pri-p2);
+  border: 1px solid var(--pri-p2);
+  color: white;
+  border-radius: 3px;
+  font-family: Calibri, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.diq-action-commit:hover { opacity: 0.88; }
+.diq-action-commit.diq-action-commit-close { background: var(--pri-p3); border-color: var(--pri-p3); }
+.diq-action-commit.diq-action-commit-watch { background: var(--pri-p1); border-color: var(--pri-p1); }
+.diq-action-commit.diq-action-commit-reopen { background: var(--pri-p0); border-color: var(--pri-p0); }
+.diq-action-cancel {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  border-radius: 3px;
+  font-family: Calibri, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ---- Phase 2 preview banner & reset link ---- */
+.diq-phase2-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--sky-soft);
+  border-left: 3px solid var(--pri-p2);
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+.diq-phase2-banner .icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 110, 138, 0.14);
+  border-radius: 4px;
+  color: var(--pri-p2);
+  font-weight: 700;
+}
+.diq-phase2-banner .label {
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pri-p2);
+  font-weight: 700;
+}
+.diq-phase2-banner .text {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  flex: 1;
+}
+.diq-phase2-banner .reset-link {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-soft);
+  border-radius: 3px;
+  font-family: Calibri, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.diq-phase2-banner .reset-link:hover {
+  border-color: var(--pri-p2);
+  color: var(--pri-p2);
+}
+
+/* ---- Lifecycle KPIs strip ---- */
+.diq-lifecycle-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.diq-lifecycle-kpi {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  border-top: 3px solid var(--rule);
+}
+.diq-lifecycle-kpi.k-new       { border-top-color: var(--pri-p0); }
+.diq-lifecycle-kpi.k-ack       { border-top-color: var(--pri-p2); }
+.diq-lifecycle-kpi.k-watching  { border-top-color: var(--pri-p1); }
+.diq-lifecycle-kpi.k-closed    { border-top-color: var(--pri-p3); }
+.diq-lifecycle-kpi.k-reactivated { border-top-color: var(--pri-p0); }
+.diq-lifecycle-kpi .label {
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.diq-lifecycle-kpi .value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.diq-lifecycle-kpi .sub {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+/* Row click affordance */
+.diq-cat-table tbody tr.diq-trigger-row { cursor: pointer; }
+.diq-cat-table tbody tr.diq-trigger-row.is-closed { opacity: 0.55; }
+.diq-cat-table tbody tr.diq-trigger-row.is-expanded { background: var(--surface-soft); }
+.diq-cat-table tbody tr.diq-trigger-row.is-expanded td { border-bottom: none; }
+
+/* Hide actions in print */
+@media print {
+  .diq-filter-bar, .diq-row-actions, .diq-action-form, .diq-phase2-banner .reset-link, .diq-action-btn {
+    display: none !important;
+  }
+  .diq-trigger-row.is-closed { opacity: 1; }
+}
