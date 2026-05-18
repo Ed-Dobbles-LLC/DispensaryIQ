@@ -2940,3 +2940,40 @@ html[data-theme="dark"] .diq-alert-strip-count.watching { background: rgba(219,1
   .diq-alert-strip-row { grid-template-columns: 36px 1fr auto; }
   .diq-alert-strip-row-meta { display: none; }
 }
+
+/* ============================================================
+   v21 — Print mode (body.diq-print-mode, triggered by ?print=1)
+   Used by PDF export to capture clean content without site chrome.
+   Hides nav, "Prepared for" header box, and site footer so the
+   PDF presents pure report content with my PDF chrome around it.
+   ============================================================ */
+body.diq-print-mode nav.diq-nav,
+body.diq-print-mode .diq-nav,
+body.diq-print-mode .diq-prepared-for,
+body.diq-print-mode footer.diq-footer,
+body.diq-print-mode .diq-footer {
+  display: none !important;
+}
+
+body.diq-print-mode {
+  background: #FFFFFF !important;
+}
+
+body.diq-print-mode main,
+body.diq-print-mode .diq-main {
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+}
+
+body.diq-print-mode .diq-section,
+body.diq-print-mode .diq-card,
+body.diq-print-mode .diq-tile,
+body.diq-print-mode .diq-bluf-strip {
+  box-shadow: none !important;
+}
+
+/* Avoid the report eyebrow being too cramped without the nav above it */
+body.diq-print-mode .diq-report-meta,
+body.diq-print-mode .diq-eyebrow {
+  margin-top: 0 !important;
+}
