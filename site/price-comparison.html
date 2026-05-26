@@ -97,6 +97,15 @@
     .pc-brands-legend-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
     .pc-brands-target-dot { display: inline-block; width: 8px; height: 8px; background: var(--coral); border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
+    /* Sortable table-header chrome — applied to <th class="diq-sortable">
+       on the retailer table. Click handler lives on the thead via
+       delegation (see onTableHeaderClick). Hover/active states stay within
+       existing color tokens (no new palette). */
+    .diq-sortable { cursor: pointer; user-select: none; }
+    .diq-sortable:hover { background: rgba(255,255,255,0.06); }
+    .diq-sort-ind { font-size: 0.85em; opacity: 0.45; margin-left: 4px; font-variant-numeric: normal; display: inline-block; min-width: 0.8em; text-align: left; }
+    .diq-sortable.active .diq-sort-ind { opacity: 1; color: var(--teal-bright); }
+
     /* ──────────────────────────────────────────────────────────
        2-page letter layout
        On-screen: .page-1 then divider then .page-2
@@ -437,10 +446,10 @@
           <tr>
             <th>Retailer</th>
             <th class="r">Obs</th>
-            <th class="r">Regular</th>
-            <th class="r">Effective</th>
-            <th class="r">% off</th>
-            <th class="r">vs Curaleaf anchor</th>
+            <th class="r diq-sortable" data-sort-key="reg"    aria-sort="none">Regular <span class="diq-sort-ind">&#8597;</span></th>
+            <th class="r diq-sortable" data-sort-key="eff"    aria-sort="none">Effective <span class="diq-sort-ind">&#8597;</span></th>
+            <th class="r diq-sortable" data-sort-key="pctoff" aria-sort="none">% off <span class="diq-sort-ind">&#8597;</span></th>
+            <th class="r diq-sortable" data-sort-key="anchor" aria-sort="none">vs Curaleaf anchor <span class="diq-sort-ind">&#8597;</span></th>
           </tr>
         </thead>
         <tbody id="pc-table-body"></tbody>
@@ -501,6 +510,13 @@ let PC_DATA = null;                            // payload from data/price_compar
 let PC_SKU_MAP = {};                           // sku.key → sku
 let pcCurrentKey   = "select-2g-vape";
 let pcCurrentState = "IL";
+
+// Retailer-table sort state. Reset to default (Effective DESC) by render()
+// on every dropdown/state change; mutated by onTableHeaderClick when the
+// user clicks a column header. renderTable() reads this to order the rows.
+const PC_TABLE_SORT_DEFAULT = { col: 'eff', dir: 'desc' };
+let pcTableSort = { ...PC_TABLE_SORT_DEFAULT };
+const PC_SORT_LABEL = { reg: "Regular", eff: "Effective", pctoff: "% off", anchor: "vs Curaleaf anchor" };
 let pcDropdownKeys = new Set();                // keys that live inside the dropdown
 let pcGroupOrder = ["Select", "Grassroots", "Find", "Anthem"];
 
@@ -618,6 +634,9 @@ function selectSku(key) {
 function render() {
   const sku = getSku(pcCurrentKey);
   if (!sku) return;
+  // Every dropdown/state change resets the retailer-table sort to default.
+  // Per-column ordering does not persist across SKU/state switches.
+  pcTableSort = { ...PC_TABLE_SORT_DEFAULT };
   const cell = getCell(pcCurrentKey, pcCurrentState);
   const anchor = cell ? cell.curaleaf_anchor : null;
   const market = cell ? cell.market : null;
@@ -833,6 +852,83 @@ function renderBrands(sku) {
   }).join("");
 }
 
+// Extract the comparable value for a retailer row + sort column. Returns
+// a number for sortable rows, or null when the column is undefined/missing
+// for this retailer (which the comparator then forces to the bottom).
+function sortValue(r, key) {
+  if (key === 'reg') {
+    return (typeof r.median_regular === 'number') ? r.median_regular : null;
+  }
+  if (key === 'eff') {
+    return (typeof r.median_effective === 'number') ? r.median_effective : null;
+  }
+  if (key === 'pctoff') {
+    if (r.is_on_promo
+        && typeof r.median_regular === 'number'
+        && typeof r.median_effective === 'number'
+        && r.median_regular > 0
+        && r.median_regular > r.median_effective) {
+      return (r.median_regular - r.median_effective) / r.median_regular;
+    }
+    return null;
+  }
+  if (key === 'anchor') {
+    return (typeof r.vs_anchor_pct_effective === 'number') ? r.vs_anchor_pct_effective : null;
+  }
+  return null;
+}
+
+// Null/missing values always sort to the bottom regardless of direction.
+// Otherwise standard numeric comparison flipped by dir.
+function compareRows(a, b, key, dir) {
+  const av = sortValue(a, key);
+  const bv = sortValue(b, key);
+  if (av === null && bv === null) return 0;
+  if (av === null) return 1;
+  if (bv === null) return -1;
+  const cmp = (av < bv) ? -1 : (av > bv) ? 1 : 0;
+  return (dir === 'desc') ? -cmp : cmp;
+}
+
+function updateSortIndicators() {
+  const ths = document.querySelectorAll('.diq-cat-table thead .diq-sortable');
+  ths.forEach(th => {
+    const key = th.dataset.sortKey;
+    const ind = th.querySelector('.diq-sort-ind');
+    if (!ind) return;
+    if (key === pcTableSort.col) {
+      th.classList.add('active');
+      th.setAttribute('aria-sort', pcTableSort.dir === 'desc' ? 'descending' : 'ascending');
+      ind.innerHTML = pcTableSort.dir === 'desc' ? '&#9660;' : '&#9650;';  // ▼ / ▲
+    } else {
+      th.classList.remove('active');
+      th.setAttribute('aria-sort', 'none');
+      ind.innerHTML = '&#8597;';  // ↕
+    }
+  });
+}
+
+function onTableHeaderClick(e) {
+  if (!PC_DATA) return;  // ignore clicks before payload loads
+  const th = e.target.closest('.diq-sortable');
+  if (!th) return;
+  const key = th.dataset.sortKey;
+  if (!key || !(key in PC_SORT_LABEL)) return;
+  if (pcTableSort.col === key) {
+    pcTableSort.dir = (pcTableSort.dir === 'desc') ? 'asc' : 'desc';
+  } else {
+    pcTableSort.col = key;
+    pcTableSort.dir = 'desc';
+  }
+  // Re-render the table only — preserves the new sort. Calling render()
+  // instead would reset sort back to default (Effective DESC).
+  const sku = getSku(pcCurrentKey);
+  const cell = getCell(pcCurrentKey, pcCurrentState);
+  if (sku && cell) {
+    renderTable(sku, cell.curaleaf_anchor, cell.market, cell.retailers || []);
+  }
+}
+
 function renderTable(sku, anchor, market, retailers) {
   setHTML("table-title", "Retailer detail · " + sku.label + " · " + pcCurrentState);
   setHTML("table-meta",
@@ -846,11 +942,12 @@ function renderTable(sku, anchor, market, retailers) {
     setHTML("table-note", "");
     setText("print-table-footnote", "");
     document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
+    updateSortIndicators();
     return;
   }
 
-  // Sort: lowest effective first (most aggressive)
-  const sorted = retailers.slice().sort((a, b) => a.median_effective - b.median_effective);
+  // Sort by the currently-active column + direction. Nulls always last.
+  const sorted = retailers.slice().sort((a, b) => compareRows(a, b, pcTableSort.col, pcTableSort.dir));
   const PRINT_CAP = 25;
   tbody.innerHTML = sorted.map((r, i) => {
     let deltaCell = "<span style='color:var(--ink-faint)'>—</span>";
@@ -878,21 +975,27 @@ function renderTable(sku, anchor, market, retailers) {
       '</tr>';
   }).join("");
 
+  const sortLabel = PC_SORT_LABEL[pcTableSort.col] || pcTableSort.col;
+  const dirLabel = (pcTableSort.dir === 'desc') ? 'descending' : 'ascending';
   setHTML("table-note",
-    "Sorted lowest effective first. % off = (regular − effective) / regular when retailer is on promo; blank otherwise. vs Curaleaf anchor compares the retailer's median effective to the Curaleaf-owned anchor's median effective — negative = retailer is cheaper than Curaleaf retail."
+    "Click any sortable column header to re-sort &mdash; currently sorted by <strong>" + sortLabel + "</strong>, " + dirLabel +
+    ". Empty values always sort to the bottom. % off = (regular &minus; effective) / regular when the retailer is on promo; blank otherwise. vs Curaleaf anchor compares the retailer's median effective to the Curaleaf-owned anchor's median effective &mdash; negative = retailer is cheaper than Curaleaf retail."
   );
 
-  // Print-only footnote — visible only when the table is truncated for PDF
+  // Print-only footnote — visible only when the table is truncated for PDF.
+  // Top-25 in print reflects whatever the current sort is.
   if (sorted.length > PRINT_CAP) {
     setText("print-table-footnote",
       "Showing top " + PRINT_CAP + " of " + sorted.length +
-      " retailers, sorted lowest effective first. Full list available in the on-screen view."
+      " retailers, sorted by " + sortLabel + " " + dirLabel + ". Full list available in the on-screen view."
     );
     document.querySelector('[data-bind="print-table-footnote"]').style.display = '';
   } else {
     setText("print-table-footnote", "");
     document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
   }
+
+  updateSortIndicators();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -908,6 +1011,11 @@ async function init() {
   }
   PC_SKU_MAP = {};
   PC_DATA.skus.forEach(s => { PC_SKU_MAP[s.key] = s; });
+
+  // Wire retailer-table sort once. Delegated on the thead so we never have
+  // to re-attach when renderTable rebuilds the tbody.
+  const tableThead = document.querySelector('.diq-cat-table thead');
+  if (tableThead) tableThead.addEventListener('click', onTableHeaderClick);
 
   // Manifest footer date
   if (PC_DATA.manifest.generated_at) {
