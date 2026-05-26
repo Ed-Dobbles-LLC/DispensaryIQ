@@ -171,11 +171,23 @@
       /* Suppress the deck-wide hero-pagebreak from style.css */
       .diq-hero-metric { page-break-after: auto !important; }
 
-      /* The ladder chart on page-1 is redundant with the table on page-2 (same
-         top 25 retailers, different visualization). Hide it in print so page-1
-         is just the dual-price hero and page-2 is the table. On-screen it
-         stays visible. */
-      .pc-ladder-section { display: none !important; }
+      /* KILL THE TRAILING BLANK PAGE.
+         Defensive: nothing after methodology should force a new sheet.
+         The methodology section is the final printed block; nothing follows it
+         in the rendered print stream (footer/nav/dropdowns are display:none).
+         These rules belt-and-suspenders against any implicit break-after on
+         .page-2 or its trailing children inherited from deck-wide @media print
+         rules in style.css. */
+      .page-2,
+      .page-2 > section:last-of-type,
+      .page-2 > section:last-of-type .diq-callout,
+      main.diq-main,
+      body {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+      .page-2 > section:last-of-type { margin-bottom: 0 !important; }
+      .page-2 > section:last-of-type .diq-callout { margin-bottom: 0 !important; }
 
       /* Compact base typography */
       html, body { font-size: 10pt !important; line-height: 1.35 !important; }
@@ -192,24 +204,33 @@
       .diq-section-title { font-size: 11pt !important; margin: 0 !important; }
       .diq-section-meta { font-size: 8.5pt !important; }
 
-      /* Hero block — tight grid, smaller numbers */
-      .diq-hero-metric { padding: 0 !important; gap: 18pt !important; margin-bottom: 8pt !important; }
-      .diq-hero-label { font-size: 8pt !important; margin: 0 0 2pt !important; }
-      .diq-hero-number { font-size: 22pt !important; margin: 0 !important; line-height: 1.05 !important; }
-      .diq-hero-body { font-size: 9pt !important; margin: 2pt 0 !important; }
-      .pc-dp-reg-label, .pc-dp-eff-label { font-size: 7.5pt !important; }
-      .pc-dp-reg-value { font-size: 22pt !important; line-height: 1.05 !important; }
-      .pc-dp-eff-value { font-size: 13pt !important; }
-      .pc-promo-line { font-size: 9pt !important; margin-top: 4pt !important; }
-      .pc-dp-inline-meth { font-size: 7.5pt !important; margin-top: 4pt !important; }
-      .pc-verdict-hero { font-size: 8pt !important; padding: 2pt 6pt !important; margin-top: 4pt !important; }
+      /* Hero block — compressed v4 to fit alongside ladder on page 1 */
+      .diq-hero-metric {
+        padding: 6pt 10pt !important;
+        gap: 14pt !important;
+        margin-bottom: 6pt !important;
+        border-width: 0.5pt !important;
+      }
+      .diq-hero-label { font-size: 7.5pt !important; margin: 0 0 2pt !important; }
+      .diq-hero-number { font-size: 18pt !important; margin: 0 !important; line-height: 1.05 !important; }
+      .diq-hero-body { font-size: 8pt !important; margin: 1pt 0 !important; }
+      .pc-dp-reg-label, .pc-dp-eff-label { font-size: 7pt !important; }
+      .pc-dp-reg-value { font-size: 18pt !important; line-height: 1.05 !important; }
+      .pc-dp-eff-value { font-size: 12pt !important; }
+      .pc-promo-line { font-size: 8pt !important; margin-top: 2pt !important; }
+      .pc-dp-inline-meth { font-size: 6.5pt !important; margin-top: 2pt !important; line-height: 1.3 !important; }
+      .pc-verdict-hero { font-size: 7.5pt !important; padding: 1pt 5pt !important; margin-top: 3pt !important; }
 
-      /* Ladder — slim rows, compact bars */
-      .pc-ladder-legend { font-size: 8pt !important; margin-bottom: 4pt !important; }
-      .pc-ladder-row { padding: 1.5pt 0 !important; font-size: 8.5pt !important;
-                       grid-template-columns: 170pt 1fr 56pt 50pt !important; }
-      .pc-ladder-bar-wrap { height: 11pt !important; }
-      .pc-ladder-price-sub { font-size: 7pt !important; }
+      /* Ladder — slim rows, compact bars, height-clamped to leftover space */
+      .pc-ladder { max-height: 5.5in !important; overflow: hidden !important; }
+      .pc-ladder-legend { font-size: 7.5pt !important; margin-bottom: 3pt !important; }
+      .pc-ladder-row { padding: 1pt 0 !important; font-size: 8pt !important;
+                       grid-template-columns: 160pt 1fr 52pt 46pt !important; }
+      .pc-ladder-bar-wrap { height: 10pt !important; }
+      .pc-ladder-name { font-size: 8pt !important; }
+      .pc-ladder-price { font-size: 8pt !important; }
+      .pc-ladder-price-sub { font-size: 6.5pt !important; }
+      .pc-ladder-delta { font-size: 7.5pt !important; }
 
       /* Cap chart to top 25 (already done at render) — guard if longer */
       .pc-ladder-row:nth-of-type(n+26) { display: none !important; }
