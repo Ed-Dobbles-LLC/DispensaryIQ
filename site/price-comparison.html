@@ -162,13 +162,20 @@
       .pc-page-divider,
       .pc-dropdown-panel { display: none !important; }
 
-      /* Page mechanics */
-      .page-1 { page-break-after: always; break-after: page; }
+      /* Page mechanics — .page-2 has break-before: page (set outside @media),
+         so we don't also page-break-after the page-1 (that creates a blank
+         intermediate page in some browsers). */
       .page-1, .page-2 { page-break-inside: auto; }
       .diq-main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
 
       /* Suppress the deck-wide hero-pagebreak from style.css */
       .diq-hero-metric { page-break-after: auto !important; }
+
+      /* The ladder chart on page-1 is redundant with the table on page-2 (same
+         top 25 retailers, different visualization). Hide it in print so page-1
+         is just the dual-price hero and page-2 is the table. On-screen it
+         stays visible. */
+      .pc-ladder-section { display: none !important; }
 
       /* Compact base typography */
       html, body { font-size: 10pt !important; line-height: 1.35 !important; }
@@ -370,7 +377,7 @@
       </div>
     </section>
 
-    <section class="diq-section">
+    <section class="diq-section pc-ladder-section">
       <div class="diq-section-head">
         <h2 class="diq-section-title" data-bind="ladder-title">Price ladder</h2>
         <span class="diq-section-meta" data-bind="ladder-meta">&mdash;</span>
@@ -423,7 +430,7 @@
       <div class="diq-callout" style="border-color: var(--sky); background: rgba(133, 228, 253, 0.06)">
         <p class="diq-callout-label" style="color: var(--sky)">&#9656; Methodology</p>
         <p style="margin:0">
-          <strong>Anchor.</strong> Median price across Curaleaf-owned stores carrying this SKU in the selected state. Verdict compares the Curaleaf-owned median-effective to the cross-retailer market-effective median (independents + non-Curaleaf chains).<br>
+          <strong>Anchor.</strong> Median price across Curaleaf-owned stores carrying this SKU in the selected state. Multi-tier product lines (e.g., Select Elite, Essentials, Flavor) are represented by their SKU-mix median rather than the price of any single SKU. Verdict compares the Curaleaf-owned median-effective to the cross-retailer market-effective median (independents + non-Curaleaf chains).<br>
           <strong>Regular vs Effective.</strong> Regular = median list price (MSRP) before promos. Effective = median price customers actually pay after observed discounts. The gap between the two is the promo intensity in that cell.<br>
           <strong>Promo participation.</strong> Share of priced observations in the cell that were on sale (price &lt; regular). Average discount depth = mean of discount_pct across those on-promo observations.<br>
           <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
