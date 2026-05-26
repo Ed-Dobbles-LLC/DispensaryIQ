@@ -113,18 +113,109 @@
     }
     .page-2 { break-before: page; page-break-before: always; }
 
-    @page { size: letter portrait; margin: 0.5in; }
+    /* Screen-only / print-only toggles */
+    .pc-print-only          { display: none; }
+    .pc-print-header        { display: none; }
+    .pc-print-table-footnote{ display: none; }
+
+    /* Compact SKU header strip — appears at the top of each printed page */
+    .pc-print-header {
+      border-bottom: 1.5pt solid #060A57;
+      padding-bottom: 6pt;
+      margin-bottom: 10pt;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .pc-print-header-sku {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #060A57;
+    }
+    .pc-print-header-state {
+      font-size: 10pt;
+      color: #00B98E;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .pc-print-header-meta {
+      font-size: 8pt;
+      color: #7A8099;
+      font-family: 'Calibri', sans-serif;
+    }
+
+    @page { size: letter portrait; margin: 0.35in; }
     @media print {
       /* Override the deck-wide landscape @page from style.css */
-      @page { size: letter portrait; margin: 0.5in; }
-      /* Hide screen-only chrome */
-      .diq-nav, .diq-footer, .pc-page-divider, .pc-dropdown-panel { display: none !important; }
-      /* Force fresh page for table */
+      @page { size: letter portrait; margin: 0.35in; }
+
+      /* Toggle visibility classes */
+      .pc-screen-only           { display: none !important; }
+      .pc-print-header          { display: flex !important; }
+      .pc-print-table-footnote  { display: block !important; }
+
+      /* Hide everything above the hero + all picker chrome + footer */
+      .diq-nav,
+      .diq-footer,
+      .diq-page-header,
+      .pc-page-divider,
+      .pc-dropdown-panel { display: none !important; }
+
+      /* Page mechanics */
       .page-1 { page-break-after: always; break-after: page; }
       .page-1, .page-2 { page-break-inside: auto; }
-      /* Suppress the deck's "page-break-after: always" on hero block — we control breaks here */
+      .diq-main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+
+      /* Suppress the deck-wide hero-pagebreak from style.css */
       .diq-hero-metric { page-break-after: auto !important; }
-      .diq-main { max-width: 100% !important; padding: 0 !important; }
+
+      /* Compact base typography */
+      html, body { font-size: 10pt !important; line-height: 1.35 !important; }
+
+      /* Collapse section card chrome — flat layout in print */
+      .diq-section {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 0 10pt !important;
+      }
+      .diq-section-head { margin-bottom: 4pt !important; }
+      .diq-section-title { font-size: 11pt !important; margin: 0 !important; }
+      .diq-section-meta { font-size: 8.5pt !important; }
+
+      /* Hero block — tight grid, smaller numbers */
+      .diq-hero-metric { padding: 0 !important; gap: 18pt !important; margin-bottom: 8pt !important; }
+      .diq-hero-label { font-size: 8pt !important; margin: 0 0 2pt !important; }
+      .diq-hero-number { font-size: 22pt !important; margin: 0 !important; line-height: 1.05 !important; }
+      .diq-hero-body { font-size: 9pt !important; margin: 2pt 0 !important; }
+      .pc-dp-reg-label, .pc-dp-eff-label { font-size: 7.5pt !important; }
+      .pc-dp-reg-value { font-size: 22pt !important; line-height: 1.05 !important; }
+      .pc-dp-eff-value { font-size: 13pt !important; }
+      .pc-promo-line { font-size: 9pt !important; margin-top: 4pt !important; }
+      .pc-dp-inline-meth { font-size: 7.5pt !important; margin-top: 4pt !important; }
+      .pc-verdict-hero { font-size: 8pt !important; padding: 2pt 6pt !important; margin-top: 4pt !important; }
+
+      /* Ladder — slim rows, compact bars */
+      .pc-ladder-legend { font-size: 8pt !important; margin-bottom: 4pt !important; }
+      .pc-ladder-row { padding: 1.5pt 0 !important; font-size: 8.5pt !important;
+                       grid-template-columns: 170pt 1fr 56pt 50pt !important; }
+      .pc-ladder-bar-wrap { height: 11pt !important; }
+      .pc-ladder-price-sub { font-size: 7pt !important; }
+
+      /* Cap chart to top 25 (already done at render) — guard if longer */
+      .pc-ladder-row:nth-of-type(n+26) { display: none !important; }
+
+      /* Retailer table — slim cells; top-25 cap is applied by JS via .print-hidden */
+      .diq-cat-table { font-size: 8.5pt !important; width: 100% !important; }
+      .diq-cat-table th, .diq-cat-table td { padding: 2pt 4pt !important; line-height: 1.25 !important; }
+      #pc-table-body tr.print-hidden { display: none !important; }
+
+      /* Methodology block — small, no card */
+      .diq-callout { padding: 6pt 8pt !important; }
+      .diq-callout-label { font-size: 8pt !important; margin-bottom: 2pt !important; }
+      .diq-callout p { font-size: 8pt !important; line-height: 1.35 !important; }
     }
   </style>
 </head>
@@ -188,14 +279,20 @@
        ============================================================ -->
   <section class="page-1">
 
-    <section class="diq-section">
+    <div class="pc-print-header pc-print-only">
+      <span class="pc-print-header-sku" data-bind="print-header-sku">&mdash;</span>
+      <span class="pc-print-header-state" data-bind="print-header-state">&mdash;</span>
+      <span class="pc-print-header-meta">DispensaryIQ &middot; <span data-bind="print-header-week">W21</span></span>
+    </div>
+
+    <section class="diq-section pc-screen-only">
       <div class="diq-callout">
         <p class="diq-callout-label">&#9656; Bottom-line up-front</p>
         <p style="margin:0" data-bind="bluf">&mdash;</p>
       </div>
     </section>
 
-    <section class="diq-section" style="background: transparent; border: none; padding: 0; box-shadow: none">
+    <section class="diq-section pc-screen-only" style="background: transparent; border: none; padding: 0; box-shadow: none">
       <div class="diq-section-head" style="margin-bottom: 10px">
         <h2 class="diq-section-title">Pick a product</h2>
         <span class="diq-section-meta">5 default SKUs &middot; 17 more in dropdown &middot; <span data-bind="sku-meta">&mdash;</span></span>
@@ -229,7 +326,7 @@
       <div class="pc-dropdown-panel" id="pc-dropdown-panel" hidden role="menu" aria-label="More SKUs"></div>
     </section>
 
-    <section class="diq-section">
+    <section class="diq-section pc-screen-only">
       <div class="diq-toggle-bar" role="tablist" aria-label="Select state">
         <button class="diq-toggle" data-state="IL" role="tab">
           <span class="diq-toggle-dot" style="background: #00B98E"></span>
@@ -294,6 +391,12 @@
        ============================================================ -->
   <section class="page-2">
 
+    <div class="pc-print-header pc-print-only">
+      <span class="pc-print-header-sku" data-bind="print-header-sku-2">&mdash;</span>
+      <span class="pc-print-header-state" data-bind="print-header-state-2">&mdash;</span>
+      <span class="pc-print-header-meta">DispensaryIQ &middot; <span data-bind="print-header-week-2">W21</span></span>
+    </div>
+
     <section class="diq-section">
       <div class="diq-section-head">
         <h2 class="diq-section-title" data-bind="table-title">Retailer detail</h2>
@@ -313,6 +416,7 @@
         <tbody id="pc-table-body"></tbody>
       </table>
       <p style="font-size:12px;color:var(--ink-faint);margin-top:8px" data-bind="table-note"></p>
+      <p class="pc-print-only pc-print-table-footnote" data-bind="print-table-footnote" style="font-size:8pt;color:#7A8099;margin-top:6pt;font-style:italic">&mdash;</p>
     </section>
 
     <section class="diq-section">
@@ -479,6 +583,16 @@ function render() {
     "Showing <strong>" + sku.label + "</strong> · " + sku.n_retailers_total +
     " retailer" + (sku.n_retailers_total===1?'':'s') + " across IL+NJ+NY"
   );
+
+  // Print-only header strip — appears in PDF on both pages
+  const stateName = { IL: "Illinois", NJ: "New Jersey", NY: "New York" }[pcCurrentState] || pcCurrentState;
+  const wk = (PC_DATA.manifest && PC_DATA.manifest.week_iso) ? PC_DATA.manifest.week_iso : "";
+  setText("print-header-sku",    sku.label);
+  setText("print-header-state",  stateName);
+  setText("print-header-week",   wk);
+  setText("print-header-sku-2",  sku.label);
+  setText("print-header-state-2",stateName);
+  setText("print-header-week-2", wk);
 
   // State toggle sublines
   ["IL","NJ","NY"].forEach(s => {
@@ -681,12 +795,15 @@ function renderTable(sku, anchor, market, retailers) {
   if (!retailers.length) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying market retailers in this cell.</td></tr>';
     setHTML("table-note", "");
+    setText("print-table-footnote", "");
+    document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
     return;
   }
 
   // Sort: lowest effective first (most aggressive)
   const sorted = retailers.slice().sort((a, b) => a.median_effective - b.median_effective);
-  tbody.innerHTML = sorted.map(r => {
+  const PRINT_CAP = 25;
+  tbody.innerHTML = sorted.map((r, i) => {
     let deltaCell = "<span style='color:var(--ink-faint)'>—</span>";
     if (r.vs_anchor_pct_effective !== null && r.vs_anchor_pct_effective !== undefined) {
       const d = r.vs_anchor_pct_effective;
@@ -701,7 +818,8 @@ function renderTable(sku, anchor, market, retailers) {
     const regCell = (r.median_regular !== null && r.median_regular !== r.median_effective)
       ? '<strong>' + fmtMoney(r.median_regular) + '</strong>'
       : '<span style="color:var(--ink-faint)">' + fmtMoney(r.median_regular) + '</span>';
-    return '<tr>' +
+    const rowCls = (i >= PRINT_CAP) ? ' class="print-hidden"' : '';
+    return '<tr'+rowCls+'>' +
       '<td>' + r.dispensary_name + '</td>' +
       '<td class="r">' + r.n_observations + '</td>' +
       '<td class="r">' + regCell + '</td>' +
@@ -714,6 +832,18 @@ function renderTable(sku, anchor, market, retailers) {
   setHTML("table-note",
     "Sorted lowest effective first. % off = (regular − effective) / regular when retailer is on promo; blank otherwise. vs Curaleaf anchor compares the retailer's median effective to the Curaleaf-owned anchor's median effective — negative = retailer is cheaper than Curaleaf retail."
   );
+
+  // Print-only footnote — visible only when the table is truncated for PDF
+  if (sorted.length > PRINT_CAP) {
+    setText("print-table-footnote",
+      "Showing top " + PRINT_CAP + " of " + sorted.length +
+      " retailers, sorted lowest effective first. Full list available in the on-screen view."
+    );
+    document.querySelector('[data-bind="print-table-footnote"]').style.display = '';
+  } else {
+    setText("print-table-footnote", "");
+    document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
