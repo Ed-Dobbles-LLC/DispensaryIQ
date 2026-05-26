@@ -106,22 +106,10 @@
     .diq-sort-ind { font-size: 0.85em; opacity: 0.45; margin-left: 4px; font-variant-numeric: normal; display: inline-block; min-width: 0.8em; text-align: left; }
     .diq-sortable.active .diq-sort-ind { opacity: 1; color: var(--teal-bright); }
 
-    /* Retailer name → menu URL link. Kept as a class definition for legacy
-       reasons (was once applied to the retailer-name cell); the active use
-       is the .pc-menu-link below — clickable arrow in the rightmost cell.
-       Subtle dotted underline until hover, then teal. */
+    /* Currently orphaned — retained per the revert brief in case a future
+       iteration re-introduces a retailer-name or per-row click target. */
     .pc-retailer-link { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
     .pc-retailer-link:hover { color: var(--teal); border-bottom-color: var(--teal); }
-
-    /* MENU column — one arrow per row, click for a brand-filtered deep link
-       to the retailer's menu. Teal so it's a recognized action affordance;
-       slight lift on hover gives a tactile cue without adding column width. */
-    .pc-menu-link { display: inline-block; text-align: center; min-width: 18px; font-weight: bold; color: var(--teal); text-decoration: none; border-bottom: none; transition: transform 120ms ease, color 120ms ease; }
-    .pc-menu-link:hover { color: var(--teal-bright); transform: translateY(-1px); }
-    .pc-menu-link-disabled { color: var(--ink-faint); cursor: default; }
-    .pc-menu-link-disabled:hover { transform: none; color: var(--ink-faint); }
-    .pc-menu-cell { text-align: center !important; }
-    .pc-menu-col-head { text-align: center !important; }
 
     /* ──────────────────────────────────────────────────────────
        2-page letter layout
@@ -280,14 +268,6 @@
       /* Retailer-name link is invisible in print — the URL itself has no use
          on a printed page, so suppress all link chrome. */
       .pc-retailer-link { color: inherit !important; border-bottom: none !important; text-decoration: none !important; }
-
-      /* MENU column is the rightmost; drop it entirely in print. Links are
-         useless on paper, and removing the column gives the remaining six
-         columns more horizontal room to render cleanly within the 2-page
-         budget. Targeted by :last-child so we don't need to thread a class
-         onto the inactive <th>/<td> selector. */
-      .diq-cat-table thead th:last-child,
-      .diq-cat-table tbody td:last-child { display: none !important; }
 
       /* Methodology block — small, no card */
       .diq-callout { padding: 6pt 8pt !important; }
@@ -489,7 +469,6 @@
             <th class="r diq-sortable" data-sort-key="eff"    aria-sort="none">Effective <span class="diq-sort-ind">&#8597;</span></th>
             <th class="r diq-sortable" data-sort-key="pctoff" aria-sort="none">% off <span class="diq-sort-ind">&#8597;</span></th>
             <th class="r diq-sortable" data-sort-key="anchor" aria-sort="none">vs Curaleaf anchor <span class="diq-sort-ind">&#8597;</span></th>
-            <th class="r pc-menu-col-head">Menu</th>
           </tr>
         </thead>
         <tbody id="pc-table-body"></tbody>
@@ -507,8 +486,7 @@
           <strong>Regular vs Effective.</strong> Regular = median list price (MSRP) before promos. Effective = median price customers actually pay after observed discounts. The gap between the two is the promo intensity in that cell.<br>
           <strong>Promo participation.</strong> Share of priced observations in the cell that were on sale (price &lt; regular). Average discount depth = mean of discount_pct across those on-promo observations.<br>
           <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
-          <strong>Coverage.</strong> Quality filter: dispensaries with &ge;5 priced items on their menu, aggregator websites excluded. Cells without a Curaleaf-owned store fall back to market spread for context. Empty cells indicate no qualifying observations.<br>
-          <strong>Menu link.</strong> The &#8599; in the rightmost column opens a brand-filtered view of the retailer&rsquo;s menu on supported platforms (Dutchie, iHeartJane, Leafly, Curaleaf-owned). On custom dispensary websites, the link opens the menu home page &mdash; search for the brand from there. Hidden in the printed PDF.
+          <strong>Coverage.</strong> Quality filter: dispensaries with &ge;5 priced items on their menu, aggregator websites excluded. Cells without a Curaleaf-owned store fall back to market spread for context. Empty cells indicate no qualifying observations.
         </p>
       </div>
     </section>
@@ -582,28 +560,6 @@ function safeMenuHref(url) {
   const trimmed = url.trim();
   if (!/^https?:\/\//i.test(trimmed)) return null;
   return trimmed;
-}
-
-// Construct a brand-filtered deep link to a retailer's menu when we can
-// recognize the underlying platform. Falls back to the bare menu URL on
-// custom dispensary sites — caller renders that as a still-clickable arrow
-// so the operator can land on the menu home and search from there.
-// Returns null only when safeMenuHref rejects the source URL.
-function buildProductSearchUrl(menu_url, brand_display) {
-  const base = safeMenuHref(menu_url);
-  if (!base || !brand_display) return base;
-  const q = encodeURIComponent(brand_display);
-  const sep = base.includes('?') ? '&' : '?';
-  // Dutchie + iHeartJane + Curaleaf own stores all accept ?search=
-  if (/dutchie\.com|iheartjane\.com|curaleaf\.com/i.test(base)) {
-    return base + sep + 'search=' + q;
-  }
-  // Leafly uses ?q=
-  if (/leafly\.com/i.test(base)) {
-    return base + sep + 'q=' + q;
-  }
-  // Unknown platform → return the base menu URL; operator can search manually
-  return base;
 }
 
 function fmtMoney(n) {
@@ -1021,7 +977,7 @@ function renderTable(sku, anchor, market, retailers) {
 
   const tbody = document.getElementById("pc-table-body");
   if (!retailers.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying market retailers in this cell.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying market retailers in this cell.</td></tr>';
     setHTML("table-note", "");
     setText("print-table-footnote", "");
     document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
@@ -1049,15 +1005,6 @@ function renderTable(sku, anchor, market, retailers) {
       : '<span style="color:var(--ink-faint)">' + fmtMoney(r.median_regular) + '</span>';
     const rowCls = (i >= PRINT_CAP) ? ' class="print-hidden"' : '';
     const safeName = escapeHtml(r.dispensary_name);
-    // Menu column: brand-filtered deep link on supported platforms;
-    // base menu URL on custom sites; em-dash placeholder when no usable
-    // URL exists on this retailer (kept as a span so the cell width is
-    // preserved across rows).
-    const productSearchUrl = buildProductSearchUrl(r.menu_url, sku.brand_display);
-    const menuCell = productSearchUrl
-      ? '<a href="' + escapeHtml(productSearchUrl) + '" target="_blank" rel="noopener noreferrer" class="pc-menu-link"'
-        + ' aria-label="View ' + escapeHtml(sku.brand_display) + ' on ' + escapeHtml(r.dispensary_name) + ' menu">&#8599;</a>'
-      : '<span class="pc-menu-link pc-menu-link-disabled" aria-label="No menu link available">&mdash;</span>';
     return '<tr'+rowCls+'>' +
       '<td>' + safeName + '</td>' +
       '<td class="r">' + r.n_observations + '</td>' +
@@ -1065,7 +1012,6 @@ function renderTable(sku, anchor, market, retailers) {
       '<td class="r"><strong>' + fmtMoney(r.median_effective) + '</strong></td>' +
       '<td class="r">' + pctOff + '</td>' +
       '<td class="r">' + deltaCell + '</td>' +
-      '<td class="r pc-menu-cell">' + menuCell + '</td>' +
       '</tr>';
   }).join("");
 
