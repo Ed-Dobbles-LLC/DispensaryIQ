@@ -77,23 +77,25 @@
     .pc-no-anchor strong { color: var(--ink); }
 
     /* ──────────────────────────────────────────────────────────
-       Price ladder (chart) — bars show effective; regular hint overlay
+       Brand chart (top of page) — one horizontal bar per brand, two-tone
+       (regular underlay + effective overlay). Curaleaf brand rows get
+       teal fill; the row matching the current SKU's brand gets a coral
+       dot prefix as the "this is your brand" indicator.
        ────────────────────────────────────────────────────────── */
-    .pc-ladder { width: 100%; }
-    .pc-ladder-row { display: grid; grid-template-columns: 220px 1fr 80px 70px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
-    .pc-ladder-name { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Calibri', sans-serif; }
-    .pc-ladder-bar-wrap { background: rgba(255,255,255,0.04); height: 18px; border-radius: 2px; position: relative; overflow: hidden; }
-    .pc-ladder-bar-reg { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,0.10); border-radius: 2px; }
-    .pc-ladder-bar-eff { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(133, 228, 253, 0.45); border-radius: 2px; }
-    .pc-ladder-bar-eff.own { background: var(--teal); }
-    .pc-ladder-anchor-line { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--teal-bright); }
-    .pc-ladder-price { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
-    .pc-ladder-price-sub { font-size: 10px; color: var(--ink-faint); display: block; }
-    .pc-ladder-row.own .pc-ladder-name { color: var(--teal-bright); font-weight: 700; }
-    .pc-ladder-row.own .pc-ladder-price { color: var(--teal-bright); }
-    .pc-ladder-delta { font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
-    .pc-ladder-legend { display: flex; gap: 16px; font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; align-items: center; }
-    .pc-ladder-legend-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+    .pc-brands { width: 100%; }
+    .pc-brands-row { display: grid; grid-template-columns: 220px 1fr 90px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
+    .pc-brands-name { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Calibri', sans-serif; }
+    .pc-brands-bar-wrap { background: rgba(255,255,255,0.04); height: 18px; border-radius: 2px; position: relative; overflow: hidden; }
+    .pc-brands-bar-reg { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,0.10); border-radius: 2px; }
+    .pc-brands-bar-eff { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(133, 228, 253, 0.45); border-radius: 2px; }
+    .pc-brands-bar-eff.own { background: var(--teal); }
+    .pc-brands-price { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+    .pc-brands-price-sub { font-size: 10px; color: var(--ink-faint); display: block; }
+    .pc-brands-row.own .pc-brands-name { color: var(--teal-bright); font-weight: 700; }
+    .pc-brands-row.own .pc-brands-price { color: var(--teal-bright); }
+    .pc-brands-legend { display: flex; gap: 16px; font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+    .pc-brands-legend-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+    .pc-brands-target-dot { display: inline-block; width: 8px; height: 8px; background: var(--coral); border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
     /* ──────────────────────────────────────────────────────────
        2-page letter layout
@@ -221,19 +223,18 @@
       .pc-dp-inline-meth { font-size: 6.5pt !important; margin-top: 2pt !important; line-height: 1.3 !important; }
       .pc-verdict-hero { font-size: 7.5pt !important; padding: 1pt 5pt !important; margin-top: 3pt !important; }
 
-      /* Ladder — slim rows, compact bars, height-clamped to leftover space */
-      .pc-ladder { max-height: 5.5in !important; overflow: hidden !important; }
-      .pc-ladder-legend { font-size: 7.5pt !important; margin-bottom: 3pt !important; }
-      .pc-ladder-row { padding: 1pt 0 !important; font-size: 8pt !important;
-                       grid-template-columns: 160pt 1fr 52pt 46pt !important; }
-      .pc-ladder-bar-wrap { height: 10pt !important; }
-      .pc-ladder-name { font-size: 8pt !important; }
-      .pc-ladder-price { font-size: 8pt !important; }
-      .pc-ladder-price-sub { font-size: 6.5pt !important; }
-      .pc-ladder-delta { font-size: 7.5pt !important; }
-
-      /* Cap chart to top 25 (already done at render) — guard if longer */
-      .pc-ladder-row:nth-of-type(n+26) { display: none !important; }
+      /* Brand chart — slim rows, compact bars, height-clamped to leftover
+         space on page 1. Max 12 brands by design (server-capped), so no
+         nth-of-type guard needed. */
+      .pc-brands { max-height: 5.5in !important; overflow: hidden !important; }
+      .pc-brands-legend { font-size: 7.5pt !important; margin-bottom: 3pt !important; }
+      .pc-brands-row { padding: 1pt 0 !important; font-size: 8pt !important;
+                       grid-template-columns: 160pt 1fr 60pt !important; }
+      .pc-brands-bar-wrap { height: 10pt !important; }
+      .pc-brands-name { font-size: 8pt !important; }
+      .pc-brands-price { font-size: 8pt !important; }
+      .pc-brands-price-sub { font-size: 6.5pt !important; }
+      .pc-brands-target-dot { width: 6pt !important; height: 6pt !important; margin-right: 4pt !important; }
 
       /* Retailer table — slim cells; top-25 cap is applied by JS via .print-hidden */
       .diq-cat-table { font-size: 8.5pt !important; width: 100% !important; }
@@ -398,17 +399,18 @@
       </div>
     </section>
 
-    <section class="diq-section pc-ladder-section">
+    <section class="diq-section pc-brands-section">
       <div class="diq-section-head">
-        <h2 class="diq-section-title" data-bind="ladder-title">Price ladder</h2>
-        <span class="diq-section-meta" data-bind="ladder-meta">&mdash;</span>
+        <h2 class="diq-section-title" data-bind="brands-title">Competitive brands</h2>
+        <span class="diq-section-meta" data-bind="brands-meta">&mdash;</span>
       </div>
-      <div class="pc-ladder-legend">
-        <span><span class="pc-ladder-legend-swatch" style="background: rgba(255,255,255,0.10)"></span>Regular (MSRP)</span>
-        <span><span class="pc-ladder-legend-swatch" style="background: rgba(133, 228, 253, 0.45)"></span>Effective (post-promo)</span>
-        <span><span class="pc-ladder-legend-swatch" style="background: var(--teal-bright); width:2px"></span>Curaleaf-owned anchor</span>
+      <div class="pc-brands-legend">
+        <span><span class="pc-brands-legend-swatch" style="background: rgba(255,255,255,0.10)"></span>Regular (MSRP)</span>
+        <span><span class="pc-brands-legend-swatch" style="background: rgba(133, 228, 253, 0.45)"></span>Effective (post-promo)</span>
+        <span><span class="pc-brands-legend-swatch" style="background: var(--teal)"></span>Curaleaf brand</span>
+        <span><span class="pc-brands-target-dot"></span>This product&rsquo;s brand</span>
       </div>
-      <div id="pc-ladder" class="pc-ladder"></div>
+      <div id="pc-brands" class="pc-brands"></div>
     </section>
 
     <div class="pc-page-divider">Page 1 of 2 &middot; Continued overleaf &#10142;</div>
@@ -452,6 +454,7 @@
         <p class="diq-callout-label" style="color: var(--sky)">&#9656; Methodology</p>
         <p style="margin:0">
           <strong>Anchor.</strong> Median price across Curaleaf-owned stores carrying this SKU in the selected state. Multi-tier product lines (e.g., Select Elite, Essentials, Flavor) are represented by their SKU-mix median rather than the price of any single SKU. Verdict compares the Curaleaf-owned median-effective to the cross-retailer market-effective median (independents + non-Curaleaf chains).<br>
+          <strong>Competitive brands chart.</strong> Median price for each brand across all retailers stocking that brand in the selected state, including Curaleaf-owned dispensaries. This differs from the hero anchor (Curaleaf-owned price for this specific SKU) &mdash; the chart answers brand positioning, the anchor answers our pricing decision.<br>
           <strong>Regular vs Effective.</strong> Regular = median list price (MSRP) before promos. Effective = median price customers actually pay after observed discounts. The gap between the two is the promo intensity in that cell.<br>
           <strong>Promo participation.</strong> Share of priced observations in the cell that were on sale (price &lt; regular). Average discount depth = mean of discount_pct across those on-promo observations.<br>
           <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
@@ -480,6 +483,20 @@
 // ─────────────────────────────────────────────────────────────
 // State
 // ─────────────────────────────────────────────────────────────
+// Category labels for the brand chart title. Keep in sync with CATEGORIES
+// in scripts/build_price_comparison_payload.py.
+const CATEGORY_LABELS = {
+  "2g_vape":      "2g vape",
+  "1g_vape":      "1g vape",
+  "0.5g_vape":    "0.5g vape",
+  "3.5g_flower":  "3.5g flower",
+  "7g_flower":    "7g flower",
+  "1g_preroll":   "1g pre-roll",
+  "0.5g_preroll": "0.5g pre-roll",
+  "100mg_edible": "100mg edible",
+  "50mg_edible":  "50mg edible",
+};
+
 let PC_DATA = null;                            // payload from data/price_comparison_payload.json
 let PC_SKU_MAP = {};                           // sku.key → sku
 let pcCurrentKey   = "select-2g-vape";
@@ -717,8 +734,8 @@ function render() {
     pillEl.textContent = "Empty cell — no data";
   }
 
-  // Ladder
-  renderLadder(sku, anchor, market, retailers);
+  // Brand-vs-brand competitive chart (page 1, replaces the prior price-ladder)
+  renderBrands(sku);
 
   // Table
   renderTable(sku, anchor, market, retailers);
@@ -749,67 +766,71 @@ function composeBluf(sku, anchor, market) {
       (market.promo_participation_pct.toFixed(0) + "% of market observations were discounted") : "Few promo observations in this cell") + ".";
 }
 
-function renderLadder(sku, anchor, market, retailers) {
-  setHTML("ladder-title", sku.label + " · " + pcCurrentState);
-  setHTML("ladder-meta",
-    anchor ? "Curaleaf-owned anchor in teal · market retailers in sky · darker bar = regular (MSRP), lighter overlay = effective"
-           : "Market retailers only · no Curaleaf-owned anchor available"
+function renderBrands(sku) {
+  const brandsEl = document.getElementById("pc-brands");
+  const catKey = sku.category_key || null;
+  const byState = (PC_DATA.competitor_brands || {})[pcCurrentState] || {};
+  const brands = (catKey && Array.isArray(byState[catKey])) ? byState[catKey] : [];
+
+  // Empty cell: either the SKU doesn't bucket into any of the brand-chart
+  // categories (e.g. 14g flower, concentrate) or no brand in this category
+  // met the n_retailers ≥ 3 threshold. Show a fallback panel rather than a
+  // misleading sparse chart.
+  if (!catKey || !brands.length) {
+    setHTML("brands-title", "Competitive brands");
+    setHTML("brands-meta", catKey
+      ? "No competing brands met the &ge;3-retailer threshold in " + pcCurrentState + " for this category"
+      : "No brand comparison available for this format &mdash; see retailer detail below");
+    brandsEl.innerHTML = "";
+    return;
+  }
+
+  const catLabel = CATEGORY_LABELS[catKey] || catKey.replace(/_/g, " ");
+  setHTML("brands-title", "Competitive " + catLabel + " brands · " + pcCurrentState);
+
+  const anyCuraleaf = brands.some(b => b.is_curaleaf_brand);
+  setHTML("brands-meta",
+    brands.length + " brand" + (brands.length === 1 ? "" : "s") + " tracked"
+    + (anyCuraleaf ? " · Curaleaf brand highlighted" : " · no Curaleaf brand in this category")
   );
 
-  // Build ordered list: anchor at top (if exists), then market retailers sorted by median_effective desc
-  const sorted = retailers.slice().sort((a, b) => b.median_effective - a.median_effective);
-  let rows = sorted.slice();
-  if (anchor) {
-    rows.unshift({
-      dispensary_name: "Curaleaf-owned anchor",
-      n_observations: anchor.n_stores,
-      median_regular: anchor.median_regular,
-      median_effective: anchor.median_effective,
-      is_own: true,
-      vs_anchor_pct_effective: 0
-    });
-  }
+  // Server already capped to top 12 by n_retailers DESC. For display, re-sort
+  // by median_regular DESC so the highest-priced brand sits at the top.
+  const displayed = brands.slice().sort((a, b) => (b.median_regular || 0) - (a.median_regular || 0));
+  const maxPrice = Math.max.apply(null, displayed.map(b =>
+    Math.max(b.median_regular || 0, b.median_effective || 0)
+  )) || 1;
 
-  // Drop very long tails for chart readability
-  const capped = rows.length > 25 ? rows.slice(0, 25) : rows;
-  const maxPrice = Math.max.apply(null, capped.map(r => Math.max(r.median_regular || 0, r.median_effective || 0)));
+  // Target brand = the brand of the currently-selected SKU. The coral dot
+  // marks it within the chart, distinguishing "your brand right now" from
+  // "any Curaleaf brand" (which gets the teal bar).
+  const targetBrand = sku.brand;
 
-  const ladderEl = document.getElementById("pc-ladder");
-  ladderEl.innerHTML = capped.map(r => {
-    const isOwn = !!r.is_own;
-    const regPct  = ((r.median_regular   || r.median_effective) / maxPrice) * 100;
-    const effPct  = ((r.median_effective || r.median_regular)   / maxPrice) * 100;
-
-    let deltaHtml = "—";
-    if (isOwn) {
-      deltaHtml = '<span class="pc-delta-flat">anchor</span>';
-    } else if (r.vs_anchor_pct_effective !== null && r.vs_anchor_pct_effective !== undefined) {
-      const d = r.vs_anchor_pct_effective;
-      const cls = d > 5 ? "pc-delta-pos" : (d < -5 ? "pc-delta-neg" : "pc-delta-flat");
-      deltaHtml = '<span class="'+cls+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
-    }
+  brandsEl.innerHTML = displayed.map(b => {
+    const isOwn    = !!b.is_curaleaf_brand;
+    const isTarget = (b.brand_canonical === targetBrand);
+    const regPct = ((b.median_regular   || b.median_effective) / maxPrice) * 100;
+    const effPct = ((b.median_effective || b.median_regular)   / maxPrice) * 100;
 
     const priceCell =
-      '<span>' + fmtMoney(r.median_effective) + '</span>' +
-      ((r.median_regular !== null && r.median_regular !== r.median_effective)
-        ? '<span class="pc-ladder-price-sub">reg ' + fmtMoney(r.median_regular) + '</span>'
+      '<span>' + fmtMoney(b.median_regular) + '</span>' +
+      ((b.median_effective !== null && b.median_effective !== b.median_regular)
+        ? '<span class="pc-brands-price-sub">eff ' + fmtMoney(b.median_effective) + '</span>'
         : '');
 
-    return '<div class="pc-ladder-row '+(isOwn?'own':'')+'">' +
-      '<div class="pc-ladder-name">'+ (isOwn?'★ ':'') + r.dispensary_name +
-        ' <span style="color:var(--ink-faint);font-size:10px">· n='+r.n_observations+'</span></div>' +
-      '<div class="pc-ladder-bar-wrap">' +
-        '<div class="pc-ladder-bar-reg" style="width:'+regPct+'%"></div>' +
-        '<div class="pc-ladder-bar-eff '+(isOwn?'own':'')+'" style="width:'+effPct+'%"></div>' +
+    return '<div class="pc-brands-row ' + (isOwn ? 'own ' : '') + (isTarget ? 'target' : '') + '">' +
+      '<div class="pc-brands-name">' +
+        (isTarget ? '<span class="pc-brands-target-dot"></span>' : '') +
+        b.brand_display +
+        ' <span style="color:var(--ink-faint);font-size:10px">· ' + b.n_retailers + ' retailer' + (b.n_retailers === 1 ? '' : 's') + '</span>' +
       '</div>' +
-      '<div class="pc-ladder-price">'+priceCell+'</div>' +
-      '<div class="pc-ladder-delta">'+deltaHtml+'</div>' +
+      '<div class="pc-brands-bar-wrap">' +
+        '<div class="pc-brands-bar-reg" style="width:' + regPct + '%"></div>' +
+        '<div class="pc-brands-bar-eff ' + (isOwn ? 'own' : '') + '" style="width:' + effPct + '%"></div>' +
+      '</div>' +
+      '<div class="pc-brands-price">' + priceCell + '</div>' +
       '</div>';
   }).join("");
-
-  if (rows.length > 25) {
-    ladderEl.innerHTML += '<p style="font-size:11px;color:var(--ink-faint);margin-top:8px">Showing top 25 of ' + rows.length + ' retailers · see full list on page 2</p>';
-  }
 }
 
 function renderTable(sku, anchor, market, retailers) {

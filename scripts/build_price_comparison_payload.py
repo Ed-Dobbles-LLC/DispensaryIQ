@@ -80,6 +80,52 @@ PTYPE_FILTERS = {
 }
 
 
+# Brand-vs-brand competitive comparison categories. Each entry defines a
+# (product_type, size range) bucket within which we pull every brand_canonical
+# that meets the n_retailers >= 3 threshold. Each SKU in the manifest also
+# derives its category_key from these rules (see derive_category_key); SKUs
+# that don't fit any bucket get category_key=None and the chart shows a
+# fallback panel rather than a stale comparison.
+# beverage_single deferred until a beverage SKU is added to the manifest.
+CATEGORIES = [
+    {"key": "2g_vape",      "ptype": "vape",     "size_field": "weight_g", "size_low": 1.8,  "size_high": 2.2,   "label": "2g vape"},
+    {"key": "1g_vape",      "ptype": "vape",     "size_field": "weight_g", "size_low": 0.9,  "size_high": 1.1,   "label": "1g vape"},
+    {"key": "0.5g_vape",    "ptype": "vape",     "size_field": "weight_g", "size_low": 0.4,  "size_high": 0.6,   "label": "0.5g vape"},
+    {"key": "3.5g_flower",  "ptype": "flower",   "size_field": "weight_g", "size_low": 3.0,  "size_high": 3.8,   "label": "3.5g flower"},
+    {"key": "7g_flower",    "ptype": "flower",   "size_field": "weight_g", "size_low": 6.5,  "size_high": 7.5,   "label": "7g flower"},
+    {"key": "1g_preroll",   "ptype": "pre-roll", "size_field": "weight_g", "size_low": 0.9,  "size_high": 1.1,   "label": "1g pre-roll"},
+    {"key": "0.5g_preroll", "ptype": "pre-roll", "size_field": "weight_g", "size_low": 0.4,  "size_high": 0.6,   "label": "0.5g pre-roll"},
+    {"key": "100mg_edible", "ptype": "edible",   "size_field": "size_mg",  "size_low": 90.0, "size_high": 110.0, "label": "100mg edible"},
+    {"key": "50mg_edible",  "ptype": "edible",   "size_field": "size_mg",  "size_low": 45.0, "size_high": 55.0,  "label": "50mg edible"},
+]
+
+# Curaleaf-owned brands. The alias map collapses brand_canonical variants
+# (e.g. 'curaleaf_select' → 'select', 'bnoble' → 'b_noble') to a single
+# canonical key per brand. Anything not in the alias map is treated as
+# an external competitor and passed through verbatim (lowercased).
+CURALEAF_BRAND_ALIASES = {
+    "select":          "select",
+    "curaleaf_select": "select",
+    "grassroots":      "grassroots",
+    "find":            "find",
+    "anthem":          "anthem",
+    "jams":            "jams",
+    "reef":            "reef",        # Florida-exclusive; may not appear in IL/NJ/NY
+    "b_noble":         "b_noble",
+    "bnoble":          "b_noble",
+}
+CURALEAF_DISPLAY = {
+    "select":     "Select",
+    "grassroots": "Grassroots",
+    "find":       "Find",
+    "anthem":     "Anthem",
+    "jams":       "JAMS",
+    "reef":       "Reef",
+    "b_noble":    "B Noble",
+}
+CURALEAF_BRANDS = set(CURALEAF_DISPLAY.keys())
+
+
 def med(xs):
     xs = [x for x in xs if x is not None]
     if not xs:
@@ -134,6 +180,102 @@ def fetch_rows(conn, sku, state):
 
 def is_curaleaf(chain_name):
     return chain_name is not None and "curaleaf" in chain_name.lower()
+
+
+def derive_category_key(ptype, size_field, size_val):
+    """Map a SKU's (ptype, size_field, size_val) to one of the CATEGORIES
+    keys, or None if it doesn't fit any bucket. Stamped onto each SKU
+    entry so the front-end can look up competitor_brands[state][category_key]
+    directly from the selected SKU."""
+    for c in CATEGORIES:
+        if (c["ptype"] == ptype
+                and c["size_field"] == size_field
+                and c["size_low"] <= size_val <= c["size_high"]):
+            return c["key"]
+    return None
+
+
+def fetch_category_rows(conn, category, state):
+    """All priced rows in (category, state) across every brand.
+    Uses the same qualified-dispensary filter as fetch_rows (≥5 priced items,
+    no aggregator websites). Pulls brand_canonical so the builder can aggregate
+    per brand. Restricts price_numeric to [10, 200] per brief.
+    """
+    ptype_clause = PTYPE_FILTERS[category["ptype"]]
+    sql = f"""
+        WITH qualified AS (
+            SELECT d.id
+            FROM dispensaries d
+            WHERE d.state = %(state)s
+              AND COALESCE(d.is_aggregator_website, false) = false
+              AND (
+                SELECT COUNT(*) FROM brand_extractions be2
+                WHERE be2.dispensary_id = d.id AND be2.price_numeric IS NOT NULL
+              ) >= 5
+        )
+        SELECT
+            q.id                          AS dispensary_id,
+            LOWER(be.brand_canonical)     AS brand_raw,
+            be.price_numeric,
+            be.reg_price_numeric
+        FROM qualified q
+        JOIN brand_extractions be ON be.dispensary_id = q.id
+        WHERE be.price_numeric IS NOT NULL
+          AND be.brand_canonical IS NOT NULL
+          AND be.price_numeric BETWEEN 10 AND 200
+          AND {ptype_clause}
+          AND be.{category['size_field']} BETWEEN %(size_low)s AND %(size_high)s
+    """
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(sql, {
+            "state":    state,
+            "size_low": category["size_low"],
+            "size_high": category["size_high"],
+        })
+        return cur.fetchall()
+
+
+def build_competitor_brands(rows):
+    """Aggregate raw rows into per-brand summaries, cap at top 12 by n_retailers.
+
+    Per fact #167 / brief: promo_participation_pct = pct of observations where
+    reg_price_numeric IS NOT NULL (since reg_price_numeric is a promo flag in
+    DIP today, not a list price).
+
+    is_target_brand is always False here — Phase 3 JS computes it dynamically
+    per-row at render time as (row.brand_canonical === sku.brand).
+    """
+    by_brand = defaultdict(list)
+    for r in rows:
+        canonical = CURALEAF_BRAND_ALIASES.get(r["brand_raw"], r["brand_raw"])
+        by_brand[canonical].append(r)
+
+    summaries = []
+    for canonical, rs in by_brand.items():
+        n_ret = len({r["dispensary_id"] for r in rs})
+        if n_ret < 3:
+            continue
+        n_obs = len(rs)
+        eff = [r["price_numeric"] for r in rs]
+        reg = [(r["reg_price_numeric"] if r["reg_price_numeric"] is not None else r["price_numeric"]) for r in rs]
+        n_promo = sum(1 for r in rs if r["reg_price_numeric"] is not None)
+        is_curaleaf = canonical in CURALEAF_BRANDS
+        display = CURALEAF_DISPLAY.get(canonical) or canonical.replace("_", " ").title()
+        summaries.append({
+            "brand_canonical":         canonical,
+            "brand_display":           display,
+            "is_target_brand":         False,
+            "is_curaleaf_brand":       is_curaleaf,
+            "n_retailers":             n_ret,
+            "n_observations":          n_obs,
+            "median_regular":          med(reg),
+            "median_effective":        med(eff),
+            "promo_participation_pct": pct(n_promo, n_obs),
+        })
+
+    # Sort by retail breadth, tie-break by price desc, cap at 12 for chart readability
+    summaries.sort(key=lambda b: (-b["n_retailers"], -(b["median_regular"] or 0)))
+    return summaries[:12]
 
 
 def build_state_bucket(rows, sku):
@@ -233,6 +375,8 @@ def main():
     skus_out = []
     retailer_counts = {}
 
+    competitor_brands = {st: {} for st in STATES}
+
     try:
         for sku in SKUS:
             states_bucket = {}
@@ -251,9 +395,18 @@ def main():
                 "product_type":  sku["ptype"],
                 "size_norm":     f"{sku['size_val']}{'g' if sku['size_field']=='weight_g' else 'mg'}",
                 "label":         sku["label"],
+                "category_key":  derive_category_key(sku["ptype"], sku["size_field"], sku["size_val"]),
                 "n_retailers_total": n_ret,
                 "states":        states_bucket,
             })
+
+        # Brand-vs-brand competitive data — one block per (state, category_key).
+        # Independent of the per-SKU loop; uses the full dispensary universe for
+        # the category, not just the SKU's brand.
+        for cat in CATEGORIES:
+            for state in STATES:
+                rows = fetch_category_rows(conn, cat, state)
+                competitor_brands[state][cat["key"]] = build_competitor_brands(rows) if rows else []
     finally:
         conn.close()
 
@@ -276,15 +429,20 @@ def main():
             "week_iso":       iso_week(today),
         },
         "skus": skus_out,
+        "competitor_brands": competitor_brands,
     }
 
     out_path = os.path.join(os.path.dirname(__file__), "..", "site", "data", "price_comparison_payload.json")
     out_path = os.path.abspath(out_path)
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2)
+    n_cat_buckets = sum(1 for st in STATES for k in competitor_brands[st] if competitor_brands[st][k])
+    n_brand_rows = sum(len(competitor_brands[st][k]) for st in STATES for k in competitor_brands[st])
     sys.stdout.write(f"Wrote {out_path}\n")
     sys.stdout.write(f"  SKUs: {len(skus_out)}\n")
     sys.stdout.write(f"  Total retailer rows: {sum(len(s['states'][st]['retailers']) for s in skus_out for st in STATES)}\n")
+    sys.stdout.write(f"  Competitor categories with data: {n_cat_buckets} (of {len(CATEGORIES) * len(STATES)} possible)\n")
+    sys.stdout.write(f"  Total brand rows across competitor_brands: {n_brand_rows}\n")
 
 
 if __name__ == "__main__":
