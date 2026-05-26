@@ -106,6 +106,11 @@
     .diq-sort-ind { font-size: 0.85em; opacity: 0.45; margin-left: 4px; font-variant-numeric: normal; display: inline-block; min-width: 0.8em; text-align: left; }
     .diq-sortable.active .diq-sort-ind { opacity: 1; color: var(--teal-bright); }
 
+    /* Retailer name → menu URL link. Subtle dotted underline until hover,
+       then teal — visual weight is the same as plain text, no chrome added. */
+    .pc-retailer-link { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
+    .pc-retailer-link:hover { color: var(--teal); border-bottom-color: var(--teal); }
+
     /* ──────────────────────────────────────────────────────────
        2-page letter layout
        On-screen: .page-1 then divider then .page-2
@@ -245,10 +250,24 @@
       .pc-brands-price-sub { font-size: 6.5pt !important; }
       .pc-brands-target-dot { width: 6pt !important; height: 6pt !important; margin-right: 4pt !important; }
 
-      /* Retailer table — slim cells; top-25 cap is applied by JS via .print-hidden */
+      /* Retailer table — slim cells; top-25 cap is applied by JS via .print-hidden.
+         v5: tightened padding (~25%) and stripped on-screen sort UX (note text,
+         indicators, hover bg) to keep print at 2 pages letter portrait. */
       .diq-cat-table { font-size: 8.5pt !important; width: 100% !important; }
-      .diq-cat-table th, .diq-cat-table td { padding: 2pt 4pt !important; line-height: 1.25 !important; }
+      .diq-cat-table th, .diq-cat-table td { padding: 1.5pt 3pt !important; line-height: 1.2 !important; }
       #pc-table-body tr.print-hidden { display: none !important; }
+
+      /* On-screen sort affordances have no purpose in a static PDF. The column
+         order alone implies the active sort; the dynamic instruction note +
+         per-column sort-state glyphs eat ~3 lines of body text otherwise. */
+      [data-bind="table-note"] { display: none !important; }
+      .diq-sort-ind { display: none !important; }
+      .diq-sortable { cursor: default !important; }
+      .diq-sortable:hover { background: transparent !important; }
+
+      /* Retailer-name link is invisible in print — the URL itself has no use
+         on a printed page, so suppress all link chrome. */
+      .pc-retailer-link { color: inherit !important; border-bottom: none !important; text-decoration: none !important; }
 
       /* Methodology block — small, no card */
       .diq-callout { padding: 6pt 8pt !important; }
@@ -523,6 +542,26 @@ let pcGroupOrder = ["Select", "Grassroots", "Find", "Anthem"];
 // ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Only accept http(s) URLs as link targets — strips javascript:/data:/file:
+// and other schemes that would be unsafe in a target=_blank href even with
+// rel=noopener. Returns null when the URL isn't a usable web link.
+function safeMenuHref(url) {
+  if (typeof url !== "string") return null;
+  const trimmed = url.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return null;
+  return trimmed;
+}
+
 function fmtMoney(n) {
   if (n === null || n === undefined || isNaN(n)) return "—";
   return "$" + Number(n).toFixed(2);
@@ -965,8 +1004,13 @@ function renderTable(sku, anchor, market, retailers) {
       ? '<strong>' + fmtMoney(r.median_regular) + '</strong>'
       : '<span style="color:var(--ink-faint)">' + fmtMoney(r.median_regular) + '</span>';
     const rowCls = (i >= PRINT_CAP) ? ' class="print-hidden"' : '';
+    const safeName = escapeHtml(r.dispensary_name);
+    const safeUrl = safeMenuHref(r.menu_url);
+    const nameCell = safeUrl
+      ? '<a href="' + escapeHtml(safeUrl) + '" target="_blank" rel="noopener noreferrer" class="pc-retailer-link">' + safeName + '</a>'
+      : safeName;
     return '<tr'+rowCls+'>' +
-      '<td>' + r.dispensary_name + '</td>' +
+      '<td>' + nameCell + '</td>' +
       '<td class="r">' + r.n_observations + '</td>' +
       '<td class="r">' + regCell + '</td>' +
       '<td class="r"><strong>' + fmtMoney(r.median_effective) + '</strong></td>' +

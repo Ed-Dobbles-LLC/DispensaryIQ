@@ -156,9 +156,13 @@ def fetch_rows(conn, sku, state):
     ptype_clause = PTYPE_FILTERS[sku["ptype"]]
     size_clause = f"{sku['size_field']} = %(size_val)s"
 
+    # We pull final_url + website_url from the dispensary row, and source_url +
+    # extracted_at from each observation, so build_state_bucket can choose a
+    # menu_url per retailer (latest observation's source_url, falling back to
+    # final_url, then website_url). Cheap join — these are all single columns.
     sql = f"""
         WITH qualified AS (
-            SELECT d.id, d.name, d.chain_name
+            SELECT d.id, d.name, d.chain_name, d.final_url, d.website_url
             FROM dispensaries d
             WHERE d.state = %(state)s
               AND COALESCE(d.is_aggregator_website, false) = false
@@ -168,12 +172,16 @@ def fetch_rows(conn, sku, state):
               ) >= 5
         )
         SELECT
-            q.id            AS dispensary_id,
-            q.name          AS dispensary_name,
-            q.chain_name    AS chain_name,
+            q.id              AS dispensary_id,
+            q.name            AS dispensary_name,
+            q.chain_name      AS chain_name,
+            q.final_url       AS final_url,
+            q.website_url     AS website_url,
             be.price_numeric,
             be.reg_price_numeric,
-            be.discount_pct
+            be.discount_pct,
+            be.source_url     AS source_url,
+            be.extracted_at   AS extracted_at
         FROM qualified q
         JOIN brand_extractions be ON be.dispensary_id = q.id
         WHERE be.price_numeric IS NOT NULL
@@ -341,6 +349,8 @@ def build_state_bucket(rows, sku):
         by_disp[(r["dispensary_id"], r["dispensary_name"])].append(r)
 
     anchor_eff = curaleaf_anchor["median_effective"] if curaleaf_anchor else None
+    # tz-aware floor for max() — extracted_at is timestamptz from Neon
+    _MIN_DT = dt.datetime.min.replace(tzinfo=dt.timezone.utc)
     retailers = []
     for (disp_id, disp_name), rs in by_disp.items():
         eff = [r["price_numeric"] for r in rs]
@@ -348,6 +358,18 @@ def build_state_bucket(rows, sku):
         on_promo = any(r["reg_price_numeric"] is not None and r["price_numeric"] < r["reg_price_numeric"] for r in rs)
         m_eff = med(eff)
         m_reg = med(reg)
+
+        # menu_url: latest observation's source_url for this (dispensary, SKU);
+        # fall back through the dispensary's final_url and website_url. None of
+        # final_url / website_url depend on the observation, so they're the
+        # same on every row in rs — pull from rs[0]. Skip blank strings as if
+        # they were NULL so we don't render an <a href=""> link.
+        latest = max(rs, key=lambda r: r.get("extracted_at") or _MIN_DT)
+        src_url = (latest.get("source_url") or "").strip() or None
+        final_url = (rs[0].get("final_url") or "").strip() or None
+        website_url = (rs[0].get("website_url") or "").strip() or None
+        menu_url = src_url or final_url or website_url
+
         retailers.append({
             "dispensary_id":           disp_id,
             "dispensary_name":         disp_name,
@@ -357,6 +379,7 @@ def build_state_bucket(rows, sku):
             "is_on_promo":             on_promo,
             "vs_anchor_pct_effective": round(100.0 * (m_eff - anchor_eff) / anchor_eff, 1) if anchor_eff and m_eff is not None else None,
             "vs_anchor_pct_regular":   round(100.0 * (m_reg - anchor_eff) / anchor_eff, 1) if anchor_eff and m_reg is not None else None,
+            "menu_url":                menu_url,
         })
 
     retailers.sort(key=lambda r: (
@@ -446,9 +469,13 @@ def main():
         json.dump(payload, f, indent=2)
     n_cat_buckets = sum(1 for st in STATES for k in competitor_brands[st] if competitor_brands[st][k])
     n_brand_rows = sum(len(competitor_brands[st][k]) for st in STATES for k in competitor_brands[st])
+    all_retailers = [r for s in skus_out for st in STATES for r in s["states"][st]["retailers"]]
+    n_retailers_total = len(all_retailers)
+    n_with_url = sum(1 for r in all_retailers if r.get("menu_url"))
     sys.stdout.write(f"Wrote {out_path}\n")
     sys.stdout.write(f"  SKUs: {len(skus_out)}\n")
-    sys.stdout.write(f"  Total retailer rows: {sum(len(s['states'][st]['retailers']) for s in skus_out for st in STATES)}\n")
+    sys.stdout.write(f"  Total retailer rows: {n_retailers_total}\n")
+    sys.stdout.write(f"  Retailers with menu_url: {n_with_url} (of {n_retailers_total} total retailer rows)\n")
     sys.stdout.write(f"  Competitor categories with data: {n_cat_buckets} (of {len(CATEGORIES) * len(STATES)} possible)\n")
     sys.stdout.write(f"  Total brand rows across competitor_brands: {n_brand_rows}\n")
 
