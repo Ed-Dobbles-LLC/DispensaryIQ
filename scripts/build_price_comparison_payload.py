@@ -70,13 +70,21 @@ BRAND_FILTER = {
     "jams":       "LOWER(brand_canonical) = 'jams'",
 }
 
-# Normalized product_type buckets — same logic as we used in Neon probing
+# Normalized product_type buckets — same logic as we used in Neon probing.
+# IMPORTANT: literal '%' inside LIKE/ILIKE patterns is doubled to '%%' so
+# psycopg2's parameter parser doesn't mistake substrings like '%sugar%',
+# '%shake%', '%smalls%' for positional %s placeholders. Without this, queries
+# in fetch_rows() and fetch_category_rows() — both of which use %(named)s
+# placeholders for state / size — raise:
+#     psycopg2.ProgrammingError: argument formats can't be mixed
+# psycopg2 passes '%%' through as a single '%' to libpq, so the final
+# server-side ILIKE pattern is unchanged.
 PTYPE_FILTERS = {
-    "pre-roll":    "(product_type ILIKE '%pre%roll%' OR product_type ILIKE 'preroll%')",
-    "vape":        "(product_type ILIKE '%vape%' OR product_type ILIKE '%cartridge%' OR product_type ILIKE '%disposable%' OR product_type ILIKE 'briq%' OR product_type ILIKE '%pen%')",
-    "concentrate": "(product_type ILIKE '%concentrate%' OR product_type ILIKE 'extract' OR product_type ILIKE '%budder%' OR product_type ILIKE '%crumble%' OR product_type ILIKE '%sugar%' OR product_type ILIKE '%diamond%' OR product_type ILIKE '%rso%' OR product_type ILIKE '%distillate%')",
-    "flower":      "(product_type ILIKE '%flower%' OR product_type ILIKE '%popcorn%' OR product_type ILIKE '%bud%' OR product_type ILIKE '%shake%' OR product_type ILIKE '%smalls%')",
-    "edible":      "(product_type ILIKE '%edible%' OR product_type ILIKE '%gumm%' OR product_type ILIKE '%jell%')",
+    "pre-roll":    "(product_type ILIKE '%%pre%%roll%%' OR product_type ILIKE 'preroll%%')",
+    "vape":        "(product_type ILIKE '%%vape%%' OR product_type ILIKE '%%cartridge%%' OR product_type ILIKE '%%disposable%%' OR product_type ILIKE 'briq%%' OR product_type ILIKE '%%pen%%')",
+    "concentrate": "(product_type ILIKE '%%concentrate%%' OR product_type ILIKE 'extract' OR product_type ILIKE '%%budder%%' OR product_type ILIKE '%%crumble%%' OR product_type ILIKE '%%sugar%%' OR product_type ILIKE '%%diamond%%' OR product_type ILIKE '%%rso%%' OR product_type ILIKE '%%distillate%%')",
+    "flower":      "(product_type ILIKE '%%flower%%' OR product_type ILIKE '%%popcorn%%' OR product_type ILIKE '%%bud%%' OR product_type ILIKE '%%shake%%' OR product_type ILIKE '%%smalls%%')",
+    "edible":      "(product_type ILIKE '%%edible%%' OR product_type ILIKE '%%gumm%%' OR product_type ILIKE '%%jell%%')",
 }
 
 
