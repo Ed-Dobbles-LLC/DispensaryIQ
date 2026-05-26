@@ -8,11 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Price comparison · DispensaryIQ</title>
-  <script src="assets/theme.js?v=20"></script>
-  <link rel="stylesheet" href="assets/style.css?v=20">
+  <script src="assets/theme.js?v=23"></script>
+  <link rel="stylesheet" href="assets/style.css?v=23">
   <style>
-    /* Page-specific minor additions; everything else inherits from the deck stylesheet */
-    .pc-product-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    /* ──────────────────────────────────────────────────────────
+       Product tab row — 5 default tabs + 1 dropdown trigger
+       ────────────────────────────────────────────────────────── */
+    .pc-product-tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     @media (max-width: 900px) { .pc-product-tabs { grid-template-columns: repeat(2, 1fr); } }
     .pc-product-tab { padding: 12px 14px; background: var(--navy-deep); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: var(--ink-soft); cursor: pointer; text-align: left; font-family: 'Calibri', sans-serif; transition: all 0.15s ease; }
     .pc-product-tab:hover { color: var(--ink); border-color: rgba(0, 185, 142, 0.35); }
@@ -20,23 +22,110 @@
     .pc-tab-brand { display: block; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.3px; color: var(--ink); margin-bottom: 2px; }
     .pc-product-tab.active .pc-tab-brand { color: var(--teal-bright); }
     .pc-tab-pack { display: block; font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px; }
+    .pc-dropdown-trigger { position: relative; }
+    .pc-dropdown-trigger.open { border-color: var(--teal-bright); }
+    .pc-dropdown-trigger.active .pc-tab-brand { color: var(--teal-bright); }
+
+    /* ──────────────────────────────────────────────────────────
+       Dropdown panel — grouped 17 additional SKUs
+       ────────────────────────────────────────────────────────── */
+    .pc-dropdown-panel {
+      margin-top: 10px; background: var(--surface);
+      border: 1px solid var(--rule); border-radius: 6px;
+      padding: 16px 18px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    }
+    @media (max-width: 900px) { .pc-dropdown-panel { grid-template-columns: 1fr; } }
+    .pc-dropdown-panel[hidden] { display: none; }
+    .pc-dropdown-group-title {
+      font-family: 'Montserrat', sans-serif; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;
+      color: var(--teal-bright); margin: 0 0 8px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--rule);
+    }
+    .pc-dropdown-item {
+      display: block; width: 100%; text-align: left;
+      background: transparent; border: 1px solid transparent;
+      padding: 6px 8px; margin: 0 0 4px;
+      border-radius: 4px; color: var(--ink-soft);
+      font-family: 'Calibri', sans-serif; font-size: 13px;
+      cursor: pointer; transition: all 0.12s ease;
+      font-variant-numeric: tabular-nums;
+    }
+    .pc-dropdown-item:hover { border-color: rgba(0,185,142,0.35); color: var(--ink); }
+    .pc-dropdown-item.active { background: rgba(0,185,142,0.10); border-color: var(--teal); color: var(--teal-bright); font-weight: 700; }
+    .pc-dropdown-item-meta { color: var(--ink-faint); font-size: 11px; margin-left: 6px; }
+    .pc-dropdown-item.no-data { opacity: 0.45; }
+
+    /* ──────────────────────────────────────────────────────────
+       Hero — anchor on left, market dual-price on right
+       ────────────────────────────────────────────────────────── */
     .pc-verdict-hero { display: inline-block; padding: 4px 10px; border-radius: 4px; font-family: Consolas, monospace; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px; }
+    .pc-dual-price { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 8px; }
+    .pc-dp-reg-label, .pc-dp-eff-label { font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--ink-faint); font-family: 'Montserrat', sans-serif; }
+    .pc-dp-reg-value { font-size: 32px; font-weight: 700; color: var(--ink); font-family: 'Montserrat', sans-serif; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .pc-dp-eff-value { font-size: 18px; color: var(--ink-soft); font-family: 'Montserrat', sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 4px; }
+    .pc-dp-eff-value.discounted { color: var(--coral); }
+    .pc-promo-line { font-size: 12px; color: var(--ink-faint); margin: 6px 0 0; font-family: 'Calibri', sans-serif; }
+    .pc-promo-line .pc-promo-pct { color: var(--coral); font-weight: 700; }
+    .pc-dp-inline-meth { font-size: 11px; color: var(--ink-faint); margin-top: 10px; font-family: 'Calibri', sans-serif; font-style: italic; line-height: 1.45; }
+
     .pc-delta-pos { color: var(--coral); font-weight: 700; }
     .pc-delta-neg { color: var(--teal-bright); font-weight: 700; }
     .pc-delta-flat { color: var(--ink-soft); font-weight: 600; }
     .pc-no-anchor { padding: 18px 22px; background: rgba(133, 228, 253, 0.05); border-left: 3px solid var(--sky); border-radius: 4px; color: var(--ink-soft); font-size: 14px; }
     .pc-no-anchor strong { color: var(--ink); }
+
+    /* ──────────────────────────────────────────────────────────
+       Price ladder (chart) — bars show effective; regular hint overlay
+       ────────────────────────────────────────────────────────── */
     .pc-ladder { width: 100%; }
-    .pc-ladder-row { display: grid; grid-template-columns: 220px 1fr 80px 60px; gap: 10px; align-items: center; padding: 4px 0; font-size: 12px; }
+    .pc-ladder-row { display: grid; grid-template-columns: 220px 1fr 80px 70px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
     .pc-ladder-name { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Calibri', sans-serif; }
-    .pc-ladder-bar-wrap { background: rgba(255,255,255,0.04); height: 16px; border-radius: 2px; position: relative; }
-    .pc-ladder-bar { height: 16px; background: rgba(133, 228, 253, 0.35); border-radius: 2px; }
-    .pc-ladder-bar.own { background: var(--teal); }
-    .pc-ladder-anchor { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--teal-bright); }
+    .pc-ladder-bar-wrap { background: rgba(255,255,255,0.04); height: 18px; border-radius: 2px; position: relative; overflow: hidden; }
+    .pc-ladder-bar-reg { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,0.10); border-radius: 2px; }
+    .pc-ladder-bar-eff { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(133, 228, 253, 0.45); border-radius: 2px; }
+    .pc-ladder-bar-eff.own { background: var(--teal); }
+    .pc-ladder-anchor-line { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--teal-bright); }
     .pc-ladder-price { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+    .pc-ladder-price-sub { font-size: 10px; color: var(--ink-faint); display: block; }
     .pc-ladder-row.own .pc-ladder-name { color: var(--teal-bright); font-weight: 700; }
     .pc-ladder-row.own .pc-ladder-price { color: var(--teal-bright); }
     .pc-ladder-delta { font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+    .pc-ladder-legend { display: flex; gap: 16px; font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; align-items: center; }
+    .pc-ladder-legend-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+
+    /* ──────────────────────────────────────────────────────────
+       2-page letter layout
+       On-screen: .page-1 then divider then .page-2
+       Print: .page-2 breaks to a new sheet
+       ────────────────────────────────────────────────────────── */
+    .pc-page-divider {
+      margin: 36px 0 20px;
+      padding: 14px 0 0;
+      border-top: 1px dashed var(--rule-strong);
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .page-2 { break-before: page; page-break-before: always; }
+
+    @page { size: letter portrait; margin: 0.5in; }
+    @media print {
+      /* Override the deck-wide landscape @page from style.css */
+      @page { size: letter portrait; margin: 0.5in; }
+      /* Hide screen-only chrome */
+      .diq-nav, .diq-footer, .pc-page-divider, .pc-dropdown-panel { display: none !important; }
+      /* Force fresh page for table */
+      .page-1 { page-break-after: always; break-after: page; }
+      .page-1, .page-2 { page-break-inside: auto; }
+      /* Suppress the deck's "page-break-after: always" on hero block — we control breaks here */
+      .diq-hero-metric { page-break-after: auto !important; }
+      .diq-main { max-width: 100% !important; padding: 0 !important; }
+    }
   </style>
 </head>
 <body>
@@ -60,18 +149,18 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W21 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
         <svg class="diq-theme-icon-sun"  viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.4 1.4M11.55 11.55l1.4 1.4M3.05 12.95l1.4-1.4M11.55 4.45l1.4-1.4"/></svg>
       </button>
       <div class="diq-export-group" role="group" aria-label="Export options">
-        <button onclick="diqExportPDF()" class="diq-export-btn" title="Save all 11 pages as one combined PDF">
+        <button onclick="window.print()" class="diq-export-btn" title="Save current SKU view as a 2-page letter PDF (uses browser Print)">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5V2h8v3M4 11H2V7h12v4h-2M4 14h8v-4H4z"/></svg>
           <span>PDF</span>
         </button>
-        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download all 11 pages as individual PNGs in a ZIP">
+        <button onclick="diqExportPNG()" class="diq-export-btn" title="Download a PNG screenshot of this SKU view">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M14 11l-3.5-3.5L7 11l-2-2-3 3"/></svg>
           <span>PNG</span>
         </button>
@@ -91,122 +180,154 @@
     </div>
 
     <h1 class="diq-page-title">Are we overpriced in the marketplace?</h1>
-    <p class="diq-page-subtitle">Side-by-side: Curaleaf-owned anchor versus market median across the five most-carried Curaleaf SKUs in the pilot. Anchored cells answer the question with confidence; cells without a Curaleaf-owned store fall back to market spread for context. Pick a product tab to switch the SKU, then choose a state.</p>
+    <p class="diq-page-subtitle">Dual-price view: median <strong>regular</strong> (MSRP) and median <strong>effective</strong> (post-promo) across qualified retailers in each pilot state, anchored against Curaleaf-owned stores when available. Pick a SKU below &mdash; 5 default tabs plus 17 more in the dropdown &mdash; then choose a state.</p>
   </header>
 
-  <section class="diq-section">
-    <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; Bottom-line up-front</p>
-      <p style="margin:0">
-        Across the seven pilot cells with a Curaleaf-owned anchor, Curaleaf is priced <strong>at or below the market median in five</strong>, slightly above in one (Grassroots 3.5g flower IL, +13%), and meaningfully above in one (<strong>Find 3.5g flower NJ, +25%</strong>). The story for the pitch: Curaleaf retail is generally a value play, not the source of off-band pricing &mdash; that pressure sits with the independents.
-      </p>
-    </div>
-  </section>
+  <!-- ============================================================
+       PAGE 1 — Picker, state toggle, anchor, market dual-price, ladder
+       ============================================================ -->
+  <section class="page-1">
 
-  <section class="diq-section" style="background: transparent; border: none; padding: 0; box-shadow: none">
-    <div class="diq-section-head" style="margin-bottom: 10px">
-      <h2 class="diq-section-title">Pick a product</h2>
-      <span class="diq-section-meta">Top 5 Curaleaf SKUs by pilot reach &middot; default Select 2g vape</span>
-    </div>
-    <div class="pc-product-tabs" role="tablist" aria-label="Curaleaf product">
-      <button class="pc-product-tab active" data-key="select__2.0g" role="tab" aria-selected="true">
-        <span class="pc-tab-brand">Select</span>
-        <span class="pc-tab-pack">2g vape</span>
-      </button>
-      <button class="pc-product-tab" data-key="grassroots__3.5g" role="tab" aria-selected="false">
-        <span class="pc-tab-brand">Grassroots</span>
-        <span class="pc-tab-pack">3.5g flower</span>
-      </button>
-      <button class="pc-product-tab" data-key="find__3.5g" role="tab" aria-selected="false">
-        <span class="pc-tab-brand">Find</span>
-        <span class="pc-tab-pack">3.5g flower</span>
-      </button>
-      <button class="pc-product-tab" data-key="anthem__1.0g" role="tab" aria-selected="false">
-        <span class="pc-tab-brand">Anthem</span>
-        <span class="pc-tab-pack">1g pre-roll</span>
-      </button>
-      <button class="pc-product-tab" data-key="jams__100mg" role="tab" aria-selected="false">
-        <span class="pc-tab-brand">JAMS</span>
-        <span class="pc-tab-pack">100mg edible</span>
-      </button>
-    </div>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-toggle-bar" role="tablist" aria-label="Select state">
-      <button class="diq-toggle active" data-state="IL" role="tab" aria-selected="true">
-        <span class="diq-toggle-dot" style="background: #00B98E"></span>
-        <span class="diq-toggle-label">Illinois</span>
-        <span class="diq-toggle-sub" data-bind="il-sub">&mdash;</span>
-      </button>
-      <button class="diq-toggle" data-state="NJ" role="tab" aria-selected="false">
-        <span class="diq-toggle-dot" style="background: #85E4FD"></span>
-        <span class="diq-toggle-label">New Jersey</span>
-        <span class="diq-toggle-sub" data-bind="nj-sub">&mdash;</span>
-      </button>
-      <button class="diq-toggle" data-state="NY" role="tab" aria-selected="false">
-        <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
-        <span class="diq-toggle-label">New York</span>
-        <span class="diq-toggle-sub" data-bind="ny-sub">&mdash;</span>
-      </button>
-    </div>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-hero-metric">
-      <div>
-        <p class="diq-hero-label">Curaleaf-owned anchor</p>
-        <p class="diq-hero-number" data-bind="hero-anchor">&mdash;</p>
-        <p class="diq-hero-body" data-bind="hero-anchor-sub" style="font-size:13px">&mdash;</p>
+    <section class="diq-section">
+      <div class="diq-callout">
+        <p class="diq-callout-label">&#9656; Bottom-line up-front</p>
+        <p style="margin:0" data-bind="bluf">&mdash;</p>
       </div>
-      <div>
-        <p class="diq-hero-label">Market position vs anchor</p>
-        <p class="diq-hero-body" data-bind="hero-verdict-body">
-          <span data-bind="hero-verdict-line"></span>
+    </section>
+
+    <section class="diq-section" style="background: transparent; border: none; padding: 0; box-shadow: none">
+      <div class="diq-section-head" style="margin-bottom: 10px">
+        <h2 class="diq-section-title">Pick a product</h2>
+        <span class="diq-section-meta">5 default SKUs &middot; 17 more in dropdown &middot; <span data-bind="sku-meta">&mdash;</span></span>
+      </div>
+      <div class="pc-product-tabs" role="tablist" aria-label="Curaleaf product">
+        <button class="pc-product-tab" data-key="select-2g-vape" role="tab">
+          <span class="pc-tab-brand">Select</span>
+          <span class="pc-tab-pack">2g vape</span>
+        </button>
+        <button class="pc-product-tab" data-key="grassroots-3.5g-flower" role="tab">
+          <span class="pc-tab-brand">Grassroots</span>
+          <span class="pc-tab-pack">3.5g flower</span>
+        </button>
+        <button class="pc-product-tab" data-key="find-3.5g-flower" role="tab">
+          <span class="pc-tab-brand">Find</span>
+          <span class="pc-tab-pack">3.5g flower</span>
+        </button>
+        <button class="pc-product-tab" data-key="anthem-1g-preroll" role="tab">
+          <span class="pc-tab-brand">Anthem</span>
+          <span class="pc-tab-pack">1g pre-roll</span>
+        </button>
+        <button class="pc-product-tab" data-key="jams-100mg-edible" role="tab">
+          <span class="pc-tab-brand">JAMS</span>
+          <span class="pc-tab-pack">100mg edible</span>
+        </button>
+        <button class="pc-product-tab pc-dropdown-trigger" id="pc-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+          <span class="pc-tab-brand" data-bind="dropdown-trigger-brand">Choose your own product</span>
+          <span class="pc-tab-pack" data-bind="dropdown-trigger-pack">17 more SKUs &#9662;</span>
+        </button>
+      </div>
+      <div class="pc-dropdown-panel" id="pc-dropdown-panel" hidden role="menu" aria-label="More SKUs"></div>
+    </section>
+
+    <section class="diq-section">
+      <div class="diq-toggle-bar" role="tablist" aria-label="Select state">
+        <button class="diq-toggle" data-state="IL" role="tab">
+          <span class="diq-toggle-dot" style="background: #00B98E"></span>
+          <span class="diq-toggle-label">Illinois</span>
+          <span class="diq-toggle-sub" data-bind="il-sub">&mdash;</span>
+        </button>
+        <button class="diq-toggle" data-state="NJ" role="tab">
+          <span class="diq-toggle-dot" style="background: #85E4FD"></span>
+          <span class="diq-toggle-label">New Jersey</span>
+          <span class="diq-toggle-sub" data-bind="nj-sub">&mdash;</span>
+        </button>
+        <button class="diq-toggle" data-state="NY" role="tab">
+          <span class="diq-toggle-dot" style="background: #DB8C5E"></span>
+          <span class="diq-toggle-label">New York</span>
+          <span class="diq-toggle-sub" data-bind="ny-sub">&mdash;</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="diq-section">
+      <div class="diq-hero-metric">
+        <div>
+          <p class="diq-hero-label">Curaleaf-owned anchor</p>
+          <p class="diq-hero-number" data-bind="hero-anchor">&mdash;</p>
+          <p class="diq-hero-body" data-bind="hero-anchor-sub" style="font-size:13px">&mdash;</p>
+        </div>
+        <div>
+          <p class="diq-hero-label">Market median &middot; non-Curaleaf retailers</p>
+          <div class="pc-dual-price">
+            <span class="pc-dp-reg-label">Regular (MSRP)</span>
+            <span class="pc-dp-reg-value" data-bind="mkt-reg">&mdash;</span>
+            <span class="pc-dp-eff-label" style="margin-top:8px">Effective (post-promo)</span>
+            <span class="pc-dp-eff-value" data-bind="mkt-eff">&mdash;</span>
+          </div>
+          <p class="pc-promo-line" data-bind="mkt-promo">&mdash;</p>
+          <span class="diq-verdict pc-verdict-hero" data-bind="hero-verdict-pill">&mdash;</span>
+          <p class="pc-dp-inline-meth">
+            Regular = median list price across N retailers. Effective = median price customers actually pay after observed promos. Promo participation = % of observations discounted below MSRP.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="diq-section">
+      <div class="diq-section-head">
+        <h2 class="diq-section-title" data-bind="ladder-title">Price ladder</h2>
+        <span class="diq-section-meta" data-bind="ladder-meta">&mdash;</span>
+      </div>
+      <div class="pc-ladder-legend">
+        <span><span class="pc-ladder-legend-swatch" style="background: rgba(255,255,255,0.10)"></span>Regular (MSRP)</span>
+        <span><span class="pc-ladder-legend-swatch" style="background: rgba(133, 228, 253, 0.45)"></span>Effective (post-promo)</span>
+        <span><span class="pc-ladder-legend-swatch" style="background: var(--teal-bright); width:2px"></span>Curaleaf-owned anchor</span>
+      </div>
+      <div id="pc-ladder" class="pc-ladder"></div>
+    </section>
+
+    <div class="pc-page-divider">Page 1 of 2 &middot; Continued overleaf &#10142;</div>
+  </section>
+
+  <!-- ============================================================
+       PAGE 2 — Full retailer detail table + methodology
+       ============================================================ -->
+  <section class="page-2">
+
+    <section class="diq-section">
+      <div class="diq-section-head">
+        <h2 class="diq-section-title" data-bind="table-title">Retailer detail</h2>
+        <span class="diq-section-meta" data-bind="table-meta">&mdash;</span>
+      </div>
+      <table class="diq-cat-table">
+        <thead>
+          <tr>
+            <th>Retailer</th>
+            <th class="r">Obs</th>
+            <th class="r">Regular</th>
+            <th class="r">Effective</th>
+            <th class="r">% off</th>
+            <th class="r">vs Curaleaf anchor</th>
+          </tr>
+        </thead>
+        <tbody id="pc-table-body"></tbody>
+      </table>
+      <p style="font-size:12px;color:var(--ink-faint);margin-top:8px" data-bind="table-note"></p>
+    </section>
+
+    <section class="diq-section">
+      <div class="diq-callout" style="border-color: var(--sky); background: rgba(133, 228, 253, 0.06)">
+        <p class="diq-callout-label" style="color: var(--sky)">&#9656; Methodology</p>
+        <p style="margin:0">
+          <strong>Anchor.</strong> Median price across Curaleaf-owned stores carrying this SKU in the selected state. Verdict compares the Curaleaf-owned median-effective to the cross-retailer market-effective median (independents + non-Curaleaf chains).<br>
+          <strong>Regular vs Effective.</strong> Regular = median list price (MSRP) before promos. Effective = median price customers actually pay after observed discounts. The gap between the two is the promo intensity in that cell.<br>
+          <strong>Promo participation.</strong> Share of priced observations in the cell that were on sale (price &lt; regular). Average discount depth = mean of discount_pct across those on-promo observations.<br>
+          <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
+          <strong>Coverage.</strong> Quality filter: dispensaries with &ge;5 priced items on their menu, aggregator websites excluded. Cells without a Curaleaf-owned store fall back to market spread for context. Empty cells indicate no qualifying observations.
         </p>
-        <span class="diq-verdict pc-verdict-hero" data-bind="hero-verdict-pill">&mdash;</span>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title" data-bind="ladder-title">Price ladder</h2>
-      <span class="diq-section-meta" data-bind="ladder-meta">&mdash;</span>
-    </div>
-    <div id="pc-ladder" class="pc-ladder"></div>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">Retailer detail</h2>
-      <span class="diq-section-meta" data-bind="table-meta">&mdash;</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead>
-        <tr>
-          <th>Retailer</th>
-          <th>Cohort</th>
-          <th class="r">Locations</th>
-          <th class="r">Observations</th>
-          <th class="r">Median price</th>
-          <th class="r">vs Curaleaf anchor</th>
-        </tr>
-      </thead>
-      <tbody id="pc-table-body"></tbody>
-    </table>
-    <p style="font-size:12px;color:var(--ink-faint);margin-top:8px" data-bind="table-note"></p>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-callout" style="border-color: var(--sky); background: rgba(133, 228, 253, 0.06)">
-      <p class="diq-callout-label" style="color: var(--sky)">&#9656; Methodology</p>
-      <p style="margin:0">
-        <strong>Anchor.</strong> Mean price across Curaleaf-owned stores carrying the matched SKU in the selected state. Verdict pill compares the Curaleaf-owned mean to the cross-retailer market median (independents + non-Curaleaf chains).<br>
-        <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
-        <strong>Coverage.</strong> Cells without a Curaleaf-owned store (Select 2g vape NJ &amp; NY, Anthem 1g pre-roll all states, Grassroots NJ/NY, JAMS NJ) show market-only context until Curaleaf provides MSRP. SKUs matched on brand &times; product type &times; pack size; pricing data from license-reconciled IL/NJ/NY pilot universe.
-      </p>
-    </div>
   </section>
 
 </main>
@@ -216,496 +337,447 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-24 &middot; Week 20</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span data-bind="gen-date">&mdash;</span> &middot; <span data-bind="gen-week">W21</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
-<script src="assets/export.js?v=20"></script>
+<script src="assets/export.js?v=23"></script>
 
 <script>
 // ─────────────────────────────────────────────────────────────
-// Data — embedded inline. Aggregates and per-retailer rows
-// for 5 Curaleaf SKUs × 3 pilot states.
+// State
 // ─────────────────────────────────────────────────────────────
-const PC_AGG = [
-  {brand:"select",pack:"2.0g",state:"IL",own_n:3,own_min:58.5,own_avg:60.18,own_max:61.75,market_n:26,market_min:46.4,median:58,market_max:93,market_obs:221},
-  {brand:"select",pack:"2.0g",state:"NJ",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:17,market_min:55.25,median:68,market_max:110,market_obs:319},
-  {brand:"select",pack:"2.0g",state:"NY",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:28,market_min:52,median:75,market_max:103,market_obs:459},
-  {brand:"grassroots",pack:"3.5g",state:"IL",own_n:3,own_min:14.95,own_avg:36.33,own_max:50,market_n:24,market_min:22,median:32,market_max:60,market_obs:135},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:11,market_min:30,median:37.5,market_max:65,market_obs:84},
-  {brand:"grassroots",pack:"3.5g",state:"NY",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:49,market_min:20,median:40,market_max:125,market_obs:545},
-  {brand:"find",pack:"3.5g",state:"IL",own_n:1,own_min:17.5,own_avg:18.93,own_max:19.5,market_n:8,market_min:22,median:35,market_max:35,market_obs:17},
-  {brand:"find",pack:"3.5g",state:"NJ",own_n:1,own_min:35,own_avg:35,own_max:35,market_n:11,market_min:24,median:28,market_max:45,market_obs:70},
-  {brand:"find",pack:"3.5g",state:"NY",own_n:1,own_min:19.5,own_avg:19.5,own_max:19.5,market_n:38,market_min:20,median:35,market_max:39.55,market_obs:330},
-  {brand:"anthem",pack:"1.0g",state:"IL",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:16,market_min:11.02,median:19,market_max:20,market_obs:222},
-  {brand:"anthem",pack:"1.0g",state:"NJ",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:4,market_min:17.5,median:25,market_max:25,market_obs:24},
-  {brand:"anthem",pack:"1.0g",state:"NY",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:34,market_min:15,median:20,market_max:22.6,market_obs:494},
-  {brand:"jams",pack:"100mg",state:"IL",own_n:2,own_min:12.25,own_avg:13.21,own_max:18,market_n:4,market_min:9.1,median:22,market_max:28,market_obs:17},
-  {brand:"jams",pack:"100mg",state:"NJ",own_n:0,own_min:null,own_avg:null,own_max:null,market_n:5,market_min:14,median:14,market_max:25,market_obs:48},
-  {brand:"jams",pack:"100mg",state:"NY",own_n:1,own_min:12.25,own_avg:12.25,own_max:12.25,market_n:10,market_min:20,median:22,market_max:30.09,market_obs:105}
-];
-
-const PC_RETAILERS = [
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"own",retailer:"Curaleaf",locations:3,n:12,median_p:60.45},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Greenhouse Dispensary",locations:1,n:6,median_p:93},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Maribis of Springfield",locations:1,n:7,median_p:90},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"BLOC Dispensary - Metropolis",locations:1,n:11,median_p:90},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Maribis Cannabis",locations:1,n:9,median_p:90},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Shangri-La Dispensary",locations:1,n:12,median_p:90},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"AYR Cannabis Dispensary 1837 Broadway",locations:1,n:6,median_p:80},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Key Cannabis Dispensary",locations:1,n:5,median_p:80},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Beyond Hello Bloomington",locations:1,n:8,median_p:78},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Maribis of Chicago-Westchester",locations:1,n:2,median_p:64},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Green Releaf - Bourbonnais",locations:1,n:30,median_p:63},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Trinity",locations:1,n:5,median_p:63},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Green Releaf Dispensary",locations:1,n:6,median_p:63},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"nuEra DeKalb Dispensary",locations:2,n:20,median_p:58},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"nuEra East Dubuque",locations:1,n:31,median_p:58},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"nuEra East Peoria",locations:2,n:4,median_p:58},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"nuEra Pekin",locations:1,n:4,median_p:58},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"NuEra",locations:1,n:5,median_p:58},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"BEYOND / HELLO Normal",locations:1,n:4,median_p:56},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"Beyond/Hello Sauget",locations:1,n:9,median_p:56},
-  {brand:"select",pack:"2.0g",state:"IL",cohort:"market",retailer:"High Haven Dispensary",locations:1,n:33,median_p:56},
-
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Roots Dispensary",locations:1,n:3,median_p:85},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Canna Campus",locations:1,n:110,median_p:81},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Conservatory Cannabis Co.",locations:1,n:4,median_p:78.5},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"RISE Dispensaries",locations:2,n:32,median_p:73},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"RISE Bloomfield",locations:1,n:10,median_p:68},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Township Green Dispensary",locations:1,n:4,median_p:68},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Simply Pure Trenton",locations:1,n:6,median_p:68},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Hello High Dispensary",locations:1,n:2,median_p:64},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Budzooka Dispensary",locations:1,n:8,median_p:63},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Phasal Dispensary",locations:1,n:65,median_p:59.5},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Enlighten Dispensary",locations:1,n:43,median_p:59.5},
-  {brand:"select",pack:"2.0g",state:"NJ",cohort:"market",retailer:"Herbalicity",locations:1,n:28,median_p:55.25},
-
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"NY Cannabis Co. 5th Ave",locations:1,n:2,median_p:100},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"NY Cannabis Co.",locations:1,n:2,median_p:100},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"The Station Beacon",locations:1,n:16,median_p:91},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Big City Flavors",locations:1,n:10,median_p:85},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"RISE Dispensaries",locations:1,n:18,median_p:83},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Manhattan",locations:1,n:9,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Green Genius NYC",locations:1,n:22,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Bayside Cannabis Dispensary",locations:1,n:45,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Canna Blooms Dispensary",locations:1,n:53,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Farmers Choice Dispensary",locations:1,n:3,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Bronx",locations:1,n:27,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Sparkboro",locations:1,n:6,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"The Village Green Dispensary",locations:1,n:5,median_p:80},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Cannabis Huts",locations:1,n:7,median_p:79.65},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"High Society Dispensary",locations:1,n:8,median_p:76.85},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"NY Flower Depot",locations:1,n:17,median_p:75},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Ganja Express Dispensary",locations:1,n:20,median_p:72.57},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Upstate Exotics",locations:1,n:17,median_p:72.57},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Cannavita",locations:1,n:3,median_p:72},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"MJ Dispensary Spencerport",locations:1,n:35,median_p:70},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"MJ Dispensary Honeoye Falls",locations:1,n:39,median_p:70},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Catskill Mountain High",locations:1,n:18,median_p:68},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Herbal IQ",locations:1,n:5,median_p:65.65},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Air City Cannabis",locations:1,n:5,median_p:61.2},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"State of Mind Dispensary",locations:1,n:3,median_p:60},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"ROC dispensary and hydroponic",locations:1,n:23,median_p:60},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"FlynnStoned Rochester",locations:1,n:29,median_p:60},
-  {brand:"select",pack:"2.0g",state:"NY",cohort:"market",retailer:"Smokey Paradise",locations:1,n:12,median_p:52},
-
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"own",retailer:"Curaleaf",locations:3,n:24,median_p:32.5},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"AYR Cannabis Dispensary 1837 Broadway",locations:1,n:6,median_p:52.5},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Bridge City Collective East Dubuque",locations:1,n:11,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Beyond Hello Bloomington",locations:1,n:4,median_p:39},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"AuraLight Dispensary",locations:1,n:4,median_p:36},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Altius Dispensary",locations:2,n:2,median_p:33.75},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"RISE Joliet (Colorado)",locations:1,n:4,median_p:33.5},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"RISE",locations:3,n:29,median_p:32},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Rise Dispensaries",locations:2,n:21,median_p:32},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"RISE Naperville",locations:1,n:5,median_p:32},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"RISE Effingham",locations:1,n:6,median_p:32},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"RISE Med & Rec Dispensary",locations:1,n:6,median_p:32},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Trinity",locations:1,n:20,median_p:31.5},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Beyond/Hello Sauget",locations:1,n:4,median_p:28},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"Shangri-La Dispensary",locations:1,n:2,median_p:26.75},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"OKAY Cannabis Dispensary",locations:2,n:5,median_p:22.5},
-  {brand:"grassroots",pack:"3.5g",state:"IL",cohort:"market",retailer:"OKAY Cannabis",locations:1,n:3,median_p:22.5},
-
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Canna Campus",locations:1,n:15,median_p:60},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Flower & Flame Dispensary",locations:1,n:2,median_p:50},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"RISE Bloomfield",locations:1,n:8,median_p:47.5},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Budzooka Dispensary",locations:1,n:5,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"MindLift Dispensary",locations:1,n:2,median_p:42},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"RISE Dispensaries",locations:2,n:14,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Conservatory Cannabis Co.",locations:1,n:2,median_p:39.38},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Enlighten Dispensary",locations:1,n:12,median_p:35},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Phasal Dispensary",locations:1,n:22,median_p:35},
-  {brand:"grassroots",pack:"3.5g",state:"NJ",cohort:"market",retailer:"The Canna Bar NJ",locations:1,n:2,median_p:30},
-
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Upstate Exotics",locations:1,n:3,median_p:53.1},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Bethel Buds",locations:1,n:7,median_p:50.85},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Twisted Cannabis FLX",locations:1,n:3,median_p:50},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Bronx Joint Dispensary",locations:1,n:2,median_p:48},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"RISE Dispensaries",locations:1,n:12,median_p:47.5},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Catskill Mountain High",locations:1,n:4,median_p:46},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"The Station Beacon",locations:1,n:14,median_p:46},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Gratitude Buds",locations:1,n:4,median_p:45.34},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Menards",locations:1,n:13,median_p:45.2},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Whitehall",locations:1,n:4,median_p:45.2},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Dispensary",locations:1,n:7,median_p:45.2},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Cannabis Huts",locations:1,n:12,median_p:45.13},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"High Frequency",locations:1,n:3,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"The Village Green Dispensary",locations:1,n:15,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Etain Health",locations:2,n:12,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Manhattan",locations:1,n:14,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"FlynnStoned Baytowne",locations:1,n:16,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Green Genius NYC",locations:1,n:4,median_p:45},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Bronx",locations:1,n:15,median_p:41},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Gaslight Dispensary",locations:1,n:2,median_p:41},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Vireo Health",locations:1,n:2,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"ROC dispensary and hydroponic",locations:1,n:40,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"CONBUD Bronx (Summit Canna)",locations:1,n:20,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"MJ Dispensary Honeoye Falls",locations:1,n:28,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"MJ Dispensary Spencerport",locations:1,n:30,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"NY Flower Depot",locations:1,n:24,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Sparkboro",locations:1,n:12,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"FlynnStoned Rochester",locations:1,n:45,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Farmers Choice Dispensary",locations:1,n:2,median_p:40},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Canna Blooms Dispensary",locations:1,n:26,median_p:39.83},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Verdi",locations:1,n:12,median_p:39.55},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"The Flavor Factory",locations:1,n:16,median_p:38.5},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"High Society Dispensary",locations:1,n:35,median_p:38.4},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Bayside Cannabis Dispensary",locations:1,n:16,median_p:36},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Mango Cannabis",locations:1,n:12,median_p:35.99},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbal IQ",locations:1,n:14,median_p:35.6},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Ganja Express Dispensary",locations:1,n:19,median_p:35.39},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Thrive Syracuse",locations:1,n:2,median_p:35},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"State of Mind Albany Dispensary",locations:1,n:5,median_p:35},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Misha's Flower Shop",locations:1,n:3,median_p:34},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Air City Cannabis",locations:1,n:3,median_p:32.08},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Hush New York",locations:1,n:2,median_p:30},
-  {brand:"grassroots",pack:"3.5g",state:"NY",cohort:"market",retailer:"Smokey Paradise",locations:1,n:6,median_p:27.6},
-
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"own",retailer:"Curaleaf",locations:1,n:7,median_p:19.5},
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"market",retailer:"AuraLight Dispensary",locations:1,n:3,median_p:35},
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"market",retailer:"AYR Cannabis Dispensary 1837 Broadway",locations:1,n:3,median_p:35},
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"market",retailer:"Bridge City Collective East Dubuque",locations:1,n:3,median_p:35},
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"market",retailer:"BLOC Dispensary - Metropolis",locations:1,n:4,median_p:35},
-  {brand:"find",pack:"3.5g",state:"IL",cohort:"market",retailer:"Altius Dispensary",locations:2,n:2,median_p:30},
-
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"own",retailer:"Curaleaf",locations:1,n:2,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Med Leaf Dispensary",locations:1,n:3,median_p:45},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Flower & Flame Dispensary",locations:1,n:2,median_p:40},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Conservatory Cannabis Co.",locations:1,n:4,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Joyleaf Roselle",locations:1,n:2,median_p:32},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"BluLight Cannabis Woodbury Heights",locations:1,n:2,median_p:30},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Enlighten Dispensary",locations:1,n:26,median_p:28},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Phasal Dispensary",locations:1,n:25,median_p:28},
-  {brand:"find",pack:"3.5g",state:"NJ",cohort:"market",retailer:"Natural Apothecary",locations:1,n:3,median_p:24},
-
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"own",retailer:"Curaleaf",locations:1,n:3,median_p:19.5},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Menards",locations:1,n:15,median_p:39.55},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Dispensary",locations:1,n:11,median_p:39.55},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Northern Lights Whitehall",locations:1,n:5,median_p:39.55},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Verdi",locations:1,n:24,median_p:39.55},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Big City Flavors",locations:1,n:4,median_p:37.99},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Canna Blooms Dispensary",locations:1,n:26,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"FlynnStoned Baytowne",locations:1,n:6,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"FlynnStoned Rochester",locations:1,n:12,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"MJ Dispensary Honeoye Falls",locations:1,n:16,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"MJ Dispensary Spencerport",locations:1,n:15,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"VedaLeaf",locations:1,n:3,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Bronx",locations:1,n:15,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Manhattan",locations:1,n:17,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"ROC dispensary and hydroponic",locations:1,n:12,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"RISE Dispensaries",locations:1,n:4,median_p:35},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Ganja Express Dispensary",locations:1,n:24,median_p:33.62},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"CONBUD Bronx (Summit Canna)",locations:1,n:19,median_p:32},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"NY Flower Depot",locations:1,n:9,median_p:32},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"The Flavor Factory",locations:1,n:26,median_p:31.5},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Bayside Cannabis Dispensary",locations:1,n:5,median_p:31.5},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Air City Cannabis",locations:1,n:7,median_p:30.09},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Cannavita",locations:1,n:3,median_p:30},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Housing Works Cannabis Co.",locations:1,n:2,median_p:30},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Sparkboro",locations:1,n:2,median_p:30},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Blissful Buds",locations:1,n:10,median_p:30},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Herbal IQ",locations:1,n:2,median_p:27.69},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Vireo Health",locations:4,n:9,median_p:26.25},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Catskill Mountain High",locations:1,n:11,median_p:26},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Smokey Paradise",locations:1,n:9,median_p:24},
-  {brand:"find",pack:"3.5g",state:"NY",cohort:"market",retailer:"Hush New York",locations:1,n:2,median_p:20},
-
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"RISE",locations:3,n:46,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"Rise Dispensaries",locations:2,n:44,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"RISE Effingham",locations:1,n:30,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"RISE Joliet (Colorado)",locations:1,n:16,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"RISE Naperville",locations:1,n:14,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"RISE Med & Rec Dispensary",locations:1,n:8,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"AYR Cannabis Dispensary 1837 Broadway",locations:1,n:6,median_p:19},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"SWAY Cannabis Chicago Lakeview",locations:1,n:4,median_p:17.5},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"nuEra East Dubuque",locations:1,n:14,median_p:17},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"High Haven Dispensary",locations:1,n:26,median_p:15.2},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"Green Releaf Bourbonnais",locations:1,n:4,median_p:13.3},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"Green Releaf Dispensary",locations:1,n:4,median_p:13},
-  {brand:"anthem",pack:"1.0g",state:"IL",cohort:"market",retailer:"Beyond/Hello Sauget",locations:1,n:6,median_p:12},
-
-  {brand:"anthem",pack:"1.0g",state:"NJ",cohort:"market",retailer:"Budzooka Dispensary",locations:1,n:12,median_p:25},
-  {brand:"anthem",pack:"1.0g",state:"NJ",cohort:"market",retailer:"Canna Campus",locations:1,n:8,median_p:25},
-  {brand:"anthem",pack:"1.0g",state:"NJ",cohort:"market",retailer:"Phasal Dispensary",locations:1,n:3,median_p:17.5},
-
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"High Society Dispensary",locations:1,n:16,median_p:22.6},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Northern Lights Dispensary",locations:1,n:8,median_p:22.6},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Northern Lights Menards",locations:1,n:12,median_p:22.6},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Verdi",locations:1,n:7,median_p:22.6},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"CONBUD Bronx (Summit Canna)",locations:1,n:24,median_p:22.13},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Cannabis Huts",locations:1,n:4,median_p:20.35},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"MJ Dispensary Spencerport",locations:1,n:49,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"MJ Dispensary Honeoye Falls",locations:1,n:30,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Cannavita",locations:1,n:18,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"NY Flower Depot",locations:1,n:20,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"ROC dispensary and hydroponic",locations:1,n:20,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Mello Tymes",locations:1,n:19,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"FlynnStoned Rochester",locations:1,n:15,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Blissful Buds",locations:1,n:14,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"RISE Henrietta",locations:1,n:14,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"RISE Dispensaries",locations:1,n:14,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Farmers Choice Dispensary",locations:1,n:13,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"RISE Dispensary East Syracuse",locations:1,n:10,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Bayside Cannabis Dispensary",locations:1,n:10,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Wild Flower Dispensary",locations:1,n:9,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"FlynnStoned Baytowne",locations:1,n:2,median_p:20},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Mango Cannabis",locations:1,n:10,median_p:19.99},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Canna Blooms Dispensary",locations:1,n:46,median_p:19.47},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Ganja Express Dispensary",locations:1,n:26,median_p:19.47},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Air City Cannabis",locations:1,n:9,median_p:19.47},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Upstate Exotics",locations:1,n:9,median_p:17.7},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"The Flavor Factory",locations:1,n:10,median_p:16.1},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Smokey Paradise",locations:1,n:12,median_p:16},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Herbal IQ",locations:1,n:38,median_p:15.82},
-  {brand:"anthem",pack:"1.0g",state:"NY",cohort:"market",retailer:"Vireo Health",locations:3,n:4,median_p:15},
-
-  {brand:"jams",pack:"100mg",state:"IL",cohort:"own",retailer:"Curaleaf",locations:2,n:6,median_p:12.25},
-  {brand:"jams",pack:"100mg",state:"IL",cohort:"market",retailer:"BLOC Dispensary - Metropolis",locations:1,n:8,median_p:28},
-  {brand:"jams",pack:"100mg",state:"IL",cohort:"market",retailer:"High Haven Dispensary",locations:1,n:6,median_p:13.92},
-  {brand:"jams",pack:"100mg",state:"IL",cohort:"market",retailer:"Aroma Hill",locations:1,n:2,median_p:9.1},
-
-  {brand:"jams",pack:"100mg",state:"NJ",cohort:"market",retailer:"MindLift Dispensary",locations:1,n:6,median_p:25},
-  {brand:"jams",pack:"100mg",state:"NJ",cohort:"market",retailer:"Valley Wellness",locations:1,n:2,median_p:20},
-  {brand:"jams",pack:"100mg",state:"NJ",cohort:"market",retailer:"The CBD Shop",locations:1,n:2,median_p:14},
-  {brand:"jams",pack:"100mg",state:"NJ",cohort:"market",retailer:"Enlighten Dispensary",locations:1,n:15,median_p:14},
-  {brand:"jams",pack:"100mg",state:"NJ",cohort:"market",retailer:"Phasal Dispensary",locations:1,n:23,median_p:14},
-
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"own",retailer:"Curaleaf",locations:1,n:9,median_p:12.25},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Sparkboro",locations:1,n:4,median_p:30},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Big City Flavors",locations:1,n:6,median_p:26.51},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Green Genius NYC",locations:1,n:13,median_p:24},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Smokey Paradise",locations:1,n:6,median_p:24},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"High Frequency",locations:1,n:4,median_p:22},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Herbwell Cannabis Bronx",locations:1,n:5,median_p:22},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Farmers Choice Dispensary",locations:1,n:10,median_p:20},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"Canna Blooms Dispensary",locations:1,n:22,median_p:20},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"FlynnStoned Rochester",locations:1,n:18,median_p:20},
-  {brand:"jams",pack:"100mg",state:"NY",cohort:"market",retailer:"ROC dispensary and hydroponic",locations:1,n:17,median_p:20}
-];
-
-// ─────────────────────────────────────────────────────────────
-// Brand-pack label lookup
-// ─────────────────────────────────────────────────────────────
-const BRAND_LABELS = {
-  "select__2.0g":   { brand: "Select", pack: "2g vape" },
-  "grassroots__3.5g":{ brand: "Grassroots", pack: "3.5g flower" },
-  "find__3.5g":     { brand: "Find", pack: "3.5g flower" },
-  "anthem__1.0g":   { brand: "Anthem", pack: "1g pre-roll" },
-  "jams__100mg":    { brand: "JAMS", pack: "100mg edible" }
-};
-
-// ─────────────────────────────────────────────────────────────
-// State management
-// ─────────────────────────────────────────────────────────────
-let pcCurrentKey   = "select__2.0g";
+let PC_DATA = null;                            // payload from data/price_comparison_payload.json
+let PC_SKU_MAP = {};                           // sku.key → sku
+let pcCurrentKey   = "select-2g-vape";
 let pcCurrentState = "IL";
+let pcDropdownKeys = new Set();                // keys that live inside the dropdown
+let pcGroupOrder = ["Select", "Grassroots", "Find", "Anthem"];
 
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
 function fmtMoney(n) {
   if (n === null || n === undefined || isNaN(n)) return "—";
   return "$" + Number(n).toFixed(2);
 }
-function pctDelta(curaleaf, market) {
-  return ((curaleaf - market) / market) * 100;
+function fmtPct(n, sign) {
+  if (n === null || n === undefined || isNaN(n)) return "—";
+  const s = (sign && n > 0) ? "+" : "";
+  return s + Number(n).toFixed(1) + "%";
+}
+function pctDelta(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined || !b) return null;
+  return ((a - b) / b) * 100;
 }
 function verdictForDelta(delta) {
   if (delta === null || isNaN(delta)) return { cls: "verdict-mod", label: "No anchor in this state" };
-  if (delta <= -15) return { cls: "verdict-tight", label: "Material value · " + delta.toFixed(0) + "% below market" };
-  if (delta <= -5)  return { cls: "verdict-tight", label: "Below market · " + delta.toFixed(1) + "%" };
-  if (delta <  5)   return { cls: "verdict-mod",   label: "In line · " + (delta>=0?"+":"") + delta.toFixed(1) + "% vs market" };
-  if (delta <  15)  return { cls: "verdict-wide",  label: "Slight premium · +" + delta.toFixed(1) + "%" };
-  return { cls: "verdict-chaotic", label: "Material premium · +" + delta.toFixed(0) + "% above market" };
+  if (delta <= -15) return { cls: "verdict-tight",   label: "Material value · " + delta.toFixed(0) + "% below market" };
+  if (delta <= -5)  return { cls: "verdict-tight",   label: "Below market · " + delta.toFixed(1) + "%" };
+  if (delta <   5)  return { cls: "verdict-mod",     label: "In line · " + (delta>=0?"+":"") + delta.toFixed(1) + "% vs market" };
+  if (delta <  15)  return { cls: "verdict-wide",    label: "Slight premium · +" + delta.toFixed(1) + "%" };
+  return            { cls: "verdict-chaotic", label: "Material premium · +" + delta.toFixed(0) + "% above market" };
+}
+function setText(bind, text) {
+  document.querySelectorAll('[data-bind="'+bind+'"]').forEach(el => { el.textContent = text; });
+}
+function setHTML(bind, html) {
+  document.querySelectorAll('[data-bind="'+bind+'"]').forEach(el => { el.innerHTML = html; });
+}
+function getSku(key)  { return PC_SKU_MAP[key]; }
+function getCell(key, state) {
+  const sku = getSku(key);
+  return sku ? sku.states[state] : null;
+}
+function firstStateWithData(key) {
+  for (const s of ["IL","NJ","NY"]) {
+    const c = getCell(key, s);
+    if (c && (c.curaleaf_anchor || c.market)) return s;
+  }
+  return "IL";
 }
 
-function getAgg(brand, pack, state) {
-  return PC_AGG.find(r => r.brand === brand && r.pack === pack && r.state === state);
-}
-function getRetailers(brand, pack, state) {
-  return PC_RETAILERS.filter(r => r.brand === brand && r.pack === pack && r.state === state);
-}
-
-function setText(bind, text, html) {
-  document.querySelectorAll('[data-bind="'+bind+'"]').forEach(el => {
-    if (html) el.innerHTML = text; else el.textContent = text;
+// ─────────────────────────────────────────────────────────────
+// Dropdown wiring
+// ─────────────────────────────────────────────────────────────
+function buildDropdown() {
+  const panel = document.getElementById('pc-dropdown-panel');
+  const grouped = PC_DATA.manifest.dropdown_grouped;
+  let html = '';
+  for (const g of pcGroupOrder) {
+    const keys = grouped[g] || [];
+    if (!keys.length) continue;
+    html += '<div class="pc-dropdown-group">';
+    html += '  <p class="pc-dropdown-group-title">' + g + '</p>';
+    for (const k of keys) {
+      const sku = getSku(k);
+      if (!sku) continue;
+      const sizeLabel = sku.label.replace(sku.brand_display + " ", "");
+      const hasData = ["IL","NJ","NY"].some(s => {
+        const c = sku.states[s];
+        return c && (c.curaleaf_anchor || c.market);
+      });
+      html += '<button class="pc-dropdown-item' + (hasData ? '' : ' no-data') + '" data-key="' + k + '" role="menuitem">' +
+              sizeLabel +
+              '<span class="pc-dropdown-item-meta">' + sku.n_retailers_total + ' retailer' + (sku.n_retailers_total===1?'':'s') + '</span>' +
+              '</button>';
+      pcDropdownKeys.add(k);
+    }
+    html += '</div>';
+  }
+  panel.innerHTML = html;
+  panel.querySelectorAll('.pc-dropdown-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.getAttribute('data-key');
+      selectSku(k);
+      setDropdownOpen(false);
+    });
   });
 }
-function setHTML(bind, html) { setText(bind, html, true); }
+function setDropdownOpen(open) {
+  const panel = document.getElementById('pc-dropdown-panel');
+  const trigger = document.getElementById('pc-dropdown-trigger');
+  if (open) {
+    panel.removeAttribute('hidden');
+    trigger.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+  } else {
+    panel.setAttribute('hidden', '');
+    trigger.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+}
 
+// ─────────────────────────────────────────────────────────────
+// Selection
+// ─────────────────────────────────────────────────────────────
+function selectSku(key) {
+  if (!getSku(key)) return;
+  pcCurrentKey = key;
+  // If current state has no data, fall back
+  const c = getCell(key, pcCurrentState);
+  if (!c || (!c.curaleaf_anchor && !c.market)) {
+    pcCurrentState = firstStateWithData(key);
+  }
+  render();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Render
+// ─────────────────────────────────────────────────────────────
 function render() {
-  const [brand, pack] = pcCurrentKey.split("__");
-  const labels = BRAND_LABELS[pcCurrentKey];
+  const sku = getSku(pcCurrentKey);
+  if (!sku) return;
+  const cell = getCell(pcCurrentKey, pcCurrentState);
+  const anchor = cell ? cell.curaleaf_anchor : null;
+  const market = cell ? cell.market : null;
+  const retailers = cell ? (cell.retailers || []) : [];
 
-  // Update state-toggle sublines with availability hint
+  // SKU meta line
+  setHTML("sku-meta",
+    "Showing <strong>" + sku.label + "</strong> · " + sku.n_retailers_total +
+    " retailer" + (sku.n_retailers_total===1?'':'s') + " across IL+NJ+NY"
+  );
+
+  // State toggle sublines
   ["IL","NJ","NY"].forEach(s => {
-    const a = getAgg(brand, pack, s);
-    const hasAnchor = a && a.own_n > 0;
-    const sub = hasAnchor ? ("anchor · " + a.own_n + " store" + (a.own_n>1?"s":"")) : "market only";
+    const c = sku.states[s];
+    let sub;
+    if (!c || (!c.curaleaf_anchor && !c.market)) sub = "no data";
+    else if (c.curaleaf_anchor) sub = "anchor · " + c.curaleaf_anchor.n_stores + " store" + (c.curaleaf_anchor.n_stores===1?'':'s');
+    else sub = "market only · " + (c.market ? c.market.n_retailers : 0) + " retailers";
     setHTML(s.toLowerCase()+"-sub", sub);
   });
 
-  const agg = getAgg(brand, pack, pcCurrentState);
-  if (!agg) return;
+  // Tab + state pill states
+  document.querySelectorAll('.pc-product-tab').forEach(b => {
+    const k = b.getAttribute('data-key');
+    if (b.classList.contains('pc-dropdown-trigger')) {
+      const inDropdown = pcDropdownKeys.has(pcCurrentKey);
+      b.classList.toggle('active', inDropdown);
+      if (inDropdown) {
+        setText('dropdown-trigger-brand', sku.brand_display);
+        setText('dropdown-trigger-pack',  sku.label.replace(sku.brand_display + " ", "") + " ▾");
+      } else {
+        setText('dropdown-trigger-brand', "Choose your own product");
+        setText('dropdown-trigger-pack',  "17 more SKUs ▾");
+      }
+    } else {
+      b.classList.toggle('active', k === pcCurrentKey);
+      b.setAttribute('aria-selected', k === pcCurrentKey ? 'true' : 'false');
+    }
+  });
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    const s = b.getAttribute('data-state');
+    b.classList.toggle('active', s === pcCurrentState);
+    b.setAttribute('aria-selected', s === pcCurrentState ? 'true' : 'false');
+    const c = sku.states[s];
+    const isEmpty = !c || (!c.curaleaf_anchor && !c.market);
+    b.style.opacity = isEmpty ? '0.45' : '';
+  });
 
-  const hasAnchor = agg.own_n > 0;
-  let deltaPct = null;
-  if (hasAnchor) deltaPct = pctDelta(agg.own_avg, agg.median);
+  // BLUF
+  setHTML('bluf', composeBluf(sku, anchor, market));
 
-  // Hero block
-  if (hasAnchor) {
-    setHTML("hero-anchor", fmtMoney(agg.own_avg));
+  // Hero — anchor
+  if (anchor) {
+    setHTML("hero-anchor", fmtMoney(anchor.median_effective));
+    const rangeBit = (anchor.min_effective !== anchor.max_effective)
+      ? (" · range " + fmtMoney(anchor.min_effective) + "&ndash;" + fmtMoney(anchor.max_effective))
+      : "";
     setHTML("hero-anchor-sub",
-      "Mean across <strong>" + agg.own_n + "</strong> Curaleaf-owned " + (agg.own_n>1?"stores":"store") +
-      " in " + pcCurrentState + " · range " + fmtMoney(agg.own_min) + "&ndash;" + fmtMoney(agg.own_max)
+      "Median across <strong>" + anchor.n_stores + "</strong> Curaleaf-owned " +
+      (anchor.n_stores===1?"store":"stores") + " in " + pcCurrentState + rangeBit +
+      (anchor.median_regular !== anchor.median_effective
+        ? (" · regular " + fmtMoney(anchor.median_regular))
+        : "")
     );
-    const v = verdictForDelta(deltaPct);
-    setHTML("hero-verdict-line",
-      "Market median <strong>" + fmtMoney(agg.median) + "</strong> across " + agg.market_n +
-      " retailer" + (agg.market_n>1?"s":"") + " (" + agg.market_obs + " priced observations · range " +
-      fmtMoney(agg.market_min) + "&ndash;" + fmtMoney(agg.market_max) + ")."
+  } else {
+    setHTML("hero-anchor", "n/a");
+    setHTML("hero-anchor-sub",
+      "<strong>No Curaleaf-owned store</strong> carries " + sku.label + " in " + pcCurrentState +
+      ". This cell shows market spread only until Curaleaf provides MSRP."
     );
+  }
+
+  // Hero — market dual price
+  if (market) {
+    setHTML("mkt-reg", fmtMoney(market.median_regular));
+    setHTML("mkt-eff", fmtMoney(market.median_effective));
+    const discounted = market.median_effective !== null && market.median_regular !== null && market.median_effective < market.median_regular;
+    const effEl = document.querySelector('[data-bind="mkt-eff"]');
+    if (effEl) effEl.classList.toggle('discounted', discounted);
+
+    const parts = [];
+    parts.push("Across <strong>" + market.n_retailers + "</strong> retailer" + (market.n_retailers===1?'':'s') + " · " + market.n_observations + " priced observations");
+    if (market.promo_participation_pct !== null && market.promo_participation_pct !== undefined) {
+      const p = market.promo_participation_pct;
+      const d = market.avg_promo_discount_pct;
+      parts.push('<span class="pc-promo-pct">' + p.toFixed(0) + '% on promo</span>' + (d ? (' · avg ' + d.toFixed(0) + '% off') : ''));
+    } else {
+      parts.push("no promo observations");
+    }
+    setHTML("mkt-promo", parts.join(" · "));
+
+    // Verdict (anchor effective vs market effective)
+    const delta = anchor ? pctDelta(anchor.median_effective, market.median_effective) : null;
+    const v = verdictForDelta(delta);
     const pillEl = document.querySelector('[data-bind="hero-verdict-pill"]');
     pillEl.className = "diq-verdict pc-verdict-hero " + v.cls;
     pillEl.textContent = v.label;
   } else {
-    setHTML("hero-anchor", "n/a");
-    setHTML("hero-anchor-sub",
-      "<strong>No Curaleaf-owned store</strong> carries " + labels.brand + " " + labels.pack + " in " + pcCurrentState +
-      ". This cell shows market spread only until Curaleaf provides MSRP."
-    );
-    setHTML("hero-verdict-line",
-      "Market median <strong>" + fmtMoney(agg.median) + "</strong> across " + agg.market_n +
-      " retailer" + (agg.market_n>1?"s":"") + " · range " + fmtMoney(agg.market_min) + "&ndash;" + fmtMoney(agg.market_max) + "."
-    );
+    setHTML("mkt-reg", "—");
+    setHTML("mkt-eff", "—");
+    setHTML("mkt-promo", "No qualifying retailers in this state.");
     const pillEl = document.querySelector('[data-bind="hero-verdict-pill"]');
     pillEl.className = "diq-verdict pc-verdict-hero verdict-mod";
-    pillEl.textContent = "Market-only · no Curaleaf anchor";
+    pillEl.textContent = "Empty cell — no data";
   }
 
-  // Ladder title / meta
-  setHTML("ladder-title", labels.brand + " " + labels.pack + " · " + pcCurrentState);
-  const ladderMeta = hasAnchor
-    ? ("Curaleaf-owned anchor in teal · market retailers in sky")
-    : ("Market retailers only · no Curaleaf-owned anchor available");
-  setHTML("ladder-meta", ladderMeta);
+  // Ladder
+  renderLadder(sku, anchor, market, retailers);
 
-  // Build ladder
-  const allRetailers = getRetailers(brand, pack, pcCurrentState).slice().sort((a, b) => b.median_p - a.median_p);
-  const maxPrice = Math.max(...allRetailers.map(r => r.median_p));
-  const anchorPrice = hasAnchor ? agg.own_avg : null;
+  // Table
+  renderTable(sku, anchor, market, retailers);
+}
+
+function composeBluf(sku, anchor, market) {
+  if (!market) {
+    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no qualifying retailers in this state. Try a different state from the toggle below.";
+  }
+  if (!anchor) {
+    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no Curaleaf-owned store carries this SKU in " +
+      pcCurrentState + " yet — market spread shown for context. Market median <strong>" +
+      fmtMoney(market.median_effective) + "</strong> effective vs <strong>" + fmtMoney(market.median_regular) +
+      "</strong> regular across " + market.n_retailers + " retailers" +
+      (market.promo_participation_pct ? (" · " + market.promo_participation_pct.toFixed(0) + "% on promo") : "") + ".";
+  }
+  const delta = pctDelta(anchor.median_effective, market.median_effective);
+  const v = verdictForDelta(delta);
+  let stance;
+  if (v.cls === "verdict-tight") stance = "Curaleaf is undercutting the market";
+  else if (v.cls === "verdict-mod") stance = "Curaleaf is priced in line with the market";
+  else stance = "Curaleaf is priced above the market";
+  return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> " + stance +
+    ". Curaleaf-owned anchor <strong>" + fmtMoney(anchor.median_effective) +
+    "</strong> vs market median-effective <strong>" + fmtMoney(market.median_effective) +
+    "</strong> (regular " + fmtMoney(market.median_regular) + ") &mdash; <strong>" + v.label + "</strong>. " +
+    (market.promo_participation_pct ?
+      (market.promo_participation_pct.toFixed(0) + "% of market observations were discounted") : "Few promo observations in this cell") + ".";
+}
+
+function renderLadder(sku, anchor, market, retailers) {
+  setHTML("ladder-title", sku.label + " · " + pcCurrentState);
+  setHTML("ladder-meta",
+    anchor ? "Curaleaf-owned anchor in teal · market retailers in sky · darker bar = regular (MSRP), lighter overlay = effective"
+           : "Market retailers only · no Curaleaf-owned anchor available"
+  );
+
+  // Build ordered list: anchor at top (if exists), then market retailers sorted by median_effective desc
+  const sorted = retailers.slice().sort((a, b) => b.median_effective - a.median_effective);
+  let rows = sorted.slice();
+  if (anchor) {
+    rows.unshift({
+      dispensary_name: "Curaleaf-owned anchor",
+      n_observations: anchor.n_stores,
+      median_regular: anchor.median_regular,
+      median_effective: anchor.median_effective,
+      is_own: true,
+      vs_anchor_pct_effective: 0
+    });
+  }
+
+  // Drop very long tails for chart readability
+  const capped = rows.length > 25 ? rows.slice(0, 25) : rows;
+  const maxPrice = Math.max.apply(null, capped.map(r => Math.max(r.median_regular || 0, r.median_effective || 0)));
+
   const ladderEl = document.getElementById("pc-ladder");
-  ladderEl.innerHTML = allRetailers.map(r => {
-    const widthPct = (r.median_p / maxPrice) * 100;
-    const isOwn = r.cohort === "own";
-    const delta = anchorPrice ? ((r.median_p - anchorPrice) / anchorPrice) * 100 : null;
+  ladderEl.innerHTML = capped.map(r => {
+    const isOwn = !!r.is_own;
+    const regPct  = ((r.median_regular   || r.median_effective) / maxPrice) * 100;
+    const effPct  = ((r.median_effective || r.median_regular)   / maxPrice) * 100;
+
     let deltaHtml = "—";
-    if (delta !== null && !isOwn) {
-      const cls = delta > 5 ? "pc-delta-pos" : (delta < -5 ? "pc-delta-neg" : "pc-delta-flat");
-      const sign = delta > 0 ? "+" : "";
-      deltaHtml = '<span class="'+cls+'">'+sign+delta.toFixed(0)+'%</span>';
-    } else if (isOwn) {
+    if (isOwn) {
       deltaHtml = '<span class="pc-delta-flat">anchor</span>';
+    } else if (r.vs_anchor_pct_effective !== null && r.vs_anchor_pct_effective !== undefined) {
+      const d = r.vs_anchor_pct_effective;
+      const cls = d > 5 ? "pc-delta-pos" : (d < -5 ? "pc-delta-neg" : "pc-delta-flat");
+      deltaHtml = '<span class="'+cls+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
     }
-    return '<div class="pc-ladder-row '+(isOwn?"own":"")+'">' +
-      '<div class="pc-ladder-name">'+ (isOwn?"★ ":"") + r.retailer +' <span style="color:var(--ink-faint);font-size:10px">· n='+r.n+'</span></div>' +
-      '<div class="pc-ladder-bar-wrap"><div class="pc-ladder-bar '+(isOwn?"own":"")+'" style="width:'+widthPct+'%"></div></div>' +
-      '<div class="pc-ladder-price">'+fmtMoney(r.median_p)+'</div>' +
+
+    const priceCell =
+      '<span>' + fmtMoney(r.median_effective) + '</span>' +
+      ((r.median_regular !== null && r.median_regular !== r.median_effective)
+        ? '<span class="pc-ladder-price-sub">reg ' + fmtMoney(r.median_regular) + '</span>'
+        : '');
+
+    return '<div class="pc-ladder-row '+(isOwn?'own':'')+'">' +
+      '<div class="pc-ladder-name">'+ (isOwn?'★ ':'') + r.dispensary_name +
+        ' <span style="color:var(--ink-faint);font-size:10px">· n='+r.n_observations+'</span></div>' +
+      '<div class="pc-ladder-bar-wrap">' +
+        '<div class="pc-ladder-bar-reg" style="width:'+regPct+'%"></div>' +
+        '<div class="pc-ladder-bar-eff '+(isOwn?'own':'')+'" style="width:'+effPct+'%"></div>' +
+      '</div>' +
+      '<div class="pc-ladder-price">'+priceCell+'</div>' +
       '<div class="pc-ladder-delta">'+deltaHtml+'</div>' +
       '</div>';
   }).join("");
 
-  // Table meta + body
+  if (rows.length > 25) {
+    ladderEl.innerHTML += '<p style="font-size:11px;color:var(--ink-faint);margin-top:8px">Showing top 25 of ' + rows.length + ' retailers · see full list on page 2</p>';
+  }
+}
+
+function renderTable(sku, anchor, market, retailers) {
+  setHTML("table-title", "Retailer detail · " + sku.label + " · " + pcCurrentState);
   setHTML("table-meta",
-    labels.brand + " " + labels.pack + " · " + pcCurrentState +
-    " · " + allRetailers.length + " retailer cohort" + (allRetailers.length>1?"s":"") +
-    (hasAnchor ? " (1 Curaleaf-owned, " + (allRetailers.length-1) + " market)" : "")
+    (retailers.length) + " market retailer" + (retailers.length===1?'':'s') +
+    (anchor ? (" · Curaleaf-owned anchor " + fmtMoney(anchor.median_effective)) : "")
   );
+
   const tbody = document.getElementById("pc-table-body");
-  tbody.innerHTML = allRetailers.map(r => {
-    const isOwn = r.cohort === "own";
-    const delta = anchorPrice && !isOwn ? ((r.median_p - anchorPrice) / anchorPrice) * 100 : null;
+  if (!retailers.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying market retailers in this cell.</td></tr>';
+    setHTML("table-note", "");
+    return;
+  }
+
+  // Sort: lowest effective first (most aggressive)
+  const sorted = retailers.slice().sort((a, b) => a.median_effective - b.median_effective);
+  tbody.innerHTML = sorted.map(r => {
     let deltaCell = "<span style='color:var(--ink-faint)'>—</span>";
-    if (delta !== null) {
-      const cls = delta > 5 ? "pc-delta-pos" : (delta < -5 ? "pc-delta-neg" : "pc-delta-flat");
-      const sign = delta > 0 ? "+" : "";
-      deltaCell = '<span class="'+cls+'">'+sign+delta.toFixed(1)+'%</span> <span style="color:var(--ink-faint);font-size:11px">vs anchor</span>';
-    } else if (isOwn) {
-      deltaCell = '<span style="color:var(--teal-bright);font-weight:700">— anchor —</span>';
+    if (r.vs_anchor_pct_effective !== null && r.vs_anchor_pct_effective !== undefined) {
+      const d = r.vs_anchor_pct_effective;
+      const cls = d > 5 ? "pc-delta-pos" : (d < -5 ? "pc-delta-neg" : "pc-delta-flat");
+      deltaCell = '<span class="'+cls+'">'+(d>0?'+':'')+d.toFixed(1)+'%</span>';
     }
-    const cohortPill = isOwn
-      ? '<span class="diq-verdict verdict-tight">Curaleaf-owned</span>'
-      : '<span class="diq-verdict verdict-mod">Market</span>';
-    const rowClass = isOwn ? "diq-row-curaleaf" : "";
-    return '<tr class="'+rowClass+'">' +
-      '<td>' + r.retailer + '</td>' +
-      '<td>' + cohortPill + '</td>' +
-      '<td class="r">' + r.locations + '</td>' +
-      '<td class="r">' + r.n + '</td>' +
-      '<td class="r"><strong>' + fmtMoney(r.median_p) + '</strong></td>' +
+    let pctOff = "—";
+    if (r.is_on_promo && r.median_regular && r.median_effective && r.median_regular > r.median_effective) {
+      const off = 100 * (r.median_regular - r.median_effective) / r.median_regular;
+      pctOff = '<span class="pc-delta-pos">' + off.toFixed(0) + '%</span>';
+    }
+    const regCell = (r.median_regular !== null && r.median_regular !== r.median_effective)
+      ? '<strong>' + fmtMoney(r.median_regular) + '</strong>'
+      : '<span style="color:var(--ink-faint)">' + fmtMoney(r.median_regular) + '</span>';
+    return '<tr>' +
+      '<td>' + r.dispensary_name + '</td>' +
+      '<td class="r">' + r.n_observations + '</td>' +
+      '<td class="r">' + regCell + '</td>' +
+      '<td class="r"><strong>' + fmtMoney(r.median_effective) + '</strong></td>' +
+      '<td class="r">' + pctOff + '</td>' +
       '<td class="r">' + deltaCell + '</td>' +
       '</tr>';
   }).join("");
 
-  const tableNote = hasAnchor
-    ? "Sorted high-to-low. Curaleaf-owned row highlighted. Delta = retailer median &times; (1 − Curaleaf anchor); +X% means retailer is priced above Curaleaf retail, −X% means below."
-    : "Sorted high-to-low. No Curaleaf-owned store available as anchor for this state — delta column is suppressed.";
-  setHTML("table-note", tableNote);
-
-  // Toggle states
-  document.querySelectorAll('.pc-product-tab').forEach(b => {
-    const a = b.getAttribute('data-key') === pcCurrentKey;
-    b.classList.toggle('active', a);
-    b.setAttribute('aria-selected', a ? 'true' : 'false');
-  });
-  document.querySelectorAll('.diq-toggle').forEach(b => {
-    const a = b.getAttribute('data-state') === pcCurrentState;
-    b.classList.toggle('active', a);
-    b.setAttribute('aria-selected', a ? 'true' : 'false');
-  });
+  setHTML("table-note",
+    "Sorted lowest effective first. % off = (regular − effective) / regular when retailer is on promo; blank otherwise. vs Curaleaf anchor compares the retailer's median effective to the Curaleaf-owned anchor's median effective — negative = retailer is cheaper than Curaleaf retail."
+  );
 }
 
-document.querySelectorAll('.pc-product-tab').forEach(b => {
-  b.addEventListener('click', () => {
-    pcCurrentKey = b.getAttribute('data-key');
-    // If switching to a brand-state combo with no data, default to first state with data
-    const [brand, pack] = pcCurrentKey.split("__");
-    const cur = getAgg(brand, pack, pcCurrentState);
-    if (!cur) {
-      const fallback = PC_AGG.find(r => r.brand === brand && r.pack === pack);
-      if (fallback) pcCurrentState = fallback.state;
-    }
-    render();
-  });
-});
-document.querySelectorAll('.diq-toggle').forEach(b => {
-  b.addEventListener('click', () => {
-    pcCurrentState = b.getAttribute('data-state');
-    render();
-  });
-});
+// ─────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const resp = await fetch('data/price_comparison_payload.json', { cache: 'no-store' });
+    PC_DATA = await resp.json();
+  } catch (e) {
+    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load price_comparison_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
+    return;
+  }
+  PC_SKU_MAP = {};
+  PC_DATA.skus.forEach(s => { PC_SKU_MAP[s.key] = s; });
 
-render();
+  // Manifest footer date
+  if (PC_DATA.manifest.generated_at) {
+    setText('gen-date', PC_DATA.manifest.generated_at.slice(0, 10));
+  }
+  if (PC_DATA.manifest.week_iso) {
+    setText('gen-week', PC_DATA.manifest.week_iso);
+  }
+
+  buildDropdown();
+
+  // Wire tab + state click handlers
+  document.querySelectorAll('.pc-product-tab').forEach(b => {
+    if (b.classList.contains('pc-dropdown-trigger')) {
+      b.addEventListener('click', () => {
+        const panel = document.getElementById('pc-dropdown-panel');
+        setDropdownOpen(panel.hasAttribute('hidden'));
+      });
+    } else {
+      b.addEventListener('click', () => {
+        setDropdownOpen(false);
+        selectSku(b.getAttribute('data-key'));
+      });
+    }
+  });
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    b.addEventListener('click', () => {
+      pcCurrentState = b.getAttribute('data-state');
+      render();
+    });
+  });
+  document.addEventListener('click', (e) => {
+    const panel = document.getElementById('pc-dropdown-panel');
+    const trigger = document.getElementById('pc-dropdown-trigger');
+    if (panel.hasAttribute('hidden')) return;
+    if (panel.contains(e.target) || trigger.contains(e.target)) return;
+    setDropdownOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setDropdownOpen(false);
+  });
+
+  // Default selection — first default tab
+  pcCurrentKey = PC_DATA.manifest.default_tabs[0];
+  pcCurrentState = firstStateWithData(pcCurrentKey);
+  render();
+}
+
+init();
 </script>
 
 </body>
