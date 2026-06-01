@@ -8,8 +8,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Accounts · DispensaryIQ</title>
-  <script src="assets/theme.js?v=20"></script>
-  <link rel="stylesheet" href="assets/style.css?v=20">
+  <script src="assets/theme.js?v=24"></script>
+  <link rel="stylesheet" href="assets/style.css?v=24">
+  <style>
+    /* Structural-only helpers — colours come from existing --tokens, no new palette */
+    .na-list { list-style: none; margin: 0; padding: 0; }
+    .na-list li {
+      display: flex; align-items: baseline; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--rule);
+    }
+    .na-list li:last-child { border-bottom: none; }
+    .na-rank { font-variant-numeric: tabular-nums; color: var(--ink-faint); font-size: 12px; min-width: 26px; }
+    .na-door { font-weight: 600; }
+    .na-state { font-size: 11px; color: var(--ink-soft); font-family: 'Consolas', monospace; }
+    .na-tags { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+    .na-tag {
+      font-size: 10px; font-family: 'Consolas', monospace; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 1px 6px; border-radius: 3px;
+      background: var(--surface-soft); color: var(--ink-soft); border: 1px solid var(--rule);
+    }
+    .na-tag.indie { opacity: 0.7; }
+    .na-colfilter { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; align-items: center; }
+    .na-cf-btn {
+      font-size: 11px; font-family: 'Consolas', monospace; cursor: pointer;
+      padding: 3px 9px; border-radius: 5px; border: 1px solid var(--rule);
+      background: var(--surface); color: var(--ink-soft); transition: all 0.12s;
+    }
+    .na-cf-btn .na-cf-glyph { font-weight: 700; margin-left: 5px; }
+    .na-cf-btn[data-fs="present"] { border-color: var(--teal); color: var(--teal); }
+    .na-cf-btn[data-fs="absent"]  { border-color: var(--coral); color: var(--coral); }
+    .na-cf-btn.na-cf-cura[data-fs="present"],
+    .na-cf-btn.na-cf-cura[data-fs="absent"] { border-color: var(--coral); color: var(--coral); }
+    .na-matrix th { cursor: pointer; white-space: nowrap; user-select: none; }
+    .na-matrix th .na-arrow { font-size: 9px; color: var(--ink-faint); }
+    .na-matrix td.na-c { text-align: center; }
+    .na-yes { color: var(--teal); font-weight: 700; }
+    .na-no  { color: var(--ink-faint); }
+    .na-matrix th.na-cura-col, .na-matrix td.na-cura-col {
+      background: rgba(219, 84, 97, 0.08);
+      border-left: 2px solid var(--coral);
+      border-right: 1px solid rgba(219, 84, 97, 0.25);
+    }
+    .na-matrix th.na-cura-col { color: var(--coral); }
+    .na-yes.na-cura { color: var(--coral); }
+    .na-count { color: var(--ink-faint); font-size: 12px; font-weight: 400; }
+  </style>
 </head>
 <body>
 
@@ -33,7 +76,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W3 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -54,66 +97,110 @@
 </nav>
 
 <main class="diq-main">
-  <div class="diq-phase2-banner" style="margin-top:14px">
-    <div class="icon">&#9888;</div>
-    <div class="text"><span class="label">Week 20 baseline</span> &middot; superseded by cleaned-model W3 &middot; refresh pending</div>
-  </div>
-
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Report &middot; Named-account action list &middot; <span class="diq-preview-pill">Live data</span></p>
+    <p class="diq-page-eyebrow">Report &middot; White-space account map &middot; <span class="diq-preview-pill">Live data</span></p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
       <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
     </div>
 
-    <h1 class="diq-page-title">Named-account action list</h1>
-    <p class="diq-page-subtitle">Real dispensaries from this week's capture, ranked by priority. P0 pricing offenders are the most extreme deviations from Synthetic MSRP at retailers carrying Curaleaf SKUs. P1 distribution opportunities are top NY at-risk prospects (carrying Leal/Rolling Green, no Find).</p>
+    <h1 class="diq-page-title">White-space account map</h1>
+    <p class="diq-page-subtitle">Every assessed dispensary in the pilot, classified by whether Curaleaf is on the shelf. <strong>White space</strong> is a door carrying zero Curaleaf SKUs &mdash; split into <strong>displacement</strong> targets (a tracked MSO competitor holds shelf Curaleaf is absent from) and <strong>greenfield</strong> (open, no major present). Toggle to the full distribution matrix to see every door &times; every portfolio.</p>
   </header>
 
   <section class="diq-section">
-    <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
-      <p class="diq-callout-label" style="color: var(--coral)">&#9656; This week &middot; P0 pricing action list</p>
-      <p style="margin:0">12 named accounts pricing Curaleaf SKUs &ge;25% above (or below) Synthetic MSRP, with at least 3 observations supporting the call. Worst offenders are New York Select 1g vape stores (RISE Dispensary NY at +71% with 26 observations is the most credible call). Illinois has the deepest Select 2g vape excursions at Maribis and Greenhouse.</p>
+    <div class="diq-toggle-bar" role="tablist" aria-label="Select account view">
+      <button class="diq-toggle active" data-view="WHITESPACE" role="tab" aria-selected="true">
+        <span class="diq-toggle-label">White-space lead</span>
+        <span class="diq-toggle-sub">the who &middot; displacement + greenfield</span>
+      </button>
+      <button class="diq-toggle" data-view="MATRIX" role="tab" aria-selected="false">
+        <span class="diq-toggle-label">Distribution matrix</span>
+        <span class="diq-toggle-sub">450 doors &times; 7 portfolios</span>
+      </button>
     </div>
   </section>
 
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">P0 / P1 pricing offenders</h2>
-      <span class="diq-section-meta">Real dispensaries &middot; ranked by deviation magnitude &middot; minimum 3 observations</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead><tr><th>Account</th><th>City</th><th>State</th><th>Brand &middot; pack</th><th>Observed</th><th>MSRP</th><th>Deviation</th><th>Obs</th><th>Action</th><th>Pri</th></tr></thead>
-      <tbody id="diq-pricing-tbody"></tbody>
-    </table>
-  </section>
+  <!-- ───────────────────────── VIEW A — WHITE-SPACE LEAD ───────────────────────── -->
+  <div id="na-view-whitespace">
+    <section class="diq-section">
+      <div class="diq-hero-metric">
+        <div>
+          <p class="diq-hero-label">White space</p>
+          <p class="diq-hero-number"><span data-bind="ws-count">287</span> <span style="font-size:18px;color:var(--ink-soft)">of <span data-bind="assessed">450</span></span></p>
+        </div>
+        <div>
+          <p class="diq-hero-label">assessed dispensaries carry zero Curaleaf</p>
+          <p class="diq-hero-body">
+            <strong><span data-bind="disp-count">85</span> displacement</strong> &mdash; a tracked MSO competitor is on the shelf; displace them.
+            <strong><span data-bind="gf-count">202</span> greenfield</strong> &mdash; open door, no major present.
+            The remaining <span data-bind="cura-count">163</span> assessed doors already carry Curaleaf.
+          </p>
+        </div>
+      </div>
+    </section>
 
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">P1 distribution opportunities &middot; top NY at-risk prospects</h2>
-      <span class="diq-section-meta">NY dispensaries carrying Leal/Rolling Green with zero Find &middot; ranked by competitor SKU count</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead><tr><th>Account</th><th>City</th><th>State</th><th>Observed</th><th>Action</th><th>Pri</th></tr></thead>
-      <tbody id="diq-dist-tbody"></tbody>
-    </table>
-  </section>
+    <section class="diq-section">
+      <div class="diq-section-head">
+        <h2 class="diq-section-title">Displacement targets <span class="na-count">&middot; <span data-bind="disp-count-2">85</span> doors</span></h2>
+        <span class="diq-section-meta">Zero Curaleaf &middot; &ge;1 tracked MSO competitor on shelf &middot; sorted by state, then competitor count</span>
+      </div>
+      <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06); margin-bottom: 14px">
+        <p style="margin:0">A competitor holds shelf space Curaleaf is absent from &mdash; the hottest targets. Tags show which portfolios each door already carries.</p>
+      </div>
+      <ul class="na-list" id="na-disp-list"></ul>
+    </section>
 
-  <section class="diq-section">
-    <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; Sample size and confidence</p>
-      <p style="margin:0">Every account on this list has at least 3 price observations for the flagged SKU cohort. The highest-confidence call is RISE Dispensary NY on Select 1g vape (n=26). Below n=10 the deviation is directional, not statistically conclusive. Phase 3 will add account-owner assignment, last-touched timestamp, and a 4-week trend across the five execution dimensions per account.</p>
-    </div>
-  </section>
+    <section class="diq-section">
+      <div class="diq-section-head">
+        <h2 class="diq-section-title">Greenfield <span class="na-count">&middot; <span data-bind="gf-count-2">202</span> doors</span></h2>
+        <span class="diq-section-meta">Zero Curaleaf &middot; zero tracked MSO &middot; uncontested &middot; sorted by state, then name</span>
+      </div>
+      <div class="diq-callout" style="margin-bottom: 14px">
+        <p style="margin:0">Open shelf &mdash; no major MSO present. No incumbent to displace; the question is simply whether to land.</p>
+      </div>
+      <ul class="na-list" id="na-gf-list"></ul>
+    </section>
 
-  <section class="diq-section">
-    <div class="diq-callout" style="border-color: #DB8C5E; background: rgba(219, 140, 94, 0.06)">
-      <p class="diq-callout-label" style="color: #DB8C5E">&#9656; Phase 3 enhancement &middot; Q4 2026</p>
-      <p style="margin:0">The above lists are real data, surfaced today. Phase 3 adds: (a) account-owner assignment from Curaleaf sales ops, (b) 4-week trend across all five dimensions per account, (c) commercial-terms overlay (current contract, current programs, target SKUs), (d) recommended-action templates per offender pattern, (e) last-touched timestamp. The data layer is live; the operational wrapper unlocks once Curaleaf provides the named-account universe and owner assignments.</p>
-    </div>
-  </section>
+    <section class="diq-section">
+      <div class="diq-callout">
+        <p class="diq-callout-label">&#9656; Denominator &amp; disclosure</p>
+        <p style="margin:0">White space is measured against the <strong><span data-bind="assessed-2">450</span> assessed doors</strong> &mdash; dispensaries with enough priced shelf data to classify (&ge;5 priced items, not zero-row). The panel holds <span data-bind="panel">523</span> doors total; the other <strong><span data-bind="unassessed">73</span> are unassessed</strong> (insufficient data this week) and are <em>not</em> counted as white space. The 523 panel figure is the SHARE-metric denominator used on other pages &mdash; a different metric; do not cross-compare it with the 450 assessed base here.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ───────────────────────── VIEW B — DISTRIBUTION MATRIX ───────────────────────── -->
+  <div id="na-view-matrix" hidden>
+    <section class="diq-section">
+      <div class="diq-section-head">
+        <h2 class="diq-section-title">Full distribution matrix <span class="na-count">&middot; <span id="na-matrix-count">450</span> doors</span></h2>
+        <span class="diq-section-meta">Every assessed door &times; portfolio &middot; click a column to sort &middot; filter below</span>
+      </div>
+
+      <div class="diq-toggle-bar diq-toggle-secondary" role="tablist" aria-label="Filter by state" id="na-state-filter">
+        <button class="diq-toggle-sm active" data-state="ALL" role="tab" aria-selected="true"><span class="diq-toggle-label">All states</span></button>
+        <button class="diq-toggle-sm" data-state="NY" role="tab" aria-selected="false"><span class="diq-toggle-label">New York</span></button>
+        <button class="diq-toggle-sm" data-state="NJ" role="tab" aria-selected="false"><span class="diq-toggle-label">New Jersey</span></button>
+        <button class="diq-toggle-sm" data-state="IL" role="tab" aria-selected="false"><span class="diq-toggle-label">Illinois</span></button>
+      </div>
+
+      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 4px">Click a portfolio to cycle filter: <strong>&middot; any</strong> &rarr; <strong style="color:var(--teal)">&check; present</strong> &rarr; <strong style="color:var(--coral)">&times; absent</strong>. Set <strong>RYTHM &check;</strong> + <strong style="color:var(--coral)">Curaleaf &times;</strong> to isolate the RYTHM-held slice of the displacement list live.</p>
+      <div class="na-colfilter" id="na-colfilter"></div>
+
+      <table class="diq-cat-table na-matrix" id="na-matrix-table">
+        <thead><tr id="na-matrix-head"></tr></thead>
+        <tbody id="na-matrix-tbody"></tbody>
+      </table>
+
+      <div class="diq-callout" style="margin-top: 14px">
+        <p class="diq-callout-label">&#9656; Reading the matrix</p>
+        <p style="margin:0">The <strong style="color:var(--coral)">Curaleaf</strong> column (coral) is the insight axis &mdash; absence of a coral mark is the opportunity. A blank in a competitor column means <strong>that competitor is absent from that door</strong>, not missing data. Tracked-competitor coverage is uneven by state: <strong>Trulieve</strong> shows zero across the pilot panel and <strong>Ascend</strong> is effectively absent from New York, so their columns read empty in NY by reality, not omission.</p>
+      </div>
+    </section>
+  </div>
 
 </main>
 
@@ -122,42 +209,197 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span data-bind="gen-date">2026-06-01</span> &middot; <span data-bind="gen-week">W3</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
-<script src="assets/export.js?v=20"></script>
+<script src="assets/export.js?v=24"></script>
 
 <script>
-const PRICING = [{"name": "RISE Dispensary", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$60.00", "msrp": "$35.00", "dev": "+71%", "n": 26, "action": "Pricing investigation \u2014 highest sample-size offender in pilot", "flag": "P0"}, {"name": "ZenZest", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$68.00", "msrp": "$35.00", "dev": "+94%", "n": 8, "action": "Pricing investigation", "flag": "P0"}, {"name": "Maribis of Springfield", "city": "Springfield", "state": "IL", "brand": "Select 2g vape", "observed": "$90.00", "msrp": "$60.45", "dev": "+49%", "n": 7, "action": "Pricing investigation", "flag": "P0"}, {"name": "Greenhouse Dispensary", "city": "Deerfield", "state": "IL", "brand": "Select 2g vape", "observed": "$93.00", "msrp": "$60.45", "dev": "+54%", "n": 6, "action": "Pricing investigation", "flag": "P0"}, {"name": "Vireo Health", "city": "Johnson City", "state": "NY", "brand": "Select 1g vape", "observed": "$50.00", "msrp": "$35.00", "dev": "+43%", "n": 5, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Dispensary", "city": "New York", "state": "NY", "brand": "Find 3.5g flower", "observed": "$35.00", "msrp": "$19.50", "dev": "+80%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Dispensary", "city": "Charleston", "state": "IL", "brand": "Find 6.25g pre-roll", "observed": "$85.00", "msrp": "$60.00", "dev": "+42%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "RISE Medical & Rec Dispensary", "city": "Canton", "state": "IL", "brand": "Find 6.25g pre-roll", "observed": "$85.00", "msrp": "$60.00", "dev": "+42%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "Lighthouse Cannabis", "city": "New York", "state": "NY", "brand": "Select 1g vape", "observed": "$59.29", "msrp": "$35.00", "dev": "+69%", "n": 3, "action": "Pricing investigation", "flag": "P0"}, {"name": "SWAY Cannabis Dispensary", "city": "Chicago", "state": "IL", "brand": "Select 1g vape", "observed": "$50.00", "msrp": "$30.00", "dev": "+67%", "n": 4, "action": "Pricing investigation", "flag": "P0"}, {"name": "Beyond/Hello - Sauget", "city": "Sauget", "state": "IL", "brand": "Anthem 1g pre-roll", "observed": "$12.00", "msrp": "$19.00", "dev": "-37%", "n": 6, "action": "Pricing investigation (below-band)", "flag": "P1"}, {"name": "Beyond/Hello - Sauget", "city": "Sauget", "state": "IL", "brand": "Anthem 2.5g pre-roll", "observed": "$25.00", "msrp": "$39.00", "dev": "-36%", "n": 4, "action": "Pricing investigation (below-band)", "flag": "P1"}];
-const DIST = [{"name": "Black Market Canna Co LLC", "city": "Poughkeepsie", "state": "NY", "observed": "185 comp SKUs (Leal+RG)", "action": "Distribution opportunity \u2022 largest at-risk prospect in NY", "flag": "P1"}, {"name": "Misfits Dispensary", "city": "Rochester", "state": "NY", "observed": "177 Rolling Green SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Aspire", "city": "Ithaca", "state": "NY", "observed": "118 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "The Station Beacon", "city": "Beacon", "state": "NY", "observed": "115 Leal SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Northern Lights Dispensary", "city": "Canton", "state": "NY", "observed": "113 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Bloom Cannabis Dispensary", "city": "Penn Yan", "state": "NY", "observed": "99 Rolling Green SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Dryden Dispensary", "city": "Dryden", "state": "NY", "observed": "95 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Leafy Peaks", "city": "Waterford", "state": "NY", "observed": "85 Leal SKUs", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Wild Flower Dispensary", "city": "Auburn", "state": "NY", "observed": "83 comp SKUs (Leal+RG)", "action": "Distribution opportunity", "flag": "P1"}, {"name": "Smiley Exotics", "city": "New York", "state": "NY", "observed": "78 comp SKUs (Leal+RG)", "action": "Distribution opportunity \u2022 Manhattan", "flag": "P1"}];
-const PRI_CLS = {'P0':'diq-pri-p0','P1':'diq-pri-p1','P2':'diq-pri-p2','P3':'diq-pri-p3'};
-function priBadge(p) { return `<span class="diq-pri ${PRI_CLS[p]}">${p}</span>`; }
+// ─────────────────────────────────────────────────────────────
+// Named-accounts white-space map — reads data/named_accounts_payload.json
+// One payload, two lenses. doors[] filters reconcile to summary by construction.
+// ─────────────────────────────────────────────────────────────
+let NA = null;
 
-document.getElementById('diq-pricing-tbody').innerHTML = PRICING.map(a => `
-  <tr${a.flag === 'P0' ? ' style="background: rgba(219, 84, 97, 0.04)"' : ''}>
-    <td><strong>${a.name}</strong></td>
-    <td>${a.city}</td>
-    <td>${a.state}</td>
-    <td>${a.brand}</td>
-    <td>${a.observed}</td>
-    <td>${a.msrp}</td>
-    <td><strong style="color:${a.dev.startsWith('-') ? 'var(--sky)' : 'var(--coral)'}">${a.dev}</strong></td>
-    <td>${a.n}</td>
-    <td style="font-size:12px;color:var(--ink-soft)">${a.action}</td>
-    <td>${priBadge(a.flag)}</td>
-  </tr>`).join('');
+// Tracked MSO competitor portfolios (independents handled separately).
+const MSO = ['rythm', 'cresco', 'verano', 'trulieve', 'ascend'];
+const COMP_LABEL = { rythm: 'RYTHM', cresco: 'Cresco', verano: 'Verano', trulieve: 'Trulieve', ascend: 'Ascend', independents: 'Independents' };
+// Matrix columns after Door / State. Curaleaf first + visually distinct (coral).
+const MATRIX_COLS = ['curaleaf', 'rythm', 'cresco', 'verano', 'trulieve', 'ascend', 'independents'];
+const MATRIX_LABEL = { curaleaf: 'Curaleaf', rythm: 'RYTHM', cresco: 'Cresco', verano: 'Verano', trulieve: 'Trulieve', ascend: 'Ascend', independents: 'Independents' };
+const STATE_ORDER = { NY: 0, NJ: 1, IL: 2 };
 
-document.getElementById('diq-dist-tbody').innerHTML = DIST.map(a => `
-  <tr>
-    <td><strong>${a.name}</strong></td>
-    <td>${a.city}</td>
-    <td>${a.state}</td>
-    <td>${a.observed}</td>
-    <td style="font-size:12px;color:var(--ink-soft)">${a.action}</td>
-    <td>${priBadge(a.flag)}</td>
-  </tr>`).join('');
+function setText(bind, text) {
+  document.querySelectorAll('[data-bind="' + bind + '"]').forEach(el => { el.textContent = text; });
+}
+function has(door, key) { return key === 'curaleaf' ? !!door.has_curaleaf : !!door.competitors[key]; }
+function msoCount(door) { return MSO.reduce((n, k) => n + (door.competitors[k] ? 1 : 0), 0); }
+
+// ── View A lists ──────────────────────────────────────────────
+function renderWhitespace() {
+  const doors = NA.doors;
+  const disp = doors.filter(d => d.classification === 'displacement');
+  const gf   = doors.filter(d => d.classification === 'greenfield');
+
+  disp.sort((a, b) =>
+    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) ||
+    (msoCount(b) - msoCount(a)) ||
+    a.name.localeCompare(b.name));
+  gf.sort((a, b) =>
+    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) ||
+    a.name.localeCompare(b.name));
+
+  document.getElementById('na-disp-list').innerHTML = disp.map((d, i) => {
+    const msoTags = MSO.filter(k => d.competitors[k])
+      .map(k => `<span class="na-tag">${COMP_LABEL[k]}</span>`).join('');
+    const indieTag = d.competitors.independents ? '<span class="na-tag indie">Independents</span>' : '';
+    return `<li>
+      <span class="na-rank">${i + 1}</span>
+      <span class="na-door">${d.name}</span>
+      <span class="na-state">${d.state}</span>
+      <span class="na-tags">${msoTags}${indieTag}</span>
+    </li>`;
+  }).join('');
+
+  document.getElementById('na-gf-list').innerHTML = gf.map((d, i) =>
+    `<li>
+      <span class="na-rank">${i + 1}</span>
+      <span class="na-door">${d.name}</span>
+      <span class="na-state">${d.state}</span>
+    </li>`).join('');
+}
+
+// ── View B matrix (sortable + filterable) ─────────────────────
+let naStateFilter = 'ALL';
+const naColFilter = {};               // key -> 'any' | 'present' | 'absent'
+MATRIX_COLS.forEach(k => naColFilter[k] = 'any');
+let naSortCol = 'state';              // 'name' | 'state' | portfolio key
+let naSortDir = 1;
+
+function cycleFilter(s) { return s === 'any' ? 'present' : (s === 'present' ? 'absent' : 'any'); }
+function glyphFor(s) { return s === 'present' ? '&check;' : (s === 'absent' ? '&times;' : '&middot;'); }
+
+function buildColFilter() {
+  document.getElementById('na-colfilter').innerHTML = MATRIX_COLS.map(k =>
+    `<button class="na-cf-btn${k === 'curaleaf' ? ' na-cf-cura' : ''}" data-col="${k}" data-fs="any">
+       ${MATRIX_LABEL[k]}<span class="na-cf-glyph">&middot;</span>
+     </button>`).join('');
+  document.querySelectorAll('.na-cf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.getAttribute('data-col');
+      naColFilter[k] = cycleFilter(naColFilter[k]);
+      btn.setAttribute('data-fs', naColFilter[k]);
+      btn.querySelector('.na-cf-glyph').innerHTML = glyphFor(naColFilter[k]);
+      renderMatrix();
+    });
+  });
+}
+
+function buildHead() {
+  const cells = ['<th data-col="name">Door <span class="na-arrow"></span></th>',
+                 '<th data-col="state">State <span class="na-arrow"></span></th>'];
+  MATRIX_COLS.forEach(k => {
+    cells.push(`<th class="na-c${k === 'curaleaf' ? ' na-cura-col' : ''}" data-col="${k}">${MATRIX_LABEL[k]} <span class="na-arrow"></span></th>`);
+  });
+  document.getElementById('na-matrix-head').innerHTML = cells.join('');
+  document.querySelectorAll('#na-matrix-head th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.getAttribute('data-col');
+      if (naSortCol === col) { naSortDir *= -1; } else { naSortCol = col; naSortDir = 1; }
+      renderMatrix();
+    });
+  });
+}
+
+function matrixRows() {
+  return NA.doors.filter(d => {
+    if (naStateFilter !== 'ALL' && d.state !== naStateFilter) return false;
+    for (const k of MATRIX_COLS) {
+      const fs = naColFilter[k];
+      if (fs === 'present' && !has(d, k)) return false;
+      if (fs === 'absent'  &&  has(d, k)) return false;
+    }
+    return true;
+  });
+}
+
+function renderMatrix() {
+  const rows = matrixRows();
+  rows.sort((a, b) => {
+    let cmp;
+    if (naSortCol === 'name') cmp = a.name.localeCompare(b.name);
+    else if (naSortCol === 'state') cmp = (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || a.name.localeCompare(b.name);
+    else cmp = (has(a, naSortCol) === has(b, naSortCol)) ? a.name.localeCompare(b.name) : (has(a, naSortCol) ? -1 : 1);
+    return cmp * naSortDir;
+  });
+
+  document.getElementById('na-matrix-count').textContent = rows.length;
+  document.getElementById('na-matrix-tbody').innerHTML = rows.map(d => {
+    const cells = MATRIX_COLS.map(k => {
+      const on = has(d, k);
+      const cura = k === 'curaleaf';
+      const mark = on ? `<span class="na-yes${cura ? ' na-cura' : ''}">&check;</span>` : '<span class="na-no">&middot;</span>';
+      return `<td class="na-c${cura ? ' na-cura-col' : ''}">${mark}</td>`;
+    }).join('');
+    return `<tr><td><strong>${d.name}</strong></td><td class="na-state">${d.state}</td>${cells}</tr>`;
+  }).join('');
+
+  document.querySelectorAll('#na-matrix-head th').forEach(th => {
+    const arrow = th.querySelector('.na-arrow');
+    arrow.textContent = (th.getAttribute('data-col') === naSortCol) ? (naSortDir > 0 ? '▲' : '▼') : '';
+  });
+}
+
+// ── Toggle between the two views ──────────────────────────────
+function selectView(view) {
+  document.getElementById('na-view-whitespace').hidden = (view !== 'WHITESPACE');
+  document.getElementById('na-view-matrix').hidden = (view !== 'MATRIX');
+  document.querySelectorAll('.diq-toggle').forEach(b => {
+    const a = b.getAttribute('data-view') === view;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true' : 'false');
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────
+async function init() {
+  try {
+    const resp = await fetch('data/named_accounts_payload.json', { cache: 'no-store' });
+    NA = await resp.json();
+  } catch (e) {
+    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load named_accounts_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
+    return;
+  }
+
+  const s = NA.summary, m = NA.manifest || {};
+  setText('ws-count', s.whitespace);
+  setText('disp-count', s.displacement);   setText('disp-count-2', s.displacement);
+  setText('gf-count', s.greenfield);       setText('gf-count-2', s.greenfield);
+  setText('cura-count', s.curaleaf_doors);
+  setText('assessed', m.assessed_doors);   setText('assessed-2', m.assessed_doors);
+  setText('panel', m.panel_doors);
+  setText('unassessed', m.unassessed_doors);
+  if (m.generated_at) setText('gen-date', m.generated_at);
+  if (m.week_iso) setText('gen-week', m.week_iso);
+
+  renderWhitespace();
+  buildColFilter();
+  buildHead();
+  renderMatrix();
+
+  document.querySelectorAll('.diq-toggle').forEach(b =>
+    b.addEventListener('click', () => selectView(b.getAttribute('data-view'))));
+  document.querySelectorAll('#na-state-filter .diq-toggle-sm').forEach(b =>
+    b.addEventListener('click', () => {
+      naStateFilter = b.getAttribute('data-state');
+      document.querySelectorAll('#na-state-filter .diq-toggle-sm').forEach(x => {
+        const a = x === b; x.classList.toggle('active', a); x.setAttribute('aria-selected', a ? 'true' : 'false');
+      });
+      renderMatrix();
+    }));
+}
+init();
 </script>
 
 </body>
