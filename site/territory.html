@@ -8,8 +8,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Territory · DispensaryIQ</title>
-  <script src="assets/theme.js?v=20"></script>
-  <link rel="stylesheet" href="assets/style.css?v=20">
+  <script src="assets/theme.js?v=24"></script>
+  <link rel="stylesheet" href="assets/style.css?v=24">
+  <style>
+    /* Structural-only helpers — colours come from existing --tokens, no new palette */
+    .terr-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 760px) { .terr-cards { grid-template-columns: 1fr; } }
+    .terr-card {
+      border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 16px;
+      background: var(--surface);
+    }
+    .terr-card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+    .terr-state { font-size: 15px; font-weight: 700; }
+    .terr-badge {
+      font-size: 10px; font-family: 'Consolas', monospace; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 2px 7px; border-radius: 4px;
+      background: var(--coral-bg); color: var(--coral);
+    }
+    .terr-ws { font-size: 34px; font-weight: 800; line-height: 1; color: var(--coral); font-variant-numeric: tabular-nums; }
+    .terr-ws-sub { font-size: 12px; color: var(--ink-soft); margin: 3px 0 14px; }
+    .terr-rate { font-weight: 700; color: var(--ink); }
+    .terr-bar { display: flex; height: 9px; border-radius: 5px; overflow: hidden; margin: 4px 0 6px; background: var(--surface-soft); }
+    .terr-bar .seg-disp { background: var(--coral); }
+    .terr-bar .seg-gf { background: var(--sky); }
+    .terr-legend { display: flex; gap: 14px; font-size: 11px; color: var(--ink-soft); margin-bottom: 14px; }
+    .terr-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+    .terr-stats { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+    .terr-stats li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+    .terr-stats li:last-child { border-bottom: none; }
+    .terr-stats .k { color: var(--ink-soft); }
+    .terr-stats .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+  </style>
 </head>
 <body>
 
@@ -33,7 +62,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W3 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -54,101 +83,38 @@
 </nav>
 
 <main class="diq-main">
-  <div class="diq-phase2-banner" style="margin-top:14px">
-    <div class="icon">&#9888;</div>
-    <div class="text"><span class="label">Week 20 baseline</span> &middot; superseded by cleaned-model W3 &middot; refresh pending</div>
-  </div>
-
 
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Phase 2 wireframe &middot; Q3 2026 &middot; <span class="diq-preview-pill">Roadmapped</span></p>
+    <p class="diq-page-eyebrow">Report &middot; Geographic white-space &middot; <span class="diq-preview-pill">Live data</span></p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
       <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
     </div>
 
-    <h1 class="diq-page-title">Territory view — RVP heatmap</h1>
-    <p class="diq-page-subtitle">The territory layer rolls up the five-dimension execution scorecard into RVP territory boundaries with traffic-light status. This is the bridge between Brooke's market-level scorecard and the account-level action list (Phase 3).</p>
+    <h1 class="diq-page-title">Territory view — where the white space is</h1>
+    <p class="diq-page-subtitle">The same assessed-door universe as the account map, viewed geographically. Each state card shows white-space volume and rate, the displacement-vs-greenfield split, and the leading tracked competitor — the deploy-the-reps question of rate versus volume.</p>
   </header>
 
   <section class="diq-section">
-    <div class="diq-callout" style="border-color: #DB8C5E; background: rgba(219, 140, 94, 0.06)">
-      <p class="diq-callout-label" style="color: #DB8C5E">&#9656; Phase 2 — Q3 2026</p>
-      <p style="margin:0">Territory-level execution roll-up requires (a) Curaleaf RVP territory definitions for IL/NJ/NY, (b) shared cohort definition with field sales, (c) account-owner assignment data. Wireframe below is illustrative — the actual map populates with real territory boundaries and live data once the dependencies are provided.</p>
+    <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
+      <p class="diq-callout-label" style="color: var(--coral)">&#9656; Rate vs volume &middot; where to deploy</p>
+      <p style="margin:0"><strong>New Jersey carries the highest white-space RATE</strong> (<span data-bind="nj-rate">68.9</span>% of assessed doors) &mdash; the most efficient territory per rep. <strong>New York is the highest VOLUME</strong> (<span data-bind="ny-ws">189</span> open doors) &mdash; the biggest absolute prize. <strong>Illinois is the most penetrated</strong> (<span data-bind="il-rate">53.4</span>% white space, the lowest) &mdash; Curaleaf already holds the most shelf there. Rate tells you efficiency; volume tells you scale.</p>
     </div>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Wireframe &middot; NY territory roll-up</h2>
-      <span class="diq-section-meta">Illustrative layout &middot; not live data</span>
+      <h2 class="diq-section-title">State white-space cards</h2>
+      <span class="diq-section-meta">White space = zero-Curaleaf doors, of assessed doors per state &middot; ranked by volume</span>
     </div>
-    <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" class="diq-mock-menu">
-      <rect x="0" y="0" width="900" height="360" rx="8" fill="#11162A" stroke="#1A2074" stroke-width="1"/>
-
-      <!-- Territory cells (NY split into rough boroughs/regions, illustrative) -->
-      <g font-family="Calibri" font-size="11" fill="#F5F6FA">
-        <!-- Upstate -->
-        <rect x="40" y="40" width="220" height="90" rx="6" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E" stroke-width="1.5"/>
-        <text x="60" y="62" font-weight="bold" font-size="13">UPSTATE NY (RVP 1)</text>
-        <text x="60" y="84" fill="#00B98E" font-weight="bold" font-size="18">72 / 100</text>
-        <text x="60" y="103" fill="#B4BACC" font-size="11">62 doors · Find at 18 · ▲ 1.2</text>
-        <text x="60" y="118" fill="#7A8099" font-size="10">Top alert: Grassroots 3.5g IL-mirror discipline</text>
-
-        <!-- Hudson Valley -->
-        <rect x="280" y="40" width="220" height="90" rx="6" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E" stroke-width="1.5"/>
-        <text x="300" y="62" font-weight="bold" font-size="13">HUDSON VALLEY (RVP 2)</text>
-        <text x="300" y="84" fill="#DB8C5E" font-weight="bold" font-size="18">54 / 100</text>
-        <text x="300" y="103" fill="#B4BACC" font-size="11">87 doors · Find at 26 · ▼ 0.4</text>
-        <text x="300" y="118" fill="#7A8099" font-size="10">Top alert: 4 Q1 at-risk Leal/RG stores</text>
-
-        <!-- Brooklyn / Queens -->
-        <rect x="520" y="40" width="220" height="90" rx="6" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461" stroke-width="1.5"/>
-        <text x="540" y="62" font-weight="bold" font-size="13">BROOKLYN/QUEENS (RVP 3)</text>
-        <text x="540" y="84" fill="#DB5461" font-weight="bold" font-size="18">38 / 100</text>
-        <text x="540" y="103" fill="#B4BACC" font-size="11">141 doors · Find at 19 · ▼ 2.1</text>
-        <text x="540" y="118" fill="#7A8099" font-size="10">Top alert: 31 Q1 at-risk Leal/RG concentration</text>
-
-        <!-- Manhattan -->
-        <rect x="40" y="170" width="220" height="90" rx="6" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E" stroke-width="1.5"/>
-        <text x="60" y="192" font-weight="bold" font-size="13">MANHATTAN (RVP 4)</text>
-        <text x="60" y="214" fill="#00B98E" font-weight="bold" font-size="18">71 / 100</text>
-        <text x="60" y="233" fill="#B4BACC" font-size="11">98 doors · Find at 16 · ▲ 0.8</text>
-        <text x="60" y="248" fill="#7A8099" font-size="10">Top alert: Select 1g vape 4 retailers extreme</text>
-
-        <!-- Bronx -->
-        <rect x="280" y="170" width="220" height="90" rx="6" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E" stroke-width="1.5"/>
-        <text x="300" y="192" font-weight="bold" font-size="13">BRONX/WESTCHESTER (RVP 5)</text>
-        <text x="300" y="214" fill="#DB8C5E" font-weight="bold" font-size="18">52 / 100</text>
-        <text x="300" y="233" fill="#B4BACC" font-size="11">76 doors · Find at 6 · ▼ 0.2</text>
-        <text x="300" y="248" fill="#7A8099" font-size="10">Top alert: Find absent from 17 Leal-carried doors</text>
-
-        <!-- Long Island -->
-        <rect x="520" y="170" width="220" height="90" rx="6" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461" stroke-width="1.5"/>
-        <text x="540" y="192" font-weight="bold" font-size="13">LONG ISLAND (RVP 6)</text>
-        <text x="540" y="214" fill="#DB5461" font-weight="bold" font-size="18">41 / 100</text>
-        <text x="540" y="233" fill="#B4BACC" font-size="11">94 doors · Find at 4 · ▼ 1.5</text>
-        <text x="540" y="248" fill="#7A8099" font-size="10">Top alert: 23 Q1 prospects · Rolling Green dominance</text>
-
-        <!-- Legend -->
-        <line x1="40" y1="290" x2="860" y2="290" stroke="#1A2074" stroke-width="1"/>
-        <text x="40" y="312" fill="#B4BACC" font-size="11">Legend &nbsp;</text>
-        <rect x="100" y="302" width="14" height="14" fill="rgba(0, 185, 142, 0.20)" stroke="#00B98E"/>
-        <text x="120" y="313" fill="#7A8099" font-size="11">Strong (70+)</text>
-        <rect x="220" y="302" width="14" height="14" fill="rgba(219, 140, 94, 0.20)" stroke="#DB8C5E"/>
-        <text x="240" y="313" fill="#7A8099" font-size="11">Watch (50-69)</text>
-        <rect x="340" y="302" width="14" height="14" fill="rgba(219, 84, 97, 0.18)" stroke="#DB5461"/>
-        <text x="360" y="313" fill="#7A8099" font-size="11">Critical (&lt;50)</text>
-        <text x="500" y="313" fill="#7A8099" font-size="10">Phase 2 — illustrative wireframe with sample territory definitions</text>
-      </g>
-    </svg>
+    <div class="terr-cards" id="terr-cards"></div>
   </section>
 
   <section class="diq-section">
     <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; What this unlocks</p>
-      <p style="margin:0">Once live, each RVP owns their territory's five-dimension scorecard. A Monday-morning view answers "which territories are red, which are green, which are trending wrong direction?" Drill-down from any territory lands on the account-level action list (Phase 3). The state scorecard then aggregates territories instead of summing dispensaries directly.</p>
+      <p class="diq-callout-label">&#9656; Denominator &amp; reconciliation</p>
+      <p style="margin:0">Per-state white space is measured against that state's <strong>assessed doors</strong> (dispensaries with enough priced shelf data to classify). State assessed/Curaleaf/rate are derived from the door-level records; the displacement/greenfield/competitor counts come from the payload's <code>summary.by_state</code>. The three states sum to the pilot total: <span data-bind="sum-ws">287</span> white-space doors of <span data-bind="sum-assessed">450</span> assessed. This is the same <span data-bind="sum-ws-2">287</span> shown on the account map &mdash; one dataset, two lenses.</p>
     </div>
   </section>
 
@@ -159,12 +125,103 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span data-bind="gen-date">2026-06-01</span> &middot; <span data-bind="gen-week">W3</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
 
-<script src="assets/export.js?v=20"></script>
+<script src="assets/export.js?v=24"></script>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// Territory view — reads the SAME data/named_accounts_payload.json.
+// Geographic lens: summary.by_state for displacement/greenfield/competitor,
+// doors[] for assessed/curaleaf/rate (by_state does not carry those).
+// ─────────────────────────────────────────────────────────────
+let NA = null;
+const STATE_NAME = { NY: 'New York', NJ: 'New Jersey', IL: 'Illinois' };
+const COMP_LABEL = { rythm: 'RYTHM', cresco: 'Cresco', verano: 'Verano', trulieve: 'Trulieve', ascend: 'Ascend' };
+
+function setText(bind, text) {
+  document.querySelectorAll('[data-bind="' + bind + '"]').forEach(el => { el.textContent = text; });
+}
+
+function stateStats(st) {
+  const sd = NA.doors.filter(d => d.state === st);
+  const assessed = sd.length;
+  const curaleaf = sd.filter(d => d.has_curaleaf).length;
+  const bs = NA.summary.by_state[st];
+  const whitespace = bs.whitespace;                 // = displacement + greenfield
+  const rate = assessed ? (whitespace / assessed * 100) : 0;
+  // Top tracked competitor by door presence in-state.
+  let topKey = null, topN = -1;
+  Object.entries(bs.competitors).forEach(([k, n]) => { if (n > topN) { topN = n; topKey = k; } });
+  return { assessed, curaleaf, whitespace, rate,
+           displacement: bs.displacement, greenfield: bs.greenfield,
+           topKey, topN };
+}
+
+function renderCards() {
+  // Ranked by white-space volume (descending) — NY, NJ, IL on this data.
+  const order = Object.keys(NA.summary.by_state)
+    .sort((a, b) => NA.summary.by_state[b].whitespace - NA.summary.by_state[a].whitespace);
+
+  document.getElementById('terr-cards').innerHTML = order.map(st => {
+    const s = stateStats(st);
+    const dispPct = s.whitespace ? (s.displacement / s.whitespace * 100) : 0;
+    const gfPct = 100 - dispPct;
+    return `
+      <div class="terr-card">
+        <div class="terr-card-head">
+          <span class="terr-state">${STATE_NAME[st]} <span style="color:var(--ink-faint);font-weight:600;font-size:12px">${st}</span></span>
+          <span class="terr-badge">${s.rate.toFixed(1)}% white space</span>
+        </div>
+        <div class="terr-ws">${s.whitespace}</div>
+        <div class="terr-ws-sub">white-space doors &middot; of <strong>${s.assessed}</strong> assessed &middot; <span class="terr-rate">${s.rate.toFixed(1)}%</span></div>
+
+        <div class="terr-bar">
+          <div class="seg-disp" style="width:${dispPct}%"></div>
+          <div class="seg-gf" style="width:${gfPct}%"></div>
+        </div>
+        <div class="terr-legend">
+          <span><span class="dot" style="background:var(--coral)"></span>Displacement ${s.displacement}</span>
+          <span><span class="dot" style="background:var(--sky)"></span>Greenfield ${s.greenfield}</span>
+        </div>
+
+        <ul class="terr-stats">
+          <li><span class="k">Assessed doors</span><span class="v">${s.assessed}</span></li>
+          <li><span class="k">Carry Curaleaf</span><span class="v">${s.curaleaf}</span></li>
+          <li><span class="k">White space</span><span class="v">${s.whitespace} <span style="color:var(--ink-faint);font-weight:400">(${s.rate.toFixed(1)}%)</span></span></li>
+          <li><span class="k">Top competitor</span><span class="v">${COMP_LABEL[s.topKey] || s.topKey} <span style="color:var(--ink-faint);font-weight:400">${s.topN} doors</span></span></li>
+        </ul>
+      </div>`;
+  }).join('');
+}
+
+async function init() {
+  try {
+    const resp = await fetch('data/named_accounts_payload.json', { cache: 'no-store' });
+    NA = await resp.json();
+  } catch (e) {
+    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load named_accounts_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
+    return;
+  }
+
+  const m = NA.manifest || {}, s = NA.summary;
+  const ny = stateStats('NY'), nj = stateStats('NJ'), il = stateStats('IL');
+  setText('nj-rate', nj.rate.toFixed(1));
+  setText('ny-ws', ny.whitespace);
+  setText('il-rate', il.rate.toFixed(1));
+  setText('sum-ws', s.whitespace);  setText('sum-ws-2', s.whitespace);
+  setText('sum-assessed', m.assessed_doors);
+  if (m.generated_at) setText('gen-date', m.generated_at);
+  if (m.week_iso) setText('gen-week', m.week_iso);
+
+  renderCards();
+}
+init();
+</script>
+
 </body>
 </html>
