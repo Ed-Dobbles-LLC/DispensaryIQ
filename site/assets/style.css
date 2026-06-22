@@ -3093,3 +3093,71 @@ body.diq-print-mode .diq-eyebrow {
   color: var(--ink-soft);
   margin: 0;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   TEMPORAL VISUALS — coverage-over-time line + brand-presence bars
+   (temporal_payload.json, disp-temporal-v1). Both sit on a cream
+   "ground" so navy reads as the dominant ink and coral is the scarce
+   peak (latest coverage point + Curaleaf target brands). Montserrat.
+   ════════════════════════════════════════════════════════════════════ */
+.diq-trend-card {
+  background: #F5F4ED;                 /* cream ground */
+  border-radius: 8px;
+  padding: 26px 28px 22px;
+}
+.diq-trend-card svg { display: block; width: 100%; height: auto; }
+.diq-trend-card text { font-family: 'Montserrat', 'Calibri', sans-serif; }
+.diq-trend-foot {
+  font-family: 'Montserrat', 'Calibri', sans-serif;
+  font-size: 12px;
+  color: #6B7088;
+  margin: 14px 2px 0;
+  letter-spacing: 0.01em;
+}
+
+/* Brand-presence horizontal bars — also on a cream ground so navy
+   competitor bars stay legible (navy on the dark deck bg would vanish). */
+.diq-brandbars-card {
+  background: #F5F4ED;
+  border-radius: 8px;
+  padding: 22px 26px;
+}
+.diq-brandbars-legend {
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+  font-family: 'Montserrat', 'Calibri', sans-serif;
+  font-size: 12px; color: #6B7088; margin: 0 0 16px;
+}
+.diq-bb-swatch { display: inline-block; width: 13px; height: 13px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+.diq-brandbars { display: flex; flex-direction: column; gap: 6px; }
+.diq-bb-row {
+  display: grid;
+  grid-template-columns: 168px 1fr 118px;
+  gap: 14px; align-items: center;
+}
+.diq-bb-name {
+  font-family: 'Montserrat', 'Calibri', sans-serif;
+  font-size: 13px; font-weight: 700; color: #060A57;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: right;
+}
+.diq-bb-name .diq-bb-parent { display: block; font-weight: 400; font-size: 10px; color: #6B7088; letter-spacing: 0.02em; }
+.diq-bb-track { background: rgba(6, 10, 87, 0.07); border-radius: 3px; height: 22px; position: relative; overflow: hidden; }
+.diq-bb-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; min-width: 2px; }
+.diq-bb-fill.target { background: #DB5461; }      /* Curaleaf portfolio — coral */
+.diq-bb-fill.comp   { background: #060A57; }      /* competitors — navy */
+.diq-bb-val {
+  font-family: 'Montserrat', 'Calibri', sans-serif;
+  font-size: 12px; font-variant-numeric: tabular-nums; color: #060A57;
+  text-align: left; white-space: nowrap;
+}
+.diq-bb-val .diq-bb-doors { color: #6B7088; font-weight: 400; margin-left: 4px; }
+.diq-bb-row.target .diq-bb-name { color: #DB5461; }
+.diq-brandbars-foot {
+  font-family: 'Calibri', 'Montserrat', sans-serif;
+  font-size: 11.5px; color: #6B7088; font-style: italic;
+  margin: 16px 2px 0;
+}
+@media (max-width: 640px) {
+  .diq-bb-row { grid-template-columns: 110px 1fr 92px; gap: 8px; }
+  .diq-bb-name { font-size: 11px; }
+}

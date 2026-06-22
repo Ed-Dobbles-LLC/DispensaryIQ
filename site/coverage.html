@@ -9,10 +9,10 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Coverage · DispensaryIQ</title>
   <script src="assets/theme.js?v=20"></script>
-  <script src="assets/header.js?v=26"></script>
-  <link rel="stylesheet" href="assets/style.css?v=24">
+  <script src="assets/header.js?v=27"></script>
+  <link rel="stylesheet" href="assets/style.css?v=25">
 </head>
-<body data-diq-week-static>
+<body>
 
 <nav class="diq-nav">
   <div class="diq-nav-inner">
@@ -1053,6 +1053,19 @@
     </div>
   </section>
 
+  <!-- ───────────────── Cohort coverage over time (temporal_payload.json) ─────────────────
+       Fixed 2-point certified-coverage history. NOT wired to the week selector —
+       it shows coverage history regardless of which week is selected. -->
+  <section class="diq-section">
+    <div class="diq-section-head">
+      <h2 class="diq-section-title">Cohort coverage over time &mdash; certified weekly snapshots</h2>
+      <span class="diq-section-meta">2 certified weeks; line extends each Saturday</span>
+    </div>
+    <div class="diq-trend-card">
+      <div id="diq-coverage-trend" role="img" aria-label="Cohort coverage over time, certified weekly snapshots"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="diq-footer">
@@ -1092,6 +1105,54 @@
     tip.style.left = (ev.clientX - rect.left + 12) + 'px';
     tip.style.top = (ev.clientY - rect.top - 8) + 'px';
   });
+})();
+</script>
+
+<!-- Cohort coverage-over-time line chart — reads temporal_payload.json.
+     Numbers come from the file; the page computes nothing beyond layout. -->
+<script>
+(function () {
+  var mount = document.getElementById('diq-coverage-trend');
+  if (!mount) return;
+  fetch('data/temporal_payload.json', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .catch(function () { return null; })
+    .then(function (data) {
+      var pts = (data && Array.isArray(data.coverage_over_time)) ? data.coverage_over_time : null;
+      if (!pts || !pts.length) {
+        mount.innerHTML = '<p style="font-family:Montserrat,sans-serif;color:#6B7088;margin:6px 0">Coverage history unavailable.</p>';
+        return;
+      }
+      var COHORT = data.cohort_total || data.tracked_total || data.total_doors || 1139;
+      var W = 760, H = 320, padL = 56, padR = 44, padT = 64, padB = 52;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var vmin = Math.min.apply(null, pts.map(function (p) { return p.coverage_pct; }));
+      var dmin = Math.max(0, Math.floor((vmin - 5) / 10) * 10), dmax = 100;
+      var inset = 48;  // keep points (and their annotations) clear of the Y-axis labels
+      function xAt(i) { var L = padL + inset, R = W - padR - inset; return pts.length === 1 ? (L + R) / 2 : L + (R - L) * i / (pts.length - 1); }
+      function yAt(v) { return padT + (1 - (v - dmin) / (dmax - dmin)) * plotH; }
+      var s = ['<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">'];
+      for (var g = dmin; g <= dmax; g += 10) {
+        var gy = yAt(g).toFixed(1);
+        s.push('<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="rgba(6,10,87,0.10)" stroke-width="1"/>');
+        s.push('<text x="' + (padL - 10) + '" y="' + (yAt(g) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="#6B7088">' + g + '%</text>');
+      }
+      var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + xAt(i).toFixed(1) + ' ' + yAt(p.coverage_pct).toFixed(1); }).join(' ');
+      s.push('<path d="' + d + '" fill="none" stroke="#060A57" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>');
+      pts.forEach(function (p, i) {
+        var x = xAt(i), y = yAt(p.coverage_pct), last = (i === pts.length - 1);
+        var col = last ? '#DB5461' : '#060A57';
+        s.push('<text x="' + x.toFixed(1) + '" y="' + (y - 32).toFixed(1) + '" text-anchor="middle" font-size="20" font-weight="700" fill="' + col + '">' + p.coverage_pct + '%</text>');
+        if (p.good_doors != null) {
+          s.push('<text x="' + x.toFixed(1) + '" y="' + (y - 14).toFixed(1) + '" text-anchor="middle" font-size="11" fill="#6B7088">' + Number(p.good_doors).toLocaleString() + '/' + Number(COHORT).toLocaleString() + '</text>');
+        }
+        s.push('<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="7" fill="' + col + '" stroke="#F5F4ED" stroke-width="2"/>');
+        s.push('<text x="' + x.toFixed(1) + '" y="' + (H - padB + 24) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#060A57">' + (p.label || p.iso_week || '') + '</text>');
+        if (p.iso_week) s.push('<text x="' + x.toFixed(1) + '" y="' + (H - padB + 40) + '" text-anchor="middle" font-size="10" fill="#6B7088">' + p.iso_week + '</text>');
+      });
+      s.push('</svg>');
+      mount.innerHTML = s.join('');
+    });
 })();
 </script>
 

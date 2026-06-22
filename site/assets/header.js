@@ -35,7 +35,7 @@
     { label: 'Market share',       file: 'market-share.html' },
     { label: 'Named accounts',     file: 'named-accounts.html' },
     { label: 'Territory',          file: 'territory.html' },
-    // brand-presence: re-add when brand-presence.html ships
+    { label: 'Brand presence',     file: 'brand-presence.html' },
     { label: 'Coverage over time', file: 'coverage.html' }
   ];
 
