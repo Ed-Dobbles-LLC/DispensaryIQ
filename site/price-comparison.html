@@ -9,7 +9,8 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Price comparison · DispensaryIQ</title>
   <script src="assets/theme.js?v=23"></script>
-  <link rel="stylesheet" href="assets/style.css?v=23">
+  <script src="assets/header.js?v=25"></script>
+  <link rel="stylesheet" href="assets/style.css?v=24">
   <style>
     /* ──────────────────────────────────────────────────────────
        Product tab row — 5 default tabs + 1 dropdown trigger
@@ -281,20 +282,7 @@
 <nav class="diq-nav">
   <div class="diq-nav-inner">
     <a href="index.html" class="diq-logo">Dispensary<span class="accent">IQ</span></a>
-    <div class="diq-nav-links">
-      <a href="index.html" class="diq-nav-link">Scorecard</a>
-      <a href="coverage.html" class="diq-nav-link">Coverage</a>
-      <a href="products.html" class="diq-nav-link">Products</a>
-      <a href="price-comparison.html" class="diq-nav-link active">Price comparison</a>
-      <a href="market-share.html" class="diq-nav-link">Market share</a>
-      <a href="price-compliance.html" class="diq-nav-link">Price compliance</a>
-      <a href="display-quality.html" class="diq-nav-link">Display quality</a>
-      <a href="ny-find.html" class="diq-nav-link">NY watchlist</a>
-      <a href="alerts.html" class="diq-nav-link">Alerts</a>
-      <a href="week-over-week.html" class="diq-nav-link">Week-over-week</a>
-      <a href="territory.html" class="diq-nav-link phase">Territory</a>
-      <a href="named-accounts.html" class="diq-nav-link phase">Accounts</a>
-    </div>
+    <div class="diq-nav-controls" id="diq-nav-controls"></div>
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
@@ -1043,10 +1031,13 @@ function renderTable(sku, anchor, market, retailers) {
 // Init
 // ─────────────────────────────────────────────────────────────
 async function init() {
+  const _payloadUrl = (window.DIQ && DIQ.weekPayloadUrl) ? DIQ.weekPayloadUrl('data/price_comparison_payload.json') : 'data/price_comparison_payload.json';
   try {
-    const resp = await fetch('data/price_comparison_payload.json', { cache: 'no-store' });
+    const resp = await fetch(_payloadUrl, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     PC_DATA = await resp.json();
   } catch (e) {
+    if (window.DIQ && !DIQ.isDefaultWeek()) { DIQ.renderWeekEmptyState(); return; }
     document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load price_comparison_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
     return;
   }

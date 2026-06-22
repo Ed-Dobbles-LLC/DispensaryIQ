@@ -2977,3 +2977,119 @@ body.diq-print-mode .diq-report-meta,
 body.diq-print-mode .diq-eyebrow {
   margin-top: 0 !important;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   UNIFIED HEADER — page dropdown + week dropdown (header.js)
+   Replaces the old .diq-nav-links row. White select pills on the navy
+   nav bar; right-aligned on desktop, stack without overflow on mobile.
+   ════════════════════════════════════════════════════════════════════ */
+.diq-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;      /* hug the right, just left of the utility aside */
+  min-width: 0;
+}
+.diq-nav-select-wrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+/* Chevron (page) / calendar (week) glyph, drawn as a background SVG. */
+.diq-nav-select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.diq-nav-select-wrap-page::after {
+  /* chevron-down */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23060A57' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+}
+.diq-nav-select-wrap-week::after {
+  /* calendar */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23060A57' stroke-width='1.4'%3E%3Crect x='2' y='3' width='12' height='11' rx='1.5'/%3E%3Cpath d='M2 6.5h12M5 1.5v3M11 1.5v3' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.diq-nav-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-family: 'Montserrat', 'Calibri', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: #060A57;                       /* navy text per brand */
+  background: #FFFFFF;
+  border: 0.5px solid rgba(6, 10, 87, 0.35);
+  border-radius: 6px;
+  padding: 9px 34px 9px 14px;           /* room for the right-side glyph */
+  margin: 0;
+  cursor: pointer;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.diq-nav-select:hover {
+  border-color: rgba(6, 10, 87, 0.6);
+}
+.diq-nav-select:focus-visible {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(0, 185, 142, 0.35);
+}
+.diq-nav-select option {
+  color: #060A57;
+  background: #FFFFFF;
+}
+/* Mobile: let the bar wrap and the controls share a full-width row without
+   overflowing (the reason the link row became a dropdown in the first place). */
+@media (max-width: 760px) {
+  .diq-nav-inner { flex-wrap: wrap; gap: 14px 16px; }
+  .diq-nav-controls {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    gap: 10px;
+  }
+  .diq-nav-select-wrap { flex: 1 1 0; }
+  .diq-nav-select { width: 100%; font-size: 12px; padding: 9px 30px 9px 12px; }
+}
+
+/* Honest empty-state when a selected certified week has no published payload. */
+.diq-week-empty {
+  max-width: 640px;
+  margin: 64px auto;
+  padding: 40px 36px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  text-align: center;
+}
+.diq-week-empty-eyebrow {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin: 0 0 12px;
+}
+.diq-week-empty-title {
+  font-family: 'Montserrat', Calibri, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+.diq-week-empty-body {
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin: 0;
+}
