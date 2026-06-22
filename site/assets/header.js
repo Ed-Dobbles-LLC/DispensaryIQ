@@ -29,15 +29,13 @@
   var MOUNT_ID = 'diq-nav-controls';
 
   // Page dropdown options — label → file. Order is the deck order.
-  // brand-presence.html is intentionally listed before it is deployed: the
-  // option is present but the page may 404 until built (per brief).
   var PAGES = [
     { label: 'Pricing & position', file: 'price-comparison.html' },
     { label: 'Week-over-week',     file: 'week-over-week.html' },
     { label: 'Market share',       file: 'market-share.html' },
     { label: 'Named accounts',     file: 'named-accounts.html' },
     { label: 'Territory',          file: 'territory.html' },
-    { label: 'Brand presence',     file: 'brand-presence.html' },
+    // brand-presence: re-add when brand-presence.html ships
     { label: 'Coverage over time', file: 'coverage.html' }
   ];
 
