@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIP Ops · DispensaryIntelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
+  --ink:#E8E6DC; --ink-dim:rgba(232,230,220,.6); --ink-faint:rgba(232,230,220,.32);
+  --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
+  --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
+  --sky:#00D3A3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(6,10,87,.55) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0,185,142,.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(12,18,112,.55),transparent);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(0,185,142,.18)}
+.brand h1{font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+.status-pill{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;padding:8px 14px;border-radius:100px;background:rgba(0,185,142,.12);border:1px solid rgba(0,185,142,.3);color:var(--teal)}
+.status-pill .ping{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,185,142,.5)}70%{box-shadow:0 0 0 7px rgba(0,185,142,0)}100%{box-shadow:0 0 0 0 rgba(0,185,142,0)}}
+.refreshed{font-size:10.5px;color:var(--muted);font-weight:500}
+
+.wrap{max-width:1240px;margin:0 auto;padding:26px 28px 60px}
+.headline{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px;margin-bottom:22px}
+.card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:16px;padding:20px 22px;position:relative;overflow:visible}
+.card .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card .eyebrow::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--sky)}
+
+.cert .big{font-size:54px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.cert .big .pct{color:var(--teal)}
+.cert .sub{margin-top:10px;font-size:13px;color:var(--muted);font-weight:500}
+.cert .legs{display:flex;gap:24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.cert .leg b{display:block;font-size:22px;font-weight:700}
+.cert .leg span{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.badge-cert{position:absolute;top:18px;right:20px;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--teal);border:1px solid rgba(0,185,142,.35);border-radius:100px;padding:4px 10px;text-transform:uppercase}
+
+.stat .num{font-size:38px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.stat .lbl{font-size:12px;color:var(--muted);font-weight:500;margin-top:8px}
+.stat .delta{font-size:12px;font-weight:600;margin-top:12px;display:inline-flex;align-items:center;gap:5px}
+.up{color:var(--teal)} .warn{color:var(--coral)} .flat{color:var(--muted)}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:30px 0 14px}
+.sec-h h2{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.sec-h .note{font-size:11px;color:var(--muted);font-weight:500}
+
+.phases{display:flex;flex-direction:column;gap:2px}
+.phase{display:grid;grid-template-columns:160px 1fr auto;align-items:center;gap:16px;padding:13px 18px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid transparent}
+.phase:hover{background:rgba(255,255,255,.05)}
+.phase .pn{font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px}
+.phase .pn .pip{width:8px;height:8px;border-radius:50%;flex:none}
+.pip.ok{background:var(--teal)} .pip.stop{background:var(--coral)} .pip.idle{background:var(--muted-d)}
+.phase .bar{height:5px;border-radius:100px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+.phase .bar i{position:absolute;inset:0;border-radius:100px}
+.bar i.ok{background:linear-gradient(90deg,var(--teal),rgba(0,185,142,.4))}
+.bar i.stop{background:linear-gradient(90deg,var(--coral),rgba(219,84,97,.4))}
+.phase .meta{font-size:11px;color:var(--muted);font-weight:500;text-align:right;min-width:130px}
+.phase.stopped{border-color:rgba(219,84,97,.3);background:rgba(219,84,97,.06)}
+.phase .note-tag{font-size:10.5px;color:var(--coral);font-weight:600;margin-top:3px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel-title{font-size:12px;font-weight:700;letter-spacing:.05em;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.panel-title .tag{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+.gate{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.gate:last-child{border-bottom:none}
+.gate .gn{font-size:13px;font-weight:500}
+.gate .gv{font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+.chip{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
+.chip.live{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.chip.pending{background:rgba(133,228,253,.1);color:var(--sky);border:1px solid rgba(133,228,253,.25)}
+.chip.off{background:rgba(154,160,199,.1);color:var(--muted);border:1px solid rgba(154,160,199,.2)}
+
+.budget-bar{height:30px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden;position:relative;margin:14px 0 6px}
+.budget-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--teal),var(--sky));border-radius:8px}
+.budget-bar .cap{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700}
+.budget-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:500}
+
+.alert-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.alert-row:last-child{border-bottom:none}
+.alert-row .al{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
+.alert-row .ac{font-size:18px;font-weight:800}
+.sev-warn{color:var(--coral)} .sev-info{color:var(--sky)} .sev-mut{color:var(--muted)}
+
+.qrow{display:flex;gap:10px;flex-wrap:wrap}
+.qchip{flex:1;min-width:130px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.qchip .qn{font-size:24px;font-weight:800;line-height:1}
+.qchip .ql{font-size:11px;color:var(--muted);font-weight:500;margin-top:6px}
+
+.outlet-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.outlet-tbl th{text-align:left;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 12px 10px 0;border-bottom:1px solid var(--line)}
+.outlet-tbl td{padding:11px 12px 11px 0;border-bottom:1px solid rgba(255,255,255,.05);font-weight:500}
+.outlet-tbl tr:last-child td{border-bottom:none}
+.tag-drop{color:var(--coral);font-weight:700;font-size:11px}
+.tag-gain{color:var(--teal);font-weight:700;font-size:11px}
+.tag-cap{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
+.tag-real{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:rgba(0,185,142,.12);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+
+[data-help]{position:relative;cursor:help}
+[data-help]::after{
+  content:attr(data-help);
+  position:absolute;z-index:100;left:0;top:calc(100% + 10px);
+  width:300px;max-width:78vw;
+  background:#03051F;color:#E8EAF6;border:1px solid rgba(0,211,163,.30);
+  border-radius:11px;padding:13px 15px;
+  font-family:'Manrope',sans-serif;font-size:11.5px;font-weight:500;line-height:1.55;
+  letter-spacing:0;text-transform:none;text-align:left;
+  box-shadow:0 14px 40px rgba(0,0,0,.55);
+  opacity:0;transform:translateY(-4px);pointer-events:none;
+  transition:opacity .14s ease,transform .14s ease;white-space:pre-line;
+}
+[data-help]:hover::after{opacity:1;transform:translateY(0)}
+[data-help]::before{
+  content:"";position:absolute;z-index:101;left:18px;top:calc(100% + 4px);
+  border:6px solid transparent;border-bottom-color:rgba(133,228,253,.28);
+  opacity:0;transition:opacity .14s ease;pointer-events:none;
+}
+[data-help]:hover::before{opacity:1}
+.help-right[data-help]::after{left:auto;right:0}
+.help-right[data-help]::before{left:auto;right:18px}
+.qm{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--muted-d);color:var(--muted);font-size:9px;font-weight:700;margin-left:7px;vertical-align:middle;cursor:help;flex:none}
+.qm:hover{border-color:var(--sky);color:var(--sky)}
+
+.decision-key{margin:30px 0 8px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);font-weight:500}
+.decision-key b{color:var(--sky)}
+.footer-note{margin-top:20px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
+.footer-note b{color:var(--muted)}
+
+/* Auth overlay */
+.auth-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(3,5,31,.92);backdrop-filter:blur(8px)}
+.auth-box{background:rgba(6,10,45,.95);border:1px solid rgba(0,185,142,.25);border-radius:20px;padding:36px 40px;width:360px;text-align:center}
+.auth-box h2{font-size:18px;font-weight:800;margin-bottom:6px}
+.auth-box p{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.55}
+.auth-box input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+.auth-box input:focus{border-color:rgba(0,185,142,.4)}
+.auth-box button{width:100%;background:var(--teal);color:#03051F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.auth-box button:hover{background:var(--teal-bright)}
+.auth-err{font-size:11px;color:var(--coral);margin-top:8px;display:none}
+
+/* Error banner */
+.err-banner{background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.3);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--coral);margin-bottom:16px;display:none}
+
+@media(max-width:900px){.headline{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.phase{grid-template-columns:120px 1fr}.phase .meta{grid-column:1/-1;text-align:left}[data-help]::after{width:78vw}}
+</style>
+</head>
+<body>
+
+<!-- Auth overlay — shown when no key in sessionStorage -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <h2>DIP Ops Access</h2>
+    <p>Enter the ops admin key to view the pipeline control panel.<br>Internal use only.</p>
+    <input type="password" id="key-input" placeholder="Admin key" autocomplete="off">
+    <button id="key-submit">Unlock</button>
+    <div class="auth-err" id="auth-err">Incorrect key — try again</div>
+  </div>
+</div>
+
+<header>
+  <div class="brand"><span class="dot"></span><div><h1>DIP Ops Control</h1><small>DispensaryIntelligence · weekly pipeline</small></div></div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="refreshed" id="last-refreshed">loading…</span>
+    <div class="status-pill"><span class="ping"></span> <span id="cert-pill">Loading</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="err-banner" id="err-banner"></div>
+
+  <!-- HEADLINE -->
+  <div class="headline">
+    <div class="card cert" data-help="CERTIFIED COVERAGE — the headline number. Good doors ÷ cohort for the most recent week that passed every gate.&#10;&#10;DECISION: This is the number that can go in front of Curaleaf. If certified and ≥95%, pitch from it. If not certified, do NOT use externally.">
+      <div class="badge-cert">Certified</div>
+      <div class="eyebrow">This week · coverage</div>
+      <div class="big"><span class="pct" id="hl-pct">—</span><span style="font-size:24px;color:var(--muted)">%</span></div>
+      <div class="sub" id="hl-week">—</div>
+      <div class="legs">
+        <div class="leg" data-help="GOOD DOORS — outlets with ≥5 distinct brand|product pairs, positive price, non-null canonical brand, not invalidated.&#10;&#10;DECISION: If this falls below ~1,050, the coverage gate trips."><b id="hl-good">—</b><span id="hl-cohort-label">good doors / —</span></div>
+        <div class="leg" data-help="VISION-LEG GOOD — doors made good by the screenshot capture leg. The redundancy that holds coverage in the mid-90s.&#10;&#10;DECISION: A low vision number = vision capture needs a recovery pass."><b id="hl-vision">—</b><span>vision-leg good</span></div>
+      </div>
+    </div>
+    <div class="card stat" data-help="RECOVERY BUDGET — auto-spend on re-capturing failed/thin doors, against a $500 ceiling. Currently $0 — remediation loop (#341) not yet live.&#10;&#10;DECISION: When this approaches $500, the system auto-stops and escalates to you.">
+      <div class="eyebrow">Recovery budget</div>
+      <div class="num">$<span id="budget-spent">0</span><span style="font-size:18px;color:var(--muted)"> / <span id="budget-cap">500</span></span></div>
+      <div class="lbl">auto-spend this week</div>
+      <div class="delta flat">— remediation loop not yet live (#341)</div>
+    </div>
+    <div class="card stat help-right" data-help="OPEN ALERTS — state-change signals from the watcher. LANE-DROP = doors fell to a worse capture lane. STALLED = capture hung. Shown as COUNTS, not per-event pings.&#10;&#10;DECISION: Rising LANE-DROP before Saturday means next week's run is likely to self-abort.">
+      <div class="eyebrow">Open alerts</div>
+      <div class="num warn" id="hl-alerts">—</div>
+      <div class="lbl">LANE-DROP signals (state-change)</div>
+      <div class="delta warn" id="hl-stalled">—</div>
+    </div>
+  </div>
+
+  <!-- RUN BOARD -->
+  <div class="sec-h">
+    <h2>Run board · last Saturday <span class="qm" data-help="RUN BOARD — phase-by-phase trace of the most recent weekly pipeline run. Reads weekly_run_log.&#10;&#10;DECISION: STOP (coral) = week did NOT certify automatically and needs intervention. Green end-to-end = week certified hands-off.">?</span></h2>
+    <span class="note" id="run-board-note">loading…</span>
+  </div>
+  <div class="card"><div class="phases" id="phases"></div></div>
+
+  <!-- GATES + RECOVERY -->
+  <div class="sec-h"><h2>Quality gates &amp; recovery</h2><span class="note">research-shaped build status</span></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="panel-title">Certification gates <span class="tag">live / building</span></div>
+      <div class="gate" data-help="COVERAGE GATE — halts if good doors fall below threshold (~1,050 / 92%). Live.&#10;&#10;DECISION: none when green. When it trips, the week is suppressed — run recovery before re-certifying."><span class="gn">Coverage gate</span><span class="gv"><span class="chip live" id="gate-coverage">live</span></span></div>
+      <div class="gate" data-help="BRAND-CONFLICT GATE — halts if same product is attributed to conflicting brands. Live.&#10;&#10;DECISION: A trip means canonicalization error contaminating share-of-shelf."><span class="gn">Brand-conflict gate</span><span class="gv"><span class="chip live" id="gate-brand-conflict">live</span></span></div>
+      <div class="gate" data-help="PLAUSIBILITY GATE — halts on impossible values (price ≤$0, THC% out of range, null product type spikes). Live.&#10;&#10;DECISION: A trip points to an extraction defect."><span class="gn">Plausibility gate</span><span class="gv"><span class="chip live" id="gate-plausibility">live</span></span></div>
+      <div class="gate" data-help="EXTRACT-FAILURE HALT (#339) — stops the run when extract phase fails on too many doors and quarantines schema-bad rows instead of blind-retrying.&#10;&#10;DECISION: once live, protects automatically. Until live, watch the extract phase manually."><span class="gn">Extract-failure halt <span style="color:var(--muted-d);font-size:11px">#339</span></span><span class="gv"><span class="chip pending" id="gate-extract-halt">building</span></span></div>
+      <div class="gate help-right" data-help="WoW REGRESSION GATE (#340) — halts on a large week-over-week product/brand drop instead of letting it flow to the certified snapshot. The #1 silent-wrong-number fix.&#10;&#10;DECISION: when it halts, you decide whether the drop is a real shelf change or a capture miss."><span class="gn">WoW regression gate <span style="color:var(--muted-d);font-size:11px">#340</span></span><span class="gv"><span class="chip pending" id="gate-wow">building</span></span></div>
+      <div class="gate help-right" data-help="CROSS-LEG CORROBORATION (#340) — tells a REAL brand-departure from a CAPTURE MISS. Brand drops in text leg but vision still sees it → capture failure. Both legs lose it → real change.&#10;&#10;DECISION: turns the hardest judgment call into an evidence-backed answer."><span class="gn">Cross-leg corroboration <span style="color:var(--muted-d);font-size:11px">#340</span></span><span class="gv"><span class="chip pending" id="gate-cross-leg">building</span></span></div>
+    </div>
+    <div class="card">
+      <div class="panel-title">Remediation loop <span class="tag">#341 · headline build</span></div>
+      <div class="budget-bar" data-help="REMEDIATION BUDGET BAR — how much of the $500 weekly auto-recovery ceiling is reserved/spent.&#10;&#10;DECISION: at $500 it auto-stops and escalates. Raising the ceiling is your call."><i id="budget-bar-fill" style="width:0%"></i><span class="cap" id="budget-bar-label">$0 reserved · $500 cap</span></div>
+      <div class="budget-meta"><span id="budget-doors">0 doors recovered</span><span id="budget-breaker">0 retries · breaker closed</span></div>
+      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
+        <div class="gate" data-help="STATE MACHINE (#341) — detect → diagnose → bounded-retry → re-validate → certify-or-escalate.&#10;&#10;DECISION: once live, Saturday involvement drops to approving escalations only."><span class="gn">State machine</span><span class="gv"><span class="chip off">not built</span></span></div>
+        <div class="gate" data-help="$500 RESERVE-BEFORE-RETRY GUARD (#341) — reserves projected cost before each door so a retry storm can't blow the budget.&#10;&#10;DECISION: none — the hard guard that lets the loop run unsupervised safely."><span class="gn">$500 reserve-before-retry guard</span><span class="gv"><span class="chip off">not built</span></span></div>
+        <div class="gate help-right" data-help="CIRCUIT BREAKERS (#341) — if one capture lane fails many doors in a row, the breaker OPENS and stops retrying it.&#10;&#10;DECISION: an open breaker = a whole platform/lane broke — structural fix, not per-door recovery."><span class="gn">Per-lane circuit breakers</span><span class="gv"><span class="chip off">not built</span></span></div>
+        <div class="gate help-right" data-help="DEAD-LETTER QUEUE (#341) — doors that fail every automated retry land here with full evidence.&#10;&#10;DECISION: DLQ depth &gt; 0 is your manual queue — genuinely hard doors that need a human or new recipe."><span class="gn">Dead-letter queue</span><span class="gv"><span class="chip off">not built</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PER-OUTLET WoW REVIEW -->
+  <div class="sec-h">
+    <h2>Per-outlet week-over-week review <span class="qm" data-help="PER-OUTLET WoW REVIEW — every door whose shelf changed vs the prior certified week, with cross-leg evidence saying whether the change is REAL or a CAPTURE MISS.&#10;&#10;DECISION: 'capture-miss' rows go to recovery; 'real-change' rows are legitimate share-of-shelf movement.">?</span></h2>
+    <span class="note">artifact built by #340 · sample (stale-anchor view today)</span>
+  </div>
+  <div class="card">
+    <table class="outlet-tbl">
+      <thead><tr><th>Outlet</th><th>State</th><th>Brand</th><th>Change</th><th data-help="VERDICT — cross-leg corroboration result. CAPTURE MISS = text leg lost it but vision still shows it. REAL = both legs lost it.">Verdict ⓘ</th></tr></thead>
+      <tbody id="outlet-rows"></tbody>
+    </table>
+    <div style="margin-top:14px;font-size:11px;color:var(--muted);font-weight:500;line-height:1.6">
+      Anchored to the most recent certified window. <b style="color:var(--sky)">#340</b> auto-advances the anchor on every certify and writes this door-level review weekly.
+    </div>
+  </div>
+
+  <!-- ALERTS + QUEUES -->
+  <div class="sec-h"><h2>Alerts &amp; work queues</h2><span class="note">reading watcher_alerts + live queues</span></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="panel-title">Active alert conditions <span class="tag">watcher_alerts</span></div>
+      <div class="alert-row" data-help="STALLED — a capture attempt hung with no DOM growth. Count, not per-event pings.&#10;&#10;DECISION: high stall count concentrated on one lane = that lane needs a timeout bump or fallback."><span class="al"><span class="sev-warn">●</span> STALLED</span><span class="ac sev-warn" id="a-stall">—</span></div>
+      <div class="alert-row" data-help="LANE-DROP — doors fell to a worse capture lane than last week. THE silent-degradation signal.&#10;&#10;DECISION: rising LANE-DROP before Saturday = pre-queue a recovery pass."><span class="al"><span class="sev-warn">●</span> LANE-DROP</span><span class="ac sev-warn" id="a-lane">—</span></div>
+      <div class="alert-row" data-help="CEO-DECISION — items escalated to you for a judgment call (brand canonicalization, scope, cost above ceiling).&#10;&#10;DECISION: these are your queue — each one is waiting on an Ed answer."><span class="al"><span class="sev-info">●</span> CEO-DECISION</span><span class="ac sev-info" id="a-ceo">—</span></div>
+      <div class="alert-row" data-help="PR LIFECYCLE — build/merge events from the orchestration bus.&#10;&#10;DECISION: usually none — the Routine merges CI-green changes autonomously."><span class="al"><span class="sev-mut">●</span> PR lifecycle</span><span class="ac sev-mut" id="a-pr">—</span></div>
+    </div>
+    <div class="card">
+      <div class="panel-title">Work queues <span class="tag">depth</span></div>
+      <div class="qrow">
+        <div class="qchip" data-help="EXTRACTION PRIORITY QUEUE — doors staged for brand extraction.&#10;&#10;DECISION: depth alone is normal; not draining week-over-week = extraction throughput is the bottleneck."><div class="qn" id="q-extract">—</div><div class="ql">extraction priority</div></div>
+        <div class="qchip" data-help="CAPTURE BACKFILL QUEUE — doors needing a re-capture.&#10;&#10;DECISION: roughly your weekly recovery workload. #341 drains it within the $500 cap."><div class="qn" id="q-backfill">—</div><div class="ql">capture backfill</div></div>
+        <div class="qchip" data-help="DEAD-LETTER / REGRESSION QUEUE — doors that exhausted automated retries. #341 routes hard-fails here with evidence.&#10;&#10;DECISION: anything here is a genuine human-judgment door."><div class="qn" id="q-dead">—</div><div class="ql">dead-letter / regression</div></div>
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:var(--muted);font-weight:500;line-height:1.6">
+        Dead-letter is manual today — <b style="color:var(--sky)">#341</b> converts it into the auto-remediation overflow path with evidence packets.
+      </div>
+    </div>
+  </div>
+
+  <div class="decision-key">
+    <span><b>Hover legend:</b> every tile, gate, phase and metric has a tooltip — top line is <b>what it is</b>, "DECISION:" line is <b>the call it drives</b>.</span>
+  </div>
+  <div class="footer-note">
+    Live data via <span class="mono">dip-service /ops/api/state</span> · refreshes every 60 s.<br>
+    Tables: <span class="mono">weekly_qc_scorecard · weekly_run_log · watcher_alerts · extraction_priority_queue · menu_capture_backfill_queue · regression_manual_queue</span><br>
+    Internal ops cockpit · behind auth · not the public DispensaryIntelligence.com marketing site.
+  </div>
+</div>
+
+<script>
+const API = 'https://dip-service-production-0db3.up.railway.app/ops/api/state';
+const KEY_STORE = 'dip_ops_key';
+
+// ── Auth gate ────────────────────────────────────────────────────────
+const overlay = document.getElementById('auth-overlay');
+const keyInput = document.getElementById('key-input');
+const keySubmit = document.getElementById('key-submit');
+const authErr = document.getElementById('auth-err');
+
+function getKey() { return sessionStorage.getItem(KEY_STORE) || ''; }
+function setKey(k) { sessionStorage.setItem(KEY_STORE, k); }
+
+if (getKey()) overlay.style.display = 'none';
+
+keySubmit.addEventListener('click', async () => {
+  const k = keyInput.value.trim();
+  if (!k) return;
+  // Test the key by hitting the API
+  try {
+    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
+    if (r.ok) {
+      setKey(k);
+      overlay.style.display = 'none';
+      const json = await r.json();
+      hydrate(json.dashboard || json);
+    } else {
+      authErr.style.display = 'block';
+    }
+  } catch {
+    authErr.textContent = 'Network error — check your connection';
+    authErr.style.display = 'block';
+  }
+});
+keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') keySubmit.click(); });
+
+// ── Data fetch ───────────────────────────────────────────────────────
+const errBanner = document.getElementById('err-banner');
+
+async function fetchState() {
+  const k = getKey();
+  if (!k) return;
+  try {
+    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
+    if (r.status === 403) { sessionStorage.removeItem(KEY_STORE); location.reload(); return; }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    errBanner.style.display = 'none';
+    const json = await r.json();
+    hydrate(json.dashboard || json); // fall back to top-level for backwards compat
+  } catch (e) {
+    errBanner.textContent = `Refresh failed: ${e.message}`;
+    errBanner.style.display = 'block';
+  }
+}
+
+// ── Hydrate ──────────────────────────────────────────────────────────
+function fmt_dur(dur_s) {
+  if (!dur_s) return '—';
+  if (dur_s < 60) return `${dur_s}s`;
+  const h = Math.floor(dur_s / 3600);
+  const m = Math.floor((dur_s % 3600) / 60);
+  const s = dur_s % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+}
+
+function fmt_num(n) { return n.toLocaleString(); }
+
+function hydrate(d) {
+  document.getElementById('last-refreshed').textContent =
+    `live · refreshed ${new Date().toLocaleTimeString()}`;
+
+  // Certified headline
+  const c = d.certified;
+  if (c) {
+    const pct = c.coverage_pct.toFixed(2);
+    document.getElementById('hl-pct').textContent = pct;
+    document.getElementById('cert-pill').textContent = `Certified ${c.iso_week}`;
+    const scored = new Date(c.scored_at);
+    document.getElementById('hl-week').textContent =
+      `${c.week_run_id} · scored ${scored.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})} ${scored.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+    document.getElementById('hl-good').textContent = fmt_num(c.good_doors);
+    document.getElementById('hl-cohort-label').textContent = `good doors / ${fmt_num(c.cohort_doors)}`;
+    document.getElementById('hl-vision').textContent = fmt_num(c.vision_leg_good);
+  }
+
+  // Alerts headline
+  document.getElementById('hl-alerts').textContent = fmt_num(d.alerts['LANE-DROP'] || 0);
+  document.getElementById('hl-stalled').textContent =
+    `▲ ${fmt_num(d.alerts['STALLED'] || 0)} STALLED on dashboard (count, not pinged)`;
+
+  // Budget
+  const b = d.budget;
+  document.getElementById('budget-spent').textContent = b.spent_usd;
+  document.getElementById('budget-cap').textContent = b.cap_usd;
+  const pct_used = b.cap_usd > 0 ? Math.min(100, (b.spent_usd / b.cap_usd) * 100) : 0;
+  document.getElementById('budget-bar-fill').style.width = pct_used + '%';
+  document.getElementById('budget-bar-label').textContent =
+    `$${b.reserved_usd} reserved · $${b.cap_usd} cap`;
+  document.getElementById('budget-doors').textContent = `${b.doors_recovered} doors recovered`;
+  document.getElementById('budget-breaker').textContent =
+    `${b.retries} retries · breaker ${b.breaker_open ? 'OPEN' : 'closed'}`;
+
+  // Gates
+  const chipClass = s => s === 'live' ? 'chip live' : s === 'building' ? 'chip pending' : 'chip off';
+  const chipLabel = s => s === 'live' ? 'live' : s === 'building' ? 'building' : 'off';
+  const g = d.gates;
+  ['coverage','brand-conflict','plausibility','extract-halt','wow','cross-leg'].forEach(k => {
+    const el = document.getElementById('gate-' + k);
+    if (!el) return;
+    const key = k.replace('-','_').replace('halt','halt').replace('cross-leg','cross_leg').replace('brand-conflict','brand_conflict');
+    const val = g[key] || g[k] || 'off';
+    el.className = chipClass(val);
+    el.textContent = chipLabel(val);
+  });
+
+  // Run board
+  const pc = document.getElementById('phases');
+  pc.innerHTML = '';
+  let abortedNote = '';
+  (d.run_trace || []).forEach(p => {
+    // Skip duplicate phases (keep last one with ended_at if available)
+    const r = document.createElement('div');
+    r.className = 'phase' + (p.stop ? ' stopped' : '');
+    const pip = p.stop ? 'stop' : (p.ended_at ? 'ok' : 'idle');
+    const barPct = p.stop ? (p.dur_s ? 74 : 0) : (p.ended_at ? 100 : 0);
+    const noteHtml = p.notes
+      ? `<div class="note-tag">${p.notes}</div>` : '';
+    r.innerHTML = `<div class="pn"><span class="pip ${pip}"></span>${p.phase}</div>`+
+      `<div><div class="bar"><i class="${pip === 'stop' ? 'stop' : 'ok'}" style="width:${barPct}%"></i></div>${noteHtml}</div>`+
+      `<div class="meta">${fmt_dur(p.dur_s)}</div>`;
+    pc.appendChild(r);
+    if (p.stop) abortedNote = 'self-aborted on guardrail — certified number from manual reload';
+  });
+  document.getElementById('run-board-note').textContent =
+    abortedNote || (d.run_trace.length ? 'all phases clean' : 'no run data');
+
+  // Alert counts
+  document.getElementById('a-stall').textContent = fmt_num(d.alerts['STALLED'] || 0);
+  document.getElementById('a-lane').textContent = fmt_num(d.alerts['LANE-DROP'] || 0);
+  document.getElementById('a-ceo').textContent = fmt_num(d.alerts['CEO-DECISION'] || 0);
+  document.getElementById('a-pr').textContent = fmt_num(d.alerts['PR'] || 0);
+
+  // Queues
+  document.getElementById('q-extract').textContent = fmt_num(d.queues.extraction_priority);
+  document.getElementById('q-backfill').textContent = fmt_num(d.queues.capture_backfill);
+  document.getElementById('q-dead').textContent = fmt_num(d.queues.dead_letter);
+
+  // Outlet WoW review — static sample (will be wired to vw_wow_named_drops in #340)
+  if (!document.getElementById('outlet-rows').childElementCount) {
+    const outlets=[
+      {o:'Aroma Hills',s:'NY',b:'Reef',ch:'drop',v:'cap'},
+      {o:'Market 96',s:'NY',b:'Select',ch:'drop',v:'cap'},
+      {o:'Beleaf Medford',s:'NJ',b:'Grassroots',ch:'drop',v:'real'},
+      {o:'Green Mile',s:'IL',b:'JAMS',ch:'gain',v:'real'},
+      {o:'Verilife Romeoville',s:'IL',b:'Anthem',ch:'drop',v:'real'},
+    ];
+    const ob = document.getElementById('outlet-rows');
+    outlets.forEach(x => {
+      const tr = document.createElement('tr');
+      tr.innerHTML=`<td style="font-weight:600">${x.o}</td><td class="mono" style="color:var(--muted)">${x.s}</td><td>${x.b}</td>`+
+        `<td><span class="${x.ch==='drop'?'tag-drop':'tag-gain'}">${x.ch==='drop'?'▼ lost':'▲ gained'}</span></td>`+
+        `<td>${x.v==='cap'?'<span class="tag-cap">capture miss</span>':'<span class="tag-real">real change</span>'}</td>`;
+      ob.appendChild(tr);
+    });
+  }
+}
+
+// ── Init + 60s refresh ───────────────────────────────────────────────
+if (getKey()) fetchState();
+setInterval(() => { if (getKey()) fetchState(); }, 60000);
+</script>
+</body>
+</html>
