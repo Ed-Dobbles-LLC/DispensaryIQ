@@ -310,7 +310,8 @@ keySubmit.addEventListener('click', async () => {
     if (r.ok) {
       setKey(k);
       overlay.style.display = 'none';
-      hydrate(await r.json());
+      const json = await r.json();
+      hydrate(json.dashboard || json);
     } else {
       authErr.style.display = 'block';
     }
@@ -332,7 +333,8 @@ async function fetchState() {
     if (r.status === 403) { sessionStorage.removeItem(KEY_STORE); location.reload(); return; }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     errBanner.style.display = 'none';
-    hydrate(await r.json());
+    const json = await r.json();
+    hydrate(json.dashboard || json); // fall back to top-level for backwards compat
   } catch (e) {
     errBanner.textContent = `Refresh failed: ${e.message}`;
     errBanner.style.display = 'block';
