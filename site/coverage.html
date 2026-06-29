@@ -21,7 +21,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span id="diq-v-week">W26</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -42,9 +42,9 @@
 </nav>
 
 <main class="diq-main">
-  <div class="diq-phase2-banner" style="margin-top:14px">
+  <div id="diq-stale-banner" class="diq-phase2-banner" style="display:none;margin-top:14px">
     <div class="icon">&#9888;</div>
-    <div class="text"><span class="label">Week 20 baseline</span> &middot; superseded by cleaned-model W3 &middot; refresh pending</div>
+    <div class="text"><span id="diq-stale-msg">Data may be stale &mdash; unable to reach live endpoint.</span></div>
   </div>
 
 
@@ -57,19 +57,19 @@
     </div>
 
     <h1 class="diq-page-title">Where we have intelligence today.</h1>
-    <p class="diq-page-subtitle">1,006 dispensaries with priced extraction data across Illinois, New Jersey, and New York. Refreshed this week. Each dot below is a real store with verified products on its menu.</p>
+    <p class="diq-page-subtitle"><span id="diq-good-doors-subtitle">985</span> dispensaries with priced extraction data across Illinois, New Jersey, and New York. Refreshed this week. Each dot below is a real store with verified products on its menu.</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-hero-metric">
       <div>
         <p class="diq-hero-label">Total dispensaries with data</p>
-        <p class="diq-hero-number">1,006</p>
+        <p class="diq-hero-number" id="diq-hero-good-doors">985</p>
       </div>
       <div>
         <p class="diq-hero-label">Across three states</p>
         <p class="diq-hero-body">
-          <strong>393,594 products tracked</strong> with brand, category, price, and THC% captured. 352,110 of those (89%) have a verified price. Coverage is built on license-reconciled dispensary universes &mdash; gray-market storefronts are filtered out before any number reaches this page.
+          <strong><span id="diq-distinct-products">640,514</span> products tracked</strong> with brand, category, price, and THC% captured. 352,110 have a verified price. Coverage is built on license-reconciled dispensary universes &mdash; gray-market storefronts are filtered out before any number reaches this page.
         </p>
       </div>
     </div>
@@ -83,11 +83,11 @@
 
     <div class="diq-map-wrap">
       <div class="diq-map-legend">
-        <span><span class="diq-legend-dot" style="background: #00B98E"></span>Illinois &mdash; 236 dispensaries</span>
-        <span><span class="diq-legend-dot" style="background: #85E4FD"></span>New Jersey &mdash; 180</span>
-        <span><span class="diq-legend-dot" style="background: #DB8C5E"></span>New York &mdash; 496</span>
+        <span><span class="diq-legend-dot" style="background: #00B98E"></span>Illinois &mdash; <span id="diq-legend-IL">230</span> dispensaries</span>
+        <span><span class="diq-legend-dot" style="background: #85E4FD"></span>New Jersey &mdash; <span id="diq-legend-NJ">153</span></span>
+        <span><span class="diq-legend-dot" style="background: #DB8C5E"></span>New York &mdash; <span id="diq-legend-NY">599</span></span>
       </div>
-      <div id="diq-map" style="width: 100%;"><svg viewBox="0 0 1100 460" width="100%" height="460" role="img" aria-label="912 dispensaries plotted across Illinois, New Jersey, and New York, sized by product count" xmlns="http://www.w3.org/2000/svg">
+      <div id="diq-map" style="width: 100%;"><svg viewBox="0 0 1100 460" width="100%" height="460" role="img" id="diq-map-svg" aria-label="985 dispensaries plotted across Illinois, New Jersey, and New York, sized by product count" xmlns="http://www.w3.org/2000/svg">
 <g id="bg-states">
 <path class="bg-state" d="M381.1,717.8L388.3,716.1L388.3,715.2L390.3,716.5L389.2,717.6L387.8,717.2L385.5,717.4L383.0,718.2L381.1,717.8ZM369.3,517.0L369.2,516.5L387.6,515.1L395.3,514.4L414.8,513.1L426.2,512.0L430.7,511.5L450.1,509.6L457.5,509.0L460.6,520.4L465.2,536.1L469.0,549.6L471.8,560.0L474.9,571.1L481.9,596.3L483.2,597.4L482.8,598.7L484.6,600.2L485.9,605.5L487.4,607.9L489.9,610.2L490.6,613.1L491.9,614.2L491.1,618.6L493.5,619.3L495.2,620.6L494.1,622.6L492.7,622.8L493.1,623.6L491.4,624.6L490.0,626.7L490.6,628.6L490.7,631.8L490.2,635.0L488.7,637.8L488.5,639.4L489.8,643.8L489.7,645.4L492.5,648.3L493.4,652.5L492.7,654.7L493.1,656.2L492.5,659.2L492.9,662.0L492.1,662.9L493.0,664.7L492.8,666.7L495.7,669.6L496.9,671.8L497.4,674.0L488.8,675.0L479.8,676.2L465.7,677.9L443.4,680.2L426.0,681.6L404.7,683.6L405.2,685.0L403.9,689.3L404.2,690.1L407.5,692.7L408.0,694.1L412.9,696.6L413.5,699.0L411.9,702.9L412.5,704.8L415.2,706.4L413.0,707.9L412.2,710.9L411.1,711.6L412.1,712.4L410.2,713.5L405.4,715.2L400.3,716.5L393.1,717.3L395.3,715.6L396.9,716.4L401.4,715.0L401.6,713.8L399.5,712.2L398.5,710.7L395.8,709.3L394.6,706.1L395.5,703.3L394.9,700.6L393.9,699.0L391.2,698.0L389.4,699.9L389.8,701.2L388.8,703.4L389.0,704.8L388.3,706.0L388.6,711.2L387.8,713.7L385.9,714.0L385.9,712.7L383.2,711.5L381.3,712.2L380.6,711.4L378.3,712.4L377.3,704.4L375.9,691.6L373.9,676.4L370.4,648.6L370.7,638.2L371.3,612.3L371.3,604.6L372.1,563.7L372.4,557.8L372.8,534.3L373.2,521.1L371.1,520.0L369.3,517.0Z"/>
 <path class="bg-state" d="M-305.7,245.1L-278.7,248.7L-261.4,250.8L-224.7,255.1L-217.3,256.1L-202.0,257.7L-174.8,260.3L-174.0,260.3L-149.6,262.4L-117.8,264.9L-102.6,266.0L-86.9,267.1L-89.5,309.3L-90.3,323.2L-91.3,339.0L-91.7,346.0L-94.6,392.2L-94.8,397.2L-97.3,436.8L-119.1,435.3L-121.7,434.9L-129.1,434.3L-153.4,432.5L-173.5,431.0L-195.3,429.0L-199.4,428.6L-235.1,424.9L-257.2,422.6L-257.4,422.2L-275.4,420.1L-302.6,416.8L-328.8,413.2L-325.9,392.2L-325.6,390.9L-322.0,364.3L-321.9,359.5L-319.3,340.8L-318.0,333.1L-308.7,266.1L-308.4,264.4L-305.7,245.1Z"/>
@@ -130,918 +130,7 @@
 <path class="pilot-state" data-state="New York" d="M846.5,168.2L846.7,167.5L849.4,166.0L847.5,168.1L846.5,168.2ZM844.9,175.5L845.3,174.7L846.6,174.9L847.1,176.7L846.1,175.6L844.9,175.5ZM841.8,172.6L843.4,171.6L842.5,173.4L841.8,172.6ZM790.3,208.0L791.5,210.2L790.8,211.8L787.2,215.6L786.0,215.9L785.9,214.1L786.8,213.3L786.6,210.2L790.3,208.0ZM691.4,90.7L692.7,88.6L692.5,90.3L691.4,90.7ZM688.9,90.5L689.9,88.9L690.9,88.8L688.9,90.5ZM602.5,176.7L605.8,174.2L610.8,169.2L613.4,165.4L616.4,163.0L619.0,161.6L619.8,158.9L621.0,157.4L621.1,155.4L624.6,152.7L626.3,150.4L625.4,147.6L623.7,146.5L623.6,144.9L622.6,143.7L619.9,142.9L619.4,139.6L617.4,139.4L617.9,136.5L616.5,132.1L616.1,131.7L619.0,130.4L622.8,128.1L628.5,125.4L632.7,123.9L636.2,123.1L640.3,122.7L644.1,121.7L653.6,121.4L656.2,121.6L658.2,122.9L661.0,124.1L662.3,124.2L666.3,121.6L670.0,120.8L674.5,119.5L676.9,119.7L679.4,119.2L680.7,118.0L683.8,116.7L685.4,114.9L686.4,114.6L687.8,111.4L690.5,108.4L691.5,107.9L693.2,105.6L694.6,105.1L696.9,105.2L698.5,104.1L699.1,102.0L698.6,98.9L696.3,92.7L693.9,91.7L694.7,89.7L696.1,89.0L696.6,90.1L698.5,88.2L697.9,86.8L695.5,85.5L693.3,86.5L693.6,85.4L691.6,83.9L690.0,84.2L689.5,81.4L690.4,76.9L692.3,76.3L694.4,74.3L694.1,72.6L695.8,71.5L698.2,68.9L699.2,68.9L700.7,67.5L702.7,64.3L702.8,62.6L703.7,60.5L707.0,55.3L709.5,51.0L714.3,44.8L714.1,44.4L720.3,38.9L722.5,36.1L724.4,35.7L726.4,33.9L729.4,34.3L731.3,33.5L740.8,31.6L746.3,30.3L757.3,27.2L759.8,26.7L769.3,24.0L770.4,27.8L769.9,29.0L770.0,31.3L771.9,33.0L771.3,35.2L771.9,38.5L771.7,39.7L772.7,42.0L775.5,44.7L776.5,47.0L775.9,50.1L777.6,53.9L777.5,55.3L776.0,58.0L776.3,61.3L776.1,64.2L777.3,65.0L778.1,68.6L779.7,70.7L779.7,73.1L781.5,74.8L780.6,78.6L780.8,82.8L782.1,83.5L782.3,81.0L784.3,80.5L785.0,82.3L786.6,83.0L789.3,95.1L792.3,110.2L792.9,112.8L792.8,114.2L794.3,116.3L793.8,130.3L793.5,145.2L794.5,146.5L797.2,161.7L799.1,172.2L800.1,178.0L803.0,181.0L796.6,187.3L799.7,190.4L799.8,191.6L799.4,193.3L797.5,195.3L797.9,198.2L796.5,198.5L798.0,200.3L799.2,196.8L800.6,197.0L801.3,195.3L803.4,193.8L805.3,193.2L805.5,192.0L808.2,192.4L808.0,190.9L809.3,191.7L811.5,191.4L813.7,191.8L816.0,190.1L815.8,188.6L817.6,187.8L818.8,188.0L827.0,185.8L831.1,184.1L832.5,183.0L835.2,180.0L835.9,178.3L837.0,177.5L838.0,175.4L840.1,174.1L841.5,173.8L840.0,176.2L839.0,176.6L840.9,177.3L841.9,178.7L843.8,178.7L844.8,177.5L847.2,179.6L848.7,178.5L850.8,176.2L850.8,175.2L852.5,174.3L853.9,174.4L853.6,175.3L847.1,180.5L839.7,187.0L834.7,190.6L826.7,196.1L821.5,200.3L817.1,202.9L814.3,204.0L813.5,203.7L806.9,207.5L800.1,208.7L795.5,211.9L795.5,210.5L793.0,211.1L793.1,210.2L791.5,209.1L792.0,207.7L790.8,206.6L791.3,205.7L791.2,203.3L792.0,200.6L792.6,193.5L792.1,192.9L775.6,187.6L764.6,183.7L762.7,182.0L762.6,180.9L760.9,181.6L760.4,180.9L757.7,181.6L757.7,181.0L755.8,180.1L754.7,180.6L754.3,179.4L750.6,176.0L751.4,175.4L749.9,169.8L748.2,169.4L748.9,168.1L747.4,166.6L744.2,166.0L742.6,166.5L740.9,163.2L740.4,163.4L738.4,161.7L726.8,164.3L708.4,168.2L696.3,170.5L684.8,173.0L658.3,178.2L640.0,181.6L631.6,183.2L604.5,188.0L604.4,188.0L602.5,176.7Z"/>
 </g>
 <g id="dispensaries">
-<circle cx="345.7" cy="426.7" r="7.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BLOC Dispensary - Metropolis" data-state="IL" data-n="3913"/>
-<circle cx="304.3" cy="277.2" r="7.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Trinity Cannabis" data-state="IL" data-n="3560"/>
-<circle cx="353.5" cy="205.5" r="7.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenlight Recreational Dispensary Park City" data-state="IL" data-n="3392"/>
-<circle cx="268.2" cy="205.4" r="7.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bridge City Collective Dispensary East Dubuque IL" data-state="IL" data-n="3149"/>
-<circle cx="326.3" cy="285.8" r="6.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Haven Dispensary" data-state="IL" data-n="2746"/>
-<circle cx="300.8" cy="363.0" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Temple" data-state="IL" data-n="2256"/>
-<circle cx="354.6" cy="327.1" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensary" data-state="IL" data-n="2244"/>
-<circle cx="346.1" cy="230.4" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Medical &amp; Recreational Dispensary Naperville" data-state="IL" data-n="2239"/>
-<circle cx="343.5" cy="342.6" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Recreational Dispensary Effingham" data-state="IL" data-n="2238"/>
-<circle cx="251.1" cy="314.7" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE" data-state="IL" data-n="2237"/>
-<circle cx="292.0" cy="284.2" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Medical &amp; Recreational Dispensary" data-state="IL" data-n="2236"/>
-<circle cx="350.8" cy="210.4" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE" data-state="IL" data-n="2236"/>
-<circle cx="347.6" cy="242.3" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensaries" data-state="IL" data-n="2236"/>
-<circle cx="356.0" cy="217.7" r="6.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE" data-state="IL" data-n="2223"/>
-<circle cx="358.8" cy="254.8" r="6.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Releaf Weed Dispensary Bourbonnais" data-state="IL" data-n="2181"/>
-<circle cx="268.9" cy="206.0" r="6.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra East Dubuque Dispensary" data-state="IL" data-n="2100"/>
-<circle cx="250.7" cy="314.8" r="6.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="AYR Cannabis Dispensary 1837 Broadway - Adult Use" data-state="IL" data-n="2034"/>
-<circle cx="360.4" cy="221.9" r="6.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bloc - Avondale" data-state="IL" data-n="1945"/>
-<circle cx="292.7" cy="369.1" r="6.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beyond/Hello - Sauget (Route 3)" data-state="IL" data-n="1907"/>
-<circle cx="353.3" cy="213.8" r="6.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="OKAY Cannabis" data-state="IL" data-n="1829"/>
-<circle cx="361.1" cy="218.7" r="6.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="OKAY Cannabis Dispensary" data-state="IL" data-n="1813"/>
-<circle cx="326.4" cy="286.1" r="6.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beyond Hello Bloomington Cannabis Dispensary" data-state="IL" data-n="1789"/>
-<circle cx="362.2" cy="221.9" r="5.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SWAY Cannabis Dispensary - Chicago Lakeview" data-state="IL" data-n="1289"/>
-<circle cx="347.7" cy="238.7" r="5.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Recreational Dispensary Joliet (Colorado)" data-state="IL" data-n="1136"/>
-<circle cx="343.1" cy="224.6" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="360.7" cy="217.5" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="361.4" cy="225.3" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf Dispensary Chicago (Pilsen)" data-state="IL" data-n="756"/>
-<circle cx="362.5" cy="224.6" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Chicago (West Loop)" data-state="IL" data-n="756"/>
-<circle cx="360.7" cy="217.5" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Evanston" data-state="IL" data-n="756"/>
-<circle cx="356.1" cy="212.4" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Highland Park" data-state="IL" data-n="756"/>
-<circle cx="348.2" cy="229.3" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Naperville" data-state="IL" data-n="756"/>
-<circle cx="345.7" cy="231.1" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Aurora" data-state="IL" data-n="756"/>
-<circle cx="351.8" cy="227.2" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="361.0" cy="219.0" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="345.6" cy="230.8" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="343.1" cy="224.5" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf Dispensary St. Charles" data-state="IL" data-n="756"/>
-<circle cx="351.9" cy="216.0" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Prospect Heights" data-state="IL" data-n="756"/>
-<circle cx="355.8" cy="212.0" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="348.2" cy="229.3" r="4.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf" data-state="IL" data-n="756"/>
-<circle cx="357.3" cy="221.8" r="4.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mission Norridge" data-state="IL" data-n="401"/>
-<circle cx="345.2" cy="426.7" r="3.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Profile of Metropolis Dispensary" data-state="IL" data-n="300"/>
-<circle cx="348.2" cy="225.4" r="3.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Altius Dispensary" data-state="IL" data-n="251"/>
-<circle cx="358.8" cy="217.1" r="3.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf" data-state="IL" data-n="204"/>
-<circle cx="357.5" cy="236.8" r="3.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Altius Dispensary" data-state="IL" data-n="185"/>
-<circle cx="298.7" cy="359.3" r="3.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary - Edwardsville" data-state="IL" data-n="179"/>
-<circle cx="348.0" cy="204.5" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Altius" data-state="IL" data-n="172"/>
-<circle cx="360.7" cy="222.8" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MOCA" data-state="IL" data-n="170"/>
-<circle cx="327.6" cy="225.3" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra DeKalb Dispensary" data-state="IL" data-n="166"/>
-<circle cx="287.6" cy="321.8" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kush21 Jacksonville" data-state="IL" data-n="166"/>
-<circle cx="304.5" cy="319.4" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Maribis Cannabis" data-state="IL" data-n="161"/>
-<circle cx="362.3" cy="233.8" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Be. The Cannabis Store" data-state="IL" data-n="153"/>
-<circle cx="343.2" cy="229.5" r="3.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra Aurora Dispensary" data-state="IL" data-n="145"/>
-<circle cx="355.4" cy="213.6" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf IL Deerfield" data-state="IL" data-n="141"/>
-<circle cx="336.8" cy="208.4" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terrabis" data-state="IL" data-n="138"/>
-<circle cx="340.6" cy="233.2" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="137"/>
-<circle cx="348.9" cy="223.3" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="137"/>
-<circle cx="338.8" cy="248.2" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf" data-state="IL" data-n="136"/>
-<circle cx="355.4" cy="213.7" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf Deerfield IL" data-state="IL" data-n="136"/>
-<circle cx="352.6" cy="228.4" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf" data-state="IL" data-n="136"/>
-<circle cx="363.2" cy="225.0" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grasshopper Club South Loop Chicago Dispensary" data-state="IL" data-n="130"/>
-<circle cx="323.7" cy="286.9" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cookies Dispensary Bloomington" data-state="IL" data-n="128"/>
-<circle cx="348.9" cy="401.4" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Dispensary" data-state="IL" data-n="128"/>
-<circle cx="351.3" cy="300.5" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NuEra" data-state="IL" data-n="125"/>
-<circle cx="344.9" cy="427.1" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Dispensary" data-state="IL" data-n="123"/>
-<circle cx="333.4" cy="378.8" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Dispensary" data-state="IL" data-n="123"/>
-<circle cx="333.4" cy="378.8" r="3.4" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Mount Vernon" data-state="IL" data-n="121"/>
-<circle cx="357.4" cy="225.0" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Parkway Dispensary" data-state="IL" data-n="117"/>
-<circle cx="354.5" cy="240.8" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf" data-state="IL" data-n="114"/>
-<circle cx="304.9" cy="277.8" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall" data-state="IL" data-n="107"/>
-<circle cx="356.1" cy="223.9" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf IL Melrose Park" data-state="IL" data-n="106"/>
-<circle cx="304.5" cy="319.4" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Maribis of Springfield" data-state="IL" data-n="106"/>
-<circle cx="350.3" cy="300.8" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra Champaign Dispensary" data-state="IL" data-n="105"/>
-<circle cx="273.9" cy="249.6" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nature's Treatment of Illinois" data-state="IL" data-n="104"/>
-<circle cx="304.8" cy="320.0" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Profile" data-state="IL" data-n="101"/>
-<circle cx="359.0" cy="231.9" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary" data-state="IL" data-n="100"/>
-<circle cx="353.2" cy="205.8" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="99"/>
-<circle cx="350.1" cy="233.7" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="98"/>
-<circle cx="351.8" cy="219.2" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Snap Canna Dispensary - Elk Grove Village" data-state="IL" data-n="95"/>
-<circle cx="334.3" cy="269.7" r="3.3" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Snap Canna Dispensary - Pontiac" data-state="IL" data-n="95"/>
-<circle cx="295.7" cy="362.7" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cookies Pontoon Beach" data-state="IL" data-n="93"/>
-<circle cx="306.0" cy="279.9" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra East Peoria Dispensary" data-state="IL" data-n="92"/>
-<circle cx="361.5" cy="223.3" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="THC by Chitiva Wicker Park Bucktown" data-state="IL" data-n="92"/>
-<circle cx="349.0" cy="300.5" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Dispensary Champaign" data-state="IL" data-n="90"/>
-<circle cx="341.2" cy="211.6" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="90"/>
-<circle cx="357.1" cy="214.0" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf IL Northbrook Dispensary" data-state="IL" data-n="88"/>
-<circle cx="361.5" cy="223.2" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary" data-state="IL" data-n="86"/>
-<circle cx="363.9" cy="237.1" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NuEra Chicago Southland " data-state="IL" data-n="84"/>
-<circle cx="355.4" cy="213.7" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenhouse Dispensary" data-state="IL" data-n="81"/>
-<circle cx="269.0" cy="204.8" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Dispensary East Dubuque" data-state="IL" data-n="80"/>
-<circle cx="360.3" cy="222.2" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud &amp; Rita's" data-state="IL" data-n="79"/>
-<circle cx="326.9" cy="415.1" r="3.2" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Dispensary Anna" data-state="IL" data-n="77"/>
-<circle cx="320.2" cy="209.3" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Happy Cannabis Company" data-state="IL" data-n="71"/>
-<circle cx="360.8" cy="227.7" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Maribis of Chicago" data-state="IL" data-n="68"/>
-<circle cx="351.2" cy="200.7" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud &amp; Rita's Wadsworth Dispensary" data-state="IL" data-n="68"/>
-<circle cx="306.1" cy="277.7" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cookies Peoria Heights" data-state="IL" data-n="67"/>
-<circle cx="360.8" cy="240.9" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lux Leaf Dispensary" data-state="IL" data-n="67"/>
-<circle cx="340.2" cy="230.5" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="AuraLight Dispensary" data-state="IL" data-n="66"/>
-<circle cx="364.6" cy="379.1" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terrabis Grayville" data-state="IL" data-n="65"/>
-<circle cx="306.7" cy="319.4" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Share" data-state="IL" data-n="63"/>
-<circle cx="359.6" cy="228.3" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Midway Dispensary" data-state="IL" data-n="62"/>
-<circle cx="346.6" cy="218.9" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Aroma Hill" data-state="IL" data-n="62"/>
-<circle cx="356.2" cy="220.6" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Socíale" data-state="IL" data-n="61"/>
-<circle cx="360.6" cy="222.7" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grasshopper Club" data-state="IL" data-n="58"/>
-<circle cx="318.8" cy="213.5" r="3.1" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mapleglen Care Center" data-state="IL" data-n="58"/>
-<circle cx="353.2" cy="205.8" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall" data-state="IL" data-n="50"/>
-<circle cx="356.2" cy="220.6" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sociale Dispensary" data-state="IL" data-n="50"/>
-<circle cx="357.3" cy="221.4" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Rose Dispensary" data-state="IL" data-n="49"/>
-<circle cx="356.1" cy="223.9" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenhouse" data-state="IL" data-n="49"/>
-<circle cx="361.8" cy="223.6" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Spark'd Dispensary" data-state="IL" data-n="49"/>
-<circle cx="299.5" cy="364.3" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Revolution Dispensary - Maryville" data-state="IL" data-n="48"/>
-<circle cx="359.6" cy="228.3" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary - Chicago Midway" data-state="IL" data-n="47"/>
-<circle cx="306.3" cy="317.8" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Upper Limits Midwest, Inc." data-state="IL" data-n="46"/>
-<circle cx="358.0" cy="219.3" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud and Rita's - Niles" data-state="IL" data-n="46"/>
-<circle cx="362.5" cy="224.4" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nature's Care Company" data-state="IL" data-n="45"/>
-<circle cx="354.2" cy="216.5" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Enlightened Dispensary" data-state="IL" data-n="44"/>
-<circle cx="275.1" cy="208.2" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Botanicanna Galena" data-state="IL" data-n="41"/>
-<circle cx="355.3" cy="225.9" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Maribis" data-state="IL" data-n="40"/>
-<circle cx="324.9" cy="284.9" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Revolution Dispensary - Normal" data-state="IL" data-n="40"/>
-<circle cx="356.0" cy="217.7" r="3.0" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rise Recreational Dispensary" data-state="IL" data-n="39"/>
-<circle cx="343.2" cy="229.5" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="nuEra" data-state="IL" data-n="38"/>
-<circle cx="359.0" cy="231.9" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend" data-state="IL" data-n="36"/>
-<circle cx="344.8" cy="220.1" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall - Streamwood" data-state="IL" data-n="36"/>
-<circle cx="360.6" cy="223.1" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ivy Hall Dispensary - Logan Square" data-state="IL" data-n="36"/>
-<circle cx="362.7" cy="224.3" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cookies Chicago Dispensary" data-state="IL" data-n="36"/>
-<circle cx="354.4" cy="224.1" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary Outlet - Northlake" data-state="IL" data-n="35"/>
-<circle cx="297.7" cy="365.6" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary - Collinsville" data-state="IL" data-n="35"/>
-<circle cx="318.2" cy="209.1" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="seed canary" data-state="IL" data-n="35"/>
-<circle cx="359.0" cy="236.9" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary Outlet - Tinley Park" data-state="IL" data-n="35"/>
-<circle cx="291.6" cy="355.5" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Village Dispensary" data-state="IL" data-n="35"/>
-<circle cx="305.7" cy="285.6" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NuEra" data-state="IL" data-n="34"/>
-<circle cx="362.0" cy="223.3" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NuEra" data-state="IL" data-n="34"/>
-<circle cx="360.7" cy="222.8" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Dispensary" data-state="IL" data-n="30"/>
-<circle cx="349.5" cy="216.8" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Zone" data-state="IL" data-n="29"/>
-<circle cx="348.6" cy="224.8" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bisa Lina Cannabis Dispensary and Outlet" data-state="IL" data-n="29"/>
-<circle cx="307.9" cy="318.9" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Shangri-La Dispensary" data-state="IL" data-n="29"/>
-<circle cx="359.0" cy="219.3" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Rose - Lincolnwood" data-state="IL" data-n="29"/>
-<circle cx="353.0" cy="205.6" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Planet 13" data-state="IL" data-n="28"/>
-<circle cx="268.4" cy="205.5" r="2.9" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RiverBluff Collective" data-state="IL" data-n="27"/>
-<circle cx="354.1" cy="216.5" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Revolution Mount Prospect" data-state="IL" data-n="24"/>
-<circle cx="349.2" cy="218.4" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Revolution Dispensary Schaumburg" data-state="IL" data-n="24"/>
-<circle cx="340.2" cy="213.7" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE" data-state="IL" data-n="24"/>
-<circle cx="356.1" cy="212.4" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevele Highland Park" data-state="IL" data-n="24"/>
-<circle cx="292.3" cy="357.0" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terrace Cannabis Dispensary - Alton" data-state="IL" data-n="23"/>
-<circle cx="352.3" cy="218.9" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kashmir Rolling Papers" data-state="IL" data-n="23"/>
-<circle cx="327.3" cy="300.8" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cil Alternatives" data-state="IL" data-n="22"/>
-<circle cx="358.7" cy="221.2" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Columbia Care" data-state="IL" data-n="19"/>
-<circle cx="298.8" cy="368.9" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend - Fairview Heights" data-state="IL" data-n="18"/>
-<circle cx="306.5" cy="317.3" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend" data-state="IL" data-n="17"/>
-<circle cx="307.9" cy="318.6" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Horizon Drive" data-state="IL" data-n="17"/>
-<circle cx="360.5" cy="222.6" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Outlet" data-state="IL" data-n="17"/>
-<circle cx="363.2" cy="224.5" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis Domain Names" data-state="IL" data-n="17"/>
-<circle cx="341.7" cy="206.3" r="2.8" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="EarthMed Recreational Marijuana Dispensary - McHenry" data-state="IL" data-n="16"/>
-<circle cx="327.0" cy="404.0" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Key Cannabis Dispensary Carbondale" data-state="IL" data-n="14"/>
-<circle cx="326.6" cy="404.1" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Wellness Center" data-state="IL" data-n="14"/>
-<circle cx="320.0" cy="210.2" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="12"/>
-<circle cx="353.1" cy="213.5" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Dispensary" data-state="IL" data-n="12"/>
-<circle cx="361.9" cy="221.6" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="12"/>
-<circle cx="354.6" cy="219.8" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="EarthMed Recreational Marijuana Dispensary - Rosemont" data-state="IL" data-n="12"/>
-<circle cx="349.9" cy="218.6" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hollyweed Dispensary" data-state="IL" data-n="10"/>
-<circle cx="294.2" cy="370.7" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beyond / Hello" data-state="IL" data-n="10"/>
-<circle cx="313.6" cy="301.6" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mystic Greenz - Lincoln" data-state="IL" data-n="10"/>
-<circle cx="349.9" cy="218.6" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hollyweed Dispensary" data-state="IL" data-n="9"/>
-<circle cx="325.1" cy="212.5" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Aroma Hills" data-state="IL" data-n="9"/>
-<circle cx="372.4" cy="298.4" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="362.0" cy="221.8" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Dispensary" data-state="IL" data-n="8"/>
-<circle cx="345.8" cy="231.6" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="353.0" cy="213.2" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary - Buffalo Grove" data-state="IL" data-n="8"/>
-<circle cx="363.1" cy="223.9" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Wake-N-Bakery" data-state="IL" data-n="8"/>
-<circle cx="356.8" cy="223.1" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="318.9" cy="202.2" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="318.9" cy="202.2" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="8"/>
-<circle cx="349.8" cy="218.4" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="8"/>
-<circle cx="345.8" cy="231.7" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="8"/>
-<circle cx="363.0" cy="224.1" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="353.0" cy="213.2" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside" data-state="IL" data-n="8"/>
-<circle cx="301.0" cy="372.7" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mystic Greenz - Belleville" data-state="IL" data-n="8"/>
-<circle cx="350.2" cy="301.5" r="2.7" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Cannabis Dispensary" data-state="IL" data-n="8"/>
-<circle cx="360.1" cy="230.3" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Star Buds" data-state="IL" data-n="6"/>
-<circle cx="316.4" cy="212.0" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buckbee Weed Co." data-state="IL" data-n="6"/>
-<circle cx="350.1" cy="234.5" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Marijuana Dispensary | Romeoville" data-state="IL" data-n="4"/>
-<circle cx="362.3" cy="223.3" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Karma Club" data-state="IL" data-n="4"/>
-<circle cx="341.8" cy="229.7" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Marijuana Dispensary" data-state="IL" data-n="4"/>
-<circle cx="350.7" cy="223.9" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hatch Dispensary" data-state="IL" data-n="3"/>
-<circle cx="304.9" cy="278.1" r="2.6" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Trinity" data-state="IL" data-n="3"/>
-<circle cx="344.5" cy="209.6" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Emerald - Island Lake" data-state="IL" data-n="2"/>
-<circle cx="307.8" cy="315.7" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Maribis of Springfield" data-state="IL" data-n="2"/>
-<circle cx="276.0" cy="248.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Revolution Dispensary" data-state="IL" data-n="2"/>
-<circle cx="341.8" cy="224.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevate Holistics Medical Marijuana Cards" data-state="IL" data-n="1"/>
-<circle cx="361.5" cy="220.7" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dispensary33" data-state="IL" data-n="1"/>
-<circle cx="341.8" cy="229.7" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife" data-state="IL" data-n="1"/>
-<circle cx="354.6" cy="219.8" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="EarthMed" data-state="IL" data-n="1"/>
-<circle cx="356.3" cy="211.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Dispensary" data-state="IL" data-n="1"/>
-<circle cx="352.1" cy="213.8" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hatch - Wheeling" data-state="IL" data-n="1"/>
-<circle cx="341.7" cy="206.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Earthmed - McHenry" data-state="IL" data-n="1"/>
-<circle cx="363.3" cy="225.1" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chi'Tiva" data-state="IL" data-n="1"/>
-<circle cx="345.5" cy="229.0" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Prairie Cannabis" data-state="IL" data-n="1"/>
-<circle cx="285.2" cy="231.1" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Dispensary" data-state="IL" data-n="1"/>
-<circle cx="357.1" cy="214.0" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenhouse Northbrook" data-state="IL" data-n="1"/>
-<circle cx="355.3" cy="220.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife" data-state="IL" data-n="1"/>
-<circle cx="307.7" cy="343.6" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="305.2" cy="317.2" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sparc" data-state="IL" data-n="1"/>
-<circle cx="272.0" cy="291.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis | Macomb" data-state="IL" data-n="1"/>
-<circle cx="275.2" cy="247.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terrace Cannabis Dispensary - Moline" data-state="IL" data-n="1"/>
-<circle cx="275.1" cy="208.2" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Marijuana Dispensary | Galena" data-state="IL" data-n="1"/>
-<circle cx="275.1" cy="208.2" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Dispensary" data-state="IL" data-n="1"/>
-<circle cx="344.1" cy="204.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smokehouse Dispensary" data-state="IL" data-n="1"/>
-<circle cx="355.3" cy="213.5" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Compassionate Clinics of America" data-state="IL" data-n="1"/>
-<circle cx="361.4" cy="221.0" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="illinois cannabis attorneys" data-state="IL" data-n="1"/>
-<circle cx="362.3" cy="223.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="362.9" cy="224.0" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Rose Dispensary" data-state="IL" data-n="1"/>
-<circle cx="363.0" cy="223.8" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Marijuana Dispensary | Chicago" data-state="IL" data-n="1"/>
-<circle cx="363.3" cy="223.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Guaranteed Dispensary" data-state="IL" data-n="1"/>
-<circle cx="362.3" cy="235.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="366.6" cy="239.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BaM Body and Mind - Lynwood" data-state="IL" data-n="1"/>
-<circle cx="363.2" cy="240.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mood Shine Cannabis Dispensary" data-state="IL" data-n="1"/>
-<circle cx="363.7" cy="237.6" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="357.2" cy="239.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenhouse" data-state="IL" data-n="1"/>
-<circle cx="360.5" cy="234.5" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hi5 Cannabis Dispensary" data-state="IL" data-n="1"/>
-<circle cx="358.6" cy="233.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="353.8" cy="230.7" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mint Cannabis" data-state="IL" data-n="1"/>
-<circle cx="345.9" cy="234.2" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="1Body1Life" data-state="IL" data-n="1"/>
-<circle cx="341.0" cy="225.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Consume - St. Charles" data-state="IL" data-n="1"/>
-<circle cx="352.2" cy="226.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Columbia Care" data-state="IL" data-n="1"/>
-<circle cx="352.3" cy="225.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Releaf Weed Dispensary Villa Park" data-state="IL" data-n="1"/>
-<circle cx="347.7" cy="222.0" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RiverBluff Dispensary" data-state="IL" data-n="1"/>
-<circle cx="344.8" cy="217.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevate Holistics Medical Marijuana Cards" data-state="IL" data-n="1"/>
-<circle cx="346.6" cy="219.6" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Dispensary" data-state="IL" data-n="1"/>
-<circle cx="349.4" cy="218.2" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="PharmaCannis" data-state="IL" data-n="1"/>
-<circle cx="351.5" cy="218.1" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Marijuana Dispensary | Arlington Heights" data-state="IL" data-n="1"/>
-<circle cx="352.9" cy="218.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="UP LLC Dispensary" data-state="IL" data-n="1"/>
-<circle cx="352.4" cy="218.9" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Inter-Continental Trading USA Inc" data-state="IL" data-n="1"/>
-<circle cx="341.8" cy="216.8" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy City Cannabis" data-state="IL" data-n="1"/>
-<circle cx="300.2" cy="232.8" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smokes lab" data-state="IL" data-n="1"/>
-<circle cx="358.9" cy="255.3" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Phili Dispensary" data-state="IL" data-n="1"/>
-<circle cx="305.5" cy="277.4" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevate Holistics Medical Marijuana Doctors" data-state="IL" data-n="1"/>
-<circle cx="294.1" cy="370.6" r="2.5" fill="#00B98E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beyond Hello Dispensary" data-state="IL" data-n="1"/>
-<circle cx="765.4" cy="205.7" r="8.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canna Campus" data-state="NJ" data-n="5380"/>
-<circle cx="766.8" cy="248.3" r="7.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Phasal Dispensary" data-state="NJ" data-n="4092"/>
-<circle cx="770.7" cy="245.8" r="7.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Enlighten Dispensary" data-state="NJ" data-n="4091"/>
-<circle cx="787.8" cy="219.1" r="7.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Canna Bar NJ" data-state="NJ" data-n="3789"/>
-<circle cx="787.2" cy="262.8" r="6.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Botanist" data-state="NJ" data-n="2634"/>
-<circle cx="789.0" cy="236.4" r="6.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Profile of Lakehurst Dispensary" data-state="NJ" data-n="2359"/>
-<circle cx="785.5" cy="197.1" r="6.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensaries" data-state="NJ" data-n="2075"/>
-<circle cx="771.7" cy="224.0" r="6.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sky Cannabis" data-state="NJ" data-n="2061"/>
-<circle cx="785.7" cy="204.1" r="6.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Medical &amp; Recreational Marijuana Dispensary Bloomfield" data-state="NJ" data-n="1898"/>
-<circle cx="788.2" cy="197.3" r="5.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensaries Paramus" data-state="NJ" data-n="1558"/>
-<circle cx="784.5" cy="207.7" r="5.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Dispensary of Union" data-state="NJ" data-n="1436"/>
-<circle cx="791.6" cy="264.4" r="5.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Design 710" data-state="NJ" data-n="1178"/>
-<circle cx="785.8" cy="208.8" r="5.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Budzooka Dispensary" data-state="NJ" data-n="1145"/>
-<circle cx="773.1" cy="231.2" r="5.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Moja Life" data-state="NJ" data-n="1134"/>
-<circle cx="780.9" cy="217.2" r="5.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Herbalicity" data-state="NJ" data-n="1038"/>
-<circle cx="785.6" cy="262.7" r="4.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Brute's Roots" data-state="NJ" data-n="787"/>
-<circle cx="774.9" cy="227.7" r="4.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf Lawrence" data-state="NJ" data-n="756"/>
-<circle cx="795.5" cy="225.7" r="4.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf Neptune" data-state="NJ" data-n="756"/>
-<circle cx="786.2" cy="208.9" r="4.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zen Leaf - Elizabeth" data-state="NJ" data-n="756"/>
-<circle cx="768.8" cy="240.0" r="4.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Township Green Dispensary" data-state="NJ" data-n="631"/>
-<circle cx="791.2" cy="264.7" r="4.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Legal Distribution" data-state="NJ" data-n="480"/>
-<circle cx="784.2" cy="209.4" r="4.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Breakwater Treatment and Wellness" data-state="NJ" data-n="441"/>
-<circle cx="780.1" cy="212.3" r="4.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MindLift Dispensary" data-state="NJ" data-n="417"/>
-<circle cx="790.0" cy="205.8" r="3.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="1634 Funk Cannabis Dispensary" data-state="NJ" data-n="305"/>
-<circle cx="788.7" cy="262.0" r="3.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Red Oak Dispensary" data-state="NJ" data-n="227"/>
-<circle cx="767.1" cy="254.3" r="3.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Restore Dispensaries" data-state="NJ" data-n="205"/>
-<circle cx="755.2" cy="214.7" r="3.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Apothecarium Dispensary of Phillipsburg" data-state="NJ" data-n="193"/>
-<circle cx="766.2" cy="249.5" r="3.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabist Deptford" data-state="NJ" data-n="188"/>
-<circle cx="775.3" cy="194.7" r="3.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SoulFlora Recreational Cannabis Dispensary — West Milford" data-state="NJ" data-n="185"/>
-<circle cx="771.2" cy="262.8" r="3.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabist Dispensary - Vineland" data-state="NJ" data-n="183"/>
-<circle cx="790.7" cy="203.8" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hudsonica Dispensary" data-state="NJ" data-n="173"/>
-<circle cx="769.3" cy="240.8" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Castaway Cannabis" data-state="NJ" data-n="160"/>
-<circle cx="779.6" cy="217.9" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Timber 5" data-state="NJ" data-n="160"/>
-<circle cx="778.9" cy="216.9" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bloc Dispensary Somerset" data-state="NJ" data-n="154"/>
-<circle cx="773.3" cy="263.4" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Open Access Care Center" data-state="NJ" data-n="154"/>
-<circle cx="791.2" cy="264.7" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SunnyTien Dispensary" data-state="NJ" data-n="151"/>
-<circle cx="787.4" cy="219.4" r="3.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Scarlet Reserve" data-state="NJ" data-n="147"/>
-<circle cx="756.5" cy="256.9" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Frosted Nug" data-state="NJ" data-n="143"/>
-<circle cx="771.5" cy="255.2" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ReLeaf Cannabis" data-state="NJ" data-n="138"/>
-<circle cx="766.4" cy="246.5" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ginger Hale Dispensary" data-state="NJ" data-n="130"/>
-<circle cx="776.6" cy="190.9" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Jersey Roots Dispensary" data-state="NJ" data-n="130"/>
-<circle cx="788.4" cy="199.0" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hashery" data-state="NJ" data-n="129"/>
-<circle cx="766.2" cy="249.5" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabist" data-state="NJ" data-n="129"/>
-<circle cx="764.5" cy="249.8" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BestBuds Dispensary" data-state="NJ" data-n="122"/>
-<circle cx="768.7" cy="250.2" r="3.4" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="HoneyGrove Dispensary" data-state="NJ" data-n="119"/>
-<circle cx="772.7" cy="230.0" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bloc Ewing" data-state="NJ" data-n="117"/>
-<circle cx="790.7" cy="205.3" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bay Street Greenery" data-state="NJ" data-n="115"/>
-<circle cx="765.9" cy="248.2" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NJ Bellmawr Dispensary" data-state="NJ" data-n="112"/>
-<circle cx="783.7" cy="207.0" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Apothecarium Dispensary of Maplewood" data-state="NJ" data-n="112"/>
-<circle cx="773.8" cy="215.6" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Valley Wellness" data-state="NJ" data-n="111"/>
-<circle cx="773.3" cy="230.2" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Simply Pure Trenton - Cannabis Dispensary in Ewing, NJ" data-state="NJ" data-n="111"/>
-<circle cx="770.2" cy="239.6" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NJ Edgewater Park" data-state="NJ" data-n="110"/>
-<circle cx="790.2" cy="204.2" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Leaf Joint" data-state="NJ" data-n="105"/>
-<circle cx="775.8" cy="233.7" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NJ Bordentown" data-state="NJ" data-n="103"/>
-<circle cx="793.5" cy="238.5" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Social Leaf" data-state="NJ" data-n="101"/>
-<circle cx="784.9" cy="206.4" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Natures Motivation" data-state="NJ" data-n="101"/>
-<circle cx="793.1" cy="238.1" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="EarthE Full Spectrum CBD and Cannabis Store" data-state="NJ" data-n="100"/>
-<circle cx="791.7" cy="264.4" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Rollers Dispensary" data-state="NJ" data-n="100"/>
-<circle cx="776.9" cy="189.7" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="4Twenty Somewhere" data-state="NJ" data-n="100"/>
-<circle cx="769.8" cy="253.7" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Botanist" data-state="NJ" data-n="100"/>
-<circle cx="788.0" cy="198.0" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Cannabis Recreational and Medical Dispensary - Rochelle Park" data-state="NJ" data-n="100"/>
-<circle cx="766.8" cy="244.2" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gynsyng" data-state="NJ" data-n="99"/>
-<circle cx="765.7" cy="246.3" r="3.3" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cuzzie's" data-state="NJ" data-n="95"/>
-<circle cx="781.4" cy="217.0" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Anja: Licensed Dispensary" data-state="NJ" data-n="93"/>
-<circle cx="794.7" cy="244.6" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BLOC Dispensary - Waretown" data-state="NJ" data-n="89"/>
-<circle cx="774.6" cy="240.7" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Voltaire Dispensary" data-state="NJ" data-n="88"/>
-<circle cx="770.0" cy="244.7" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Daylite Cannabis" data-state="NJ" data-n="88"/>
-<circle cx="768.4" cy="241.2" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Lightning Cannabis" data-state="NJ" data-n="87"/>
-<circle cx="777.6" cy="258.6" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hello High Dispensary" data-state="NJ" data-n="87"/>
-<circle cx="783.3" cy="206.6" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Noire Dispensary" data-state="NJ" data-n="86"/>
-<circle cx="773.5" cy="250.9" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Holistic Solutions" data-state="NJ" data-n="86"/>
-<circle cx="783.3" cy="258.8" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Med Leaf Dispensary (Recreational / Adult Use)" data-state="NJ" data-n="84"/>
-<circle cx="786.6" cy="202.9" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="La Vida Gardens Dispensary" data-state="NJ" data-n="83"/>
-<circle cx="780.4" cy="217.5" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Puffin Store NJ" data-state="NJ" data-n="79"/>
-<circle cx="779.9" cy="285.5" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Shore House Canna" data-state="NJ" data-n="78"/>
-<circle cx="765.1" cy="205.0" r="3.2" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Street Dispensary" data-state="NJ" data-n="75"/>
-<circle cx="793.3" cy="220.8" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canopy Crossroad" data-state="NJ" data-n="72"/>
-<circle cx="784.2" cy="197.6" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Molly Ann Farms" data-state="NJ" data-n="70"/>
-<circle cx="770.6" cy="245.8" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Quality Roots" data-state="NJ" data-n="69"/>
-<circle cx="785.5" cy="207.0" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Treeotics Weed Dispensary" data-state="NJ" data-n="68"/>
-<circle cx="788.1" cy="262.6" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Conservatory Cannabis Co." data-state="NJ" data-n="67"/>
-<circle cx="770.0" cy="244.7" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nirvana Dispensary" data-state="NJ" data-n="67"/>
-<circle cx="764.5" cy="250.6" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BluLight Cannabis Dispensary - Woodbury Heights" data-state="NJ" data-n="63"/>
-<circle cx="769.8" cy="207.5" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canntica, LLC" data-state="NJ" data-n="63"/>
-<circle cx="789.4" cy="205.6" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Jersey Leaf Dispensary" data-state="NJ" data-n="61"/>
-<circle cx="770.8" cy="238.8" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Roots Dispensary" data-state="NJ" data-n="61"/>
-<circle cx="790.9" cy="204.6" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Station Hoboken" data-state="NJ" data-n="60"/>
-<circle cx="789.4" cy="204.9" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ript Dispensary" data-state="NJ" data-n="58"/>
-<circle cx="788.4" cy="198.0" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kine Buds Dispensary" data-state="NJ" data-n="58"/>
-<circle cx="778.9" cy="196.3" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Evergreen Nature's Remedy" data-state="NJ" data-n="56"/>
-<circle cx="788.5" cy="218.2" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Premo Cannabis Company" data-state="NJ" data-n="55"/>
-<circle cx="771.8" cy="248.7" r="3.1" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Eastern Green Dispensary" data-state="NJ" data-n="55"/>
-<circle cx="776.7" cy="223.2" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Got Your Six Dispensary" data-state="NJ" data-n="53"/>
-<circle cx="768.7" cy="250.8" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower &amp; Flame Dispensary" data-state="NJ" data-n="53"/>
-<circle cx="790.2" cy="204.2" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="JC Element" data-state="NJ" data-n="51"/>
-<circle cx="779.9" cy="212.3" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leaf Relief NJ" data-state="NJ" data-n="51"/>
-<circle cx="783.3" cy="208.4" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Botera" data-state="NJ" data-n="50"/>
-<circle cx="772.0" cy="265.7" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chow Pod" data-state="NJ" data-n="47"/>
-<circle cx="767.6" cy="244.5" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chow 420 Pod" data-state="NJ" data-n="47"/>
-<circle cx="778.1" cy="220.3" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Theo A Cannabis Dispensary" data-state="NJ" data-n="42"/>
-<circle cx="774.2" cy="201.8" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="G2 Dispensary Rockaway NJ" data-state="NJ" data-n="42"/>
-<circle cx="765.2" cy="247.9" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Indigo Dispensary" data-state="NJ" data-n="41"/>
-<circle cx="774.4" cy="194.5" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="J &amp; J Cannabis Dispensary" data-state="NJ" data-n="40"/>
-<circle cx="788.1" cy="262.6" r="3.0" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="City Leaves LLC" data-state="NJ" data-n="40"/>
-<circle cx="769.0" cy="241.0" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zacate NJ" data-state="NJ" data-n="37"/>
-<circle cx="780.6" cy="210.0" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BCaf Dispensary" data-state="NJ" data-n="37"/>
-<circle cx="766.3" cy="245.3" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MPX Medical &amp; Recreational Dispensary" data-state="NJ" data-n="36"/>
-<circle cx="780.6" cy="211.5" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Queen City Dispensary" data-state="NJ" data-n="36"/>
-<circle cx="785.0" cy="225.1" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Plantopia Dispensary" data-state="NJ" data-n="35"/>
-<circle cx="779.2" cy="283.9" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sea &amp; Leaf" data-state="NJ" data-n="35"/>
-<circle cx="790.5" cy="205.3" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="CREAM Retail Cannabis Dispensary" data-state="NJ" data-n="35"/>
-<circle cx="787.0" cy="206.2" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="URB'N Dispensary" data-state="NJ" data-n="32"/>
-<circle cx="786.6" cy="203.6" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Natural Apothecary" data-state="NJ" data-n="31"/>
-<circle cx="777.4" cy="215.7" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="New Era Dispensary" data-state="NJ" data-n="29"/>
-<circle cx="774.5" cy="194.7" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mountain View Farmacy" data-state="NJ" data-n="27"/>
-<circle cx="783.3" cy="214.6" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chow420" data-state="NJ" data-n="26"/>
-<circle cx="775.8" cy="233.6" r="2.9" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Evolve Cannabis Bordentown" data-state="NJ" data-n="26"/>
-<circle cx="771.1" cy="245.9" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Highway 90 Dispensary" data-state="NJ" data-n="25"/>
-<circle cx="785.5" cy="262.6" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Red Oak Dispensary" data-state="NJ" data-n="25"/>
-<circle cx="788.3" cy="198.8" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Apothecarium Dispensary of Lodi" data-state="NJ" data-n="25"/>
-<circle cx="772.3" cy="238.7" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nurse Cannabis Dispensary" data-state="NJ" data-n="24"/>
-<circle cx="770.9" cy="245.8" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Floro" data-state="NJ" data-n="22"/>
-<circle cx="775.9" cy="237.7" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Pure Shaka CBD &amp; THC" data-state="NJ" data-n="21"/>
-<circle cx="767.8" cy="220.2" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Aunt Mary's Dispensary" data-state="NJ" data-n="20"/>
-<circle cx="773.9" cy="231.7" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Moe Weed" data-state="NJ" data-n="20"/>
-<circle cx="788.8" cy="262.1" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="OTC Absecon NJ" data-state="NJ" data-n="20"/>
-<circle cx="784.4" cy="202.8" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ascend Montclair" data-state="NJ" data-n="17"/>
-<circle cx="770.3" cy="248.2" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="One Green Leaf" data-state="NJ" data-n="16"/>
-<circle cx="786.6" cy="209.3" r="2.8" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Haven Industries" data-state="NJ" data-n="16"/>
-<circle cx="790.8" cy="204.6" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Green Room - Hoboken" data-state="NJ" data-n="15"/>
-<circle cx="779.5" cy="211.8" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cloud Nine Dispensary" data-state="NJ" data-n="15"/>
-<circle cx="765.5" cy="196.2" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Releaf Newton" data-state="NJ" data-n="14"/>
-<circle cx="784.3" cy="202.7" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Green Room" data-state="NJ" data-n="14"/>
-<circle cx="768.0" cy="245.5" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nurse Cannabis Dispensary" data-state="NJ" data-n="13"/>
-<circle cx="775.7" cy="201.4" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zebulon 51 Dispensary" data-state="NJ" data-n="11"/>
-<circle cx="789.4" cy="205.7" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Legacy to Lifted" data-state="NJ" data-n="10"/>
-<circle cx="791.8" cy="264.2" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sweet Leaf's AC" data-state="NJ" data-n="10"/>
-<circle cx="766.6" cy="199.3" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Andover Cannabis LLC" data-state="NJ" data-n="9"/>
-<circle cx="780.1" cy="227.4" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="CannaSense" data-state="NJ" data-n="8"/>
-<circle cx="774.5" cy="240.6" r="2.7" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Phula" data-state="NJ" data-n="8"/>
-<circle cx="787.7" cy="201.4" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sin City Smoke Shop 2" data-state="NJ" data-n="6"/>
-<circle cx="785.3" cy="201.6" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="A-Z Supply Dispensary" data-state="NJ" data-n="6"/>
-<circle cx="780.6" cy="210.1" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sanctuary Cannabis" data-state="NJ" data-n="5"/>
-<circle cx="780.6" cy="224.4" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Breakwater Treatment &amp; Wellness - New Jersey" data-state="NJ" data-n="4"/>
-<circle cx="769.0" cy="241.0" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Zacate Recreational Cannabis Dispensary" data-state="NJ" data-n="4"/>
-<circle cx="795.5" cy="226.6" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Shipwreck'd" data-state="NJ" data-n="3"/>
-<circle cx="779.0" cy="217.2" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leaf Haus" data-state="NJ" data-n="3"/>
-<circle cx="765.7" cy="196.2" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud City NJ Dispensary" data-state="NJ" data-n="3"/>
-<circle cx="771.7" cy="247.5" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Tree House Co-Op Dispensary" data-state="NJ" data-n="3"/>
-<circle cx="784.9" cy="206.4" r="2.6" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rootleaf Dispensary Medical &amp; Recreational Center" data-state="NJ" data-n="3"/>
-<circle cx="766.5" cy="198.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buddy's Dispensary" data-state="NJ" data-n="2"/>
-<circle cx="777.3" cy="215.6" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rush Budz" data-state="NJ" data-n="1"/>
-<circle cx="765.3" cy="245.4" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Camden Apothecary" data-state="NJ" data-n="1"/>
-<circle cx="771.1" cy="226.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Jersey Meds Cannabis Recreational Dispensary - Pennington" data-state="NJ" data-n="1"/>
-<circle cx="781.5" cy="220.6" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NisonCo" data-state="NJ" data-n="1"/>
-<circle cx="785.0" cy="209.2" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Joyleaf Weed Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="786.9" cy="199.4" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gardens Dispensary Garfield" data-state="NJ" data-n="1"/>
-<circle cx="783.0" cy="208.5" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Garden State Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="776.7" cy="190.5" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Doobiez" data-state="NJ" data-n="1"/>
-<circle cx="786.7" cy="198.7" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ohm Theory - Recreational Cannabis/Marijuana Dispensary (Elmwood Park, NJ)" data-state="NJ" data-n="1"/>
-<circle cx="785.0" cy="225.2" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RUUTED Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="779.9" cy="212.1" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Island Vibez Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="785.2" cy="203.5" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nightjar Cannabis" data-state="NJ" data-n="1"/>
-<circle cx="780.5" cy="210.1" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="A21 Wellness Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="786.5" cy="205.7" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hashstoria Dispensary Newark" data-state="NJ" data-n="1"/>
-<circle cx="789.1" cy="206.8" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Cannabis Place Dispensary Weed Delivery Jersey City" data-state="NJ" data-n="1"/>
-<circle cx="769.9" cy="244.0" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Milligrams: Mount Laurel NJ Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="774.8" cy="194.5" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Spot 23 LLC" data-state="NJ" data-n="1"/>
-<circle cx="776.8" cy="190.7" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canabhang" data-state="NJ" data-n="1"/>
-<circle cx="777.2" cy="216.8" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Unity Rd." data-state="NJ" data-n="1"/>
-<circle cx="768.8" cy="252.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dragonfly Health" data-state="NJ" data-n="1"/>
-<circle cx="765.7" cy="246.4" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Organic Farms" data-state="NJ" data-n="1"/>
-<circle cx="777.4" cy="195.6" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevated Herb" data-state="NJ" data-n="1"/>
-<circle cx="767.0" cy="248.6" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cottonmouth Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="785.2" cy="202.0" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Blue Oak Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="791.2" cy="264.7" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BAKIN BAD" data-state="NJ" data-n="1"/>
-<circle cx="790.0" cy="204.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Golden Door Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="785.1" cy="207.1" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="McDavin Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="769.6" cy="243.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nurse Cannabis Dispensary" data-state="NJ" data-n="1"/>
-<circle cx="785.2" cy="202.9" r="2.5" fill="#85E4FD" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Emerald Tea Supply Company - Dispensary &amp; Delivery" data-state="NJ" data-n="1"/>
-<circle cx="820.9" cy="193.3" r="11.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canna Blooms Dispensary" data-state="NY" data-n="9921"/>
-<circle cx="799.6" cy="202.5" r="10.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bayside Cannabis Dispensary" data-state="NY" data-n="9061"/>
-<circle cx="787.3" cy="171.0" r="8.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Farmers Choice Dispensary" data-state="NY" data-n="5402"/>
-<circle cx="660.3" cy="130.8" r="8.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Misfits Dispensary" data-state="NY" data-n="5011"/>
-<circle cx="730.6" cy="115.1" r="8.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ganja Express Dispensary" data-state="NY" data-n="4448"/>
-<circle cx="660.4" cy="131.1" r="8.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mango Cannabis" data-state="NY" data-n="4209"/>
-<circle cx="782.2" cy="125.4" r="7.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smokey Paradise" data-state="NY" data-n="4036"/>
-<circle cx="782.2" cy="172.4" r="7.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis Huts" data-state="NY" data-n="3801"/>
-<circle cx="822.8" cy="193.4" r="7.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Joint Venture Cannabis Dispensary" data-state="NY" data-n="3740"/>
-<circle cx="670.1" cy="130.0" r="7.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Native Haze Cannabis Co" data-state="NY" data-n="3559"/>
-<circle cx="624.8" cy="145.7" r="7.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Phenos New York" data-state="NY" data-n="3504"/>
-<circle cx="628.7" cy="144.2" r="7.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Phinest Buds" data-state="NY" data-n="3499"/>
-<circle cx="707.0" cy="122.8" r="7.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="VedaLeaf" data-state="NY" data-n="3371"/>
-<circle cx="731.5" cy="115.1" r="7.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Air City Cannabis" data-state="NY" data-n="3264"/>
-<circle cx="786.2" cy="168.3" r="7.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Root 9 Dispensary" data-state="NY" data-n="3103"/>
-<circle cx="792.2" cy="204.3" r="7.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Genius NYC" data-state="NY" data-n="3091"/>
-<circle cx="780.9" cy="122.2" r="7.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Northern Lights Menards" data-state="NY" data-n="2954"/>
-<circle cx="785.4" cy="172.5" r="6.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Station Beacon" data-state="NY" data-n="2631"/>
-<circle cx="793.0" cy="207.1" r="6.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verdi" data-state="NY" data-n="2600"/>
-<circle cx="702.4" cy="120.5" r="6.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Tj'S Cannabis Company" data-state="NY" data-n="2593"/>
-<circle cx="792.6" cy="199.3" r="6.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sparkboro" data-state="NY" data-n="2593"/>
-<circle cx="779.5" cy="155.0" r="6.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Catskill Mountain High" data-state="NY" data-n="2533"/>
-<circle cx="792.6" cy="201.0" r="6.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gotham Buds" data-state="NY" data-n="2525"/>
-<circle cx="619.9" cy="137.6" r="6.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flavor Factory" data-state="NY" data-n="2479"/>
-<circle cx="660.5" cy="130.8" r="6.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ROC dispensary and hydroponic" data-state="NY" data-n="2387"/>
-<circle cx="660.5" cy="127.9" r="6.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Rochester" data-state="NY" data-n="2383"/>
-<circle cx="720.8" cy="158.4" r="6.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Blissful Buds" data-state="NY" data-n="2319"/>
-<circle cx="704.8" cy="147.7" r="6.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dryden Dispensary" data-state="NY" data-n="2247"/>
-<circle cx="660.6" cy="130.9" r="6.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Medical &amp; Recreational Cannabis Dispensary Henrietta" data-state="NY" data-n="2244"/>
-<circle cx="707.9" cy="122.2" r="6.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensary East Syracuse" data-state="NY" data-n="2232"/>
-<circle cx="627.9" cy="148.1" r="6.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Philosophy 716" data-state="NY" data-n="2205"/>
-<circle cx="781.0" cy="117.9" r="6.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leafy Peaks" data-state="NY" data-n="2196"/>
-<circle cx="630.0" cy="143.9" r="6.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Herbal IQ" data-state="NY" data-n="2171"/>
-<circle cx="780.5" cy="122.7" r="6.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Royale Flower Cannabis Dispensary" data-state="NY" data-n="2127"/>
-<circle cx="797.8" cy="205.0" r="6.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vaporize" data-state="NY" data-n="2040"/>
-<circle cx="620.8" cy="138.1" r="6.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Upstate Exotics" data-state="NY" data-n="1916"/>
-<circle cx="730.5" cy="116.8" r="6.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Village Green Dispensary" data-state="NY" data-n="1882"/>
-<circle cx="780.9" cy="124.3" r="6.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Frequency" data-state="NY" data-n="1829"/>
-<circle cx="788.8" cy="181.6" r="6.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cloud 9-14" data-state="NY" data-n="1713"/>
-<circle cx="779.2" cy="115.9" r="6.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Evexia Cannabis" data-state="NY" data-n="1705"/>
-<circle cx="793.0" cy="202.3" r="6.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sweetlife" data-state="NY" data-n="1702"/>
-<circle cx="782.0" cy="84.2" r="5.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Northern Lights Whitehall" data-state="NY" data-n="1673"/>
-<circle cx="699.7" cy="150.9" r="5.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Aspire" data-state="NY" data-n="1659"/>
-<circle cx="792.9" cy="195.5" r="5.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Etain Health Medical Marijuana Dispensary" data-state="NY" data-n="1655"/>
-<circle cx="681.9" cy="136.1" r="5.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Twisted Cannabis FLX" data-state="NY" data-n="1599"/>
-<circle cx="796.4" cy="199.4" r="5.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Say Less" data-state="NY" data-n="1539"/>
-<circle cx="793.1" cy="204.3" r="5.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Milligrams" data-state="NY" data-n="1505"/>
-<circle cx="630.6" cy="145.0" r="5.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Tide Dispensary" data-state="NY" data-n="1480"/>
-<circle cx="792.1" cy="203.9" r="5.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RISE Dispensary" data-state="NY" data-n="1477"/>
-<circle cx="757.3" cy="171.6" r="5.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bethel Buds" data-state="NY" data-n="1476"/>
-<circle cx="795.2" cy="202.7" r="5.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Enflor" data-state="NY" data-n="1456"/>
-<circle cx="623.5" cy="138.2" r="5.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Love Nug" data-state="NY" data-n="1442"/>
-<circle cx="628.2" cy="134.0" r="5.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Peace, Love, &amp; Bud" data-state="NY" data-n="1378"/>
-<circle cx="720.3" cy="53.4" r="5.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Northern Lights Dispensary" data-state="NY" data-n="1363"/>
-<circle cx="681.4" cy="145.4" r="5.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bloom Cannabis Dispensary" data-state="NY" data-n="1353"/>
-<circle cx="644.5" cy="177.3" r="5.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Jupiter Cafe" data-state="NY" data-n="1331"/>
-<circle cx="776.1" cy="120.4" r="5.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cussin's Cannabis" data-state="NY" data-n="1296"/>
-<circle cx="794.3" cy="195.8" r="5.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Budr Cannabis" data-state="NY" data-n="1291"/>
-<circle cx="796.1" cy="190.5" r="5.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Etain Health" data-state="NY" data-n="1282"/>
-<circle cx="792.4" cy="203.9" r="5.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smiley Exotics" data-state="NY" data-n="1272"/>
-<circle cx="700.4" cy="150.7" r="5.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Collegetown Dispensary" data-state="NY" data-n="1245"/>
-<circle cx="710.6" cy="124.5" r="5.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just Breathe Syracuse" data-state="NY" data-n="1193"/>
-<circle cx="772.9" cy="119.1" r="5.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower BNK" data-state="NY" data-n="1161"/>
-<circle cx="777.3" cy="121.4" r="5.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Brownies Dispensary LLC" data-state="NY" data-n="994"/>
-<circle cx="693.8" cy="130.9" r="5.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Wild Flower Dispensary" data-state="NY" data-n="992"/>
-<circle cx="777.6" cy="119.5" r="5.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Leaf Wellness Co." data-state="NY" data-n="966"/>
-<circle cx="792.9" cy="192.9" r="5.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Highline Dispensary" data-state="NY" data-n="956"/>
-<circle cx="701.8" cy="102.2" r="4.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Salmon River Cannabis Company" data-state="NY" data-n="844"/>
-<circle cx="783.8" cy="103.9" r="4.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Windy Hill Wellness / Cannabis Dispensary" data-state="NY" data-n="786"/>
-<circle cx="782.0" cy="173.2" r="4.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Tree" data-state="NY" data-n="763"/>
-<circle cx="700.8" cy="153.2" r="4.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Altitude Ithaca" data-state="NY" data-n="740"/>
-<circle cx="792.8" cy="199.0" r="4.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mello Tymes" data-state="NY" data-n="663"/>
-<circle cx="792.0" cy="205.6" r="4.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Klub" data-state="NY" data-n="577"/>
-<circle cx="768.8" cy="173.1" r="4.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Woodstock Oasis" data-state="NY" data-n="506"/>
-<circle cx="629.3" cy="144.1" r="4.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Smoking Buffalo" data-state="NY" data-n="480"/>
-<circle cx="791.8" cy="203.5" r="4.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hells Kitchen Cannabis Company**" data-state="NY" data-n="475"/>
-<circle cx="783.5" cy="126.7" r="4.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Litmosphere" data-state="NY" data-n="416"/>
-<circle cx="758.8" cy="112.6" r="4.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ganja Palace Dispensary" data-state="NY" data-n="400"/>
-<circle cx="669.3" cy="123.1" r="4.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Purley Cannabis Co" data-state="NY" data-n="380"/>
-<circle cx="697.3" cy="129.6" r="4.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Tap Root Station**" data-state="NY" data-n="369"/>
-<circle cx="774.3" cy="118.4" r="3.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cloud 9 Dispensary" data-state="NY" data-n="299"/>
-<circle cx="765.0" cy="171.9" r="3.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Platinum Leaf" data-state="NY" data-n="268"/>
-<circle cx="794.3" cy="209.7" r="3.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grow Together" data-state="NY" data-n="252"/>
-<circle cx="783.6" cy="173.0" r="3.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Haze Newburgh" data-state="NY" data-n="226"/>
-<circle cx="797.0" cy="195.4" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="HighLife Health" data-state="NY" data-n="200"/>
-<circle cx="788.2" cy="211.3" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Richmond Hill" data-state="NY" data-n="200"/>
-<circle cx="792.0" cy="201.9" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Upper West Side" data-state="NY" data-n="200"/>
-<circle cx="790.6" cy="210.6" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Vault" data-state="NY" data-n="200"/>
-<circle cx="786.5" cy="214.7" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Staten Island" data-state="NY" data-n="200"/>
-<circle cx="840.6" cy="184.6" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hampton Premium Green" data-state="NY" data-n="200"/>
-<circle cx="809.4" cy="199.8" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Strain Stars Cannabis Dispensary" data-state="NY" data-n="195"/>
-<circle cx="705.9" cy="125.1" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf" data-state="NY" data-n="194"/>
-<circle cx="619.3" cy="180.5" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Liquid Monkey Dispensary" data-state="NY" data-n="191"/>
-<circle cx="792.5" cy="203.1" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SOFACLUB Midtown" data-state="NY" data-n="188"/>
-<circle cx="757.4" cy="57.9" r="3.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Mellow Moose" data-state="NY" data-n="182"/>
-<circle cx="782.2" cy="173.2" r="3.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Newburgh Kush Factory" data-state="NY" data-n="169"/>
-<circle cx="788.8" cy="180.9" r="3.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Valley Greens" data-state="NY" data-n="169"/>
-<circle cx="718.8" cy="160.5" r="3.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vireo Health" data-state="NY" data-n="164"/>
-<circle cx="795.1" cy="205.1" r="3.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Late Bloomers NYC LLC" data-state="NY" data-n="150"/>
-<circle cx="780.1" cy="124.7" r="3.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="State of Mind Albany Dispensary" data-state="NY" data-n="150"/>
-<circle cx="794.6" cy="193.3" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Central Budz" data-state="NY" data-n="139"/>
-<circle cx="803.4" cy="201.0" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf Carle Place" data-state="NY" data-n="138"/>
-<circle cx="625.6" cy="141.7" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Times Cannabis Co." data-state="NY" data-n="134"/>
-<circle cx="793.5" cy="204.6" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Apple Cannabis Co." data-state="NY" data-n="130"/>
-<circle cx="792.2" cy="204.1" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Blue Forest Farms Dispensary LLC" data-state="NY" data-n="127"/>
-<circle cx="792.8" cy="202.1" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Herbal Care" data-state="NY" data-n="120"/>
-<circle cx="696.7" cy="149.2" r="3.4" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Corner House" data-state="NY" data-n="118"/>
-<circle cx="783.5" cy="172.2" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NY Hudson Valley" data-state="NY" data-n="112"/>
-<circle cx="794.3" cy="200.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bronx Joint Dispensary" data-state="NY" data-n="112"/>
-<circle cx="793.2" cy="204.8" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vgtnyc" data-state="NY" data-n="109"/>
-<circle cx="794.9" cy="198.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hush New York" data-state="NY" data-n="105"/>
-<circle cx="627.1" cy="143.2" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Times Cannabis Co." data-state="NY" data-n="104"/>
-<circle cx="790.5" cy="210.8" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Times Staten Island" data-state="NY" data-n="104"/>
-<circle cx="829.5" cy="187.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Strain Stars Riverhead" data-state="NY" data-n="103"/>
-<circle cx="633.7" cy="149.7" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buffalo Kind**" data-state="NY" data-n="101"/>
-<circle cx="796.4" cy="203.4" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Queens" data-state="NY" data-n="101"/>
-<circle cx="818.2" cy="191.0" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Strong Strains" data-state="NY" data-n="101"/>
-<circle cx="809.4" cy="199.3" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Botanist" data-state="NY" data-n="100"/>
-<circle cx="791.9" cy="205.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lighthouse Cannabis" data-state="NY" data-n="100"/>
-<circle cx="792.2" cy="204.5" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery East Village" data-state="NY" data-n="100"/>
-<circle cx="720.7" cy="159.0" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Binghamton" data-state="NY" data-n="100"/>
-<circle cx="792.5" cy="203.6" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Midtown Manhattan" data-state="NY" data-n="100"/>
-<circle cx="659.2" cy="126.2" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Rochester, West Ridge Rd" data-state="NY" data-n="100"/>
-<circle cx="794.6" cy="193.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NUG Yonkers" data-state="NY" data-n="100"/>
-<circle cx="661.5" cy="127.6" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Rochester, N Goodman St" data-state="NY" data-n="100"/>
-<circle cx="781.6" cy="173.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Newburgh" data-state="NY" data-n="100"/>
-<circle cx="788.3" cy="185.3" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery Haverstraw" data-state="NY" data-n="100"/>
-<circle cx="797.2" cy="205.5" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flor de Fred" data-state="NY" data-n="99"/>
-<circle cx="625.2" cy="143.6" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="82-J Cannabis Company" data-state="NY" data-n="99"/>
-<circle cx="784.0" cy="139.8" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gold Leaf Cannabis" data-state="NY" data-n="98"/>
-<circle cx="780.8" cy="123.4" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dark Horse Cannabis Dispensary" data-state="NY" data-n="98"/>
-<circle cx="793.1" cy="205.9" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Spot Dispensary" data-state="NY" data-n="96"/>
-<circle cx="794.3" cy="200.1" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bronx Joint" data-state="NY" data-n="96"/>
-<circle cx="793.5" cy="204.9" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower Daddy" data-state="NY" data-n="96"/>
-<circle cx="791.8" cy="204.8" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="DAGMAR Cannabis" data-state="NY" data-n="95"/>
-<circle cx="793.4" cy="197.5" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Frass Box" data-state="NY" data-n="95"/>
-<circle cx="717.3" cy="162.2" r="3.3" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sacred Bloom" data-state="NY" data-n="95"/>
-<circle cx="792.5" cy="200.6" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Midnight Moon - A Cannabis Store" data-state="NY" data-n="93"/>
-<circle cx="792.0" cy="204.1" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Stoops NYC" data-state="NY" data-n="93"/>
-<circle cx="791.7" cy="205.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Alto on Chambers" data-state="NY" data-n="92"/>
-<circle cx="801.3" cy="182.5" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Purple Plains" data-state="NY" data-n="92"/>
-<circle cx="798.5" cy="204.1" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Silk Road NYC" data-state="NY" data-n="91"/>
-<circle cx="796.7" cy="203.9" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NY Queens" data-state="NY" data-n="91"/>
-<circle cx="719.3" cy="160.8" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greenery Spot" data-state="NY" data-n="89"/>
-<circle cx="768.4" cy="37.8" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Curaleaf NY Plattsburgh" data-state="NY" data-n="88"/>
-<circle cx="794.9" cy="209.6" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greene Street" data-state="NY" data-n="87"/>
-<circle cx="788.7" cy="209.9" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NugHub NY" data-state="NY" data-n="87"/>
-<circle cx="791.9" cy="204.7" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smacked Village" data-state="NY" data-n="86"/>
-<circle cx="741.2" cy="163.0" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Knotweed Farm**" data-state="NY" data-n="85"/>
-<circle cx="794.1" cy="202.8" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Urban Weeds" data-state="NY" data-n="82"/>
-<circle cx="666.6" cy="132.0" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower City Dispensary" data-state="NY" data-n="82"/>
-<circle cx="779.3" cy="119.7" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="State of Mind Dispensary" data-state="NY" data-n="81"/>
-<circle cx="794.5" cy="205.2" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Misha's Flower Shop" data-state="NY" data-n="81"/>
-<circle cx="792.3" cy="203.4" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terrapin Greens LLC (dba The Travel Agency Fifth Avenue)" data-state="NY" data-n="80"/>
-<circle cx="660.4" cy="130.7" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Shady Grove Dispensary" data-state="NY" data-n="80"/>
-<circle cx="792.2" cy="206.5" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Erudito Cannabis Boutique" data-state="NY" data-n="80"/>
-<circle cx="660.5" cy="130.8" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ROC dispensary and hydroponic" data-state="NY" data-n="78"/>
-<circle cx="627.2" cy="147.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Cannabis Vault" data-state="NY" data-n="78"/>
-<circle cx="798.6" cy="201.6" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NY Elite Dispensary" data-state="NY" data-n="77"/>
-<circle cx="792.1" cy="204.4" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Travel Agency Union Square" data-state="NY" data-n="77"/>
-<circle cx="792.3" cy="205.0" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ConBud" data-state="NY" data-n="76"/>
-<circle cx="773.2" cy="118.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Madame Jane Cannabis Dispensary" data-state="NY" data-n="76"/>
-<circle cx="704.8" cy="120.6" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned North Syracuse" data-state="NY" data-n="75"/>
-<circle cx="660.7" cy="129.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Goat Dispensary" data-state="NY" data-n="75"/>
-<circle cx="793.0" cy="206.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Travel Agency Downtown Brooklyn" data-state="NY" data-n="74"/>
-<circle cx="792.0" cy="203.8" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis Union" data-state="NY" data-n="74"/>
-<circle cx="793.0" cy="206.7" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gramp's" data-state="NY" data-n="74"/>
-<circle cx="810.0" cy="199.3" r="3.2" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Planet Nugg Weed Dispensary &amp; Delivery" data-state="NY" data-n="73"/>
-<circle cx="792.1" cy="204.5" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Housing Works Cannabis Co." data-state="NY" data-n="72"/>
-<circle cx="620.6" cy="134.9" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Fritz's Joint" data-state="NY" data-n="72"/>
-<circle cx="779.7" cy="124.4" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabicity Albany" data-state="NY" data-n="72"/>
-<circle cx="792.6" cy="203.3" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Urban Leaf" data-state="NY" data-n="71"/>
-<circle cx="800.0" cy="203.4" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Fumi dispensary " data-state="NY" data-n="70"/>
-<circle cx="795.7" cy="203.5" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vireo Health" data-state="NY" data-n="70"/>
-<circle cx="796.2" cy="205.6" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud City Cannabis" data-state="NY" data-n="70"/>
-<circle cx="792.1" cy="204.9" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mighty Lucky" data-state="NY" data-n="69"/>
-<circle cx="792.2" cy="204.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gotham Dispensary | Bowery" data-state="NY" data-n="67"/>
-<circle cx="625.8" cy="163.5" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Good Leaf Cannabis Dispensary" data-state="NY" data-n="66"/>
-<circle cx="789.0" cy="210.4" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Oz Dispensary" data-state="NY" data-n="66"/>
-<circle cx="634.4" cy="175.8" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Good Leaf" data-state="NY" data-n="66"/>
-<circle cx="628.9" cy="132.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grow716" data-state="NY" data-n="65"/>
-<circle cx="792.8" cy="207.2" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Matawana Dispensary" data-state="NY" data-n="63"/>
-<circle cx="792.1" cy="203.9" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bud &amp; Honey NYC Dispensary" data-state="NY" data-n="62"/>
-<circle cx="624.6" cy="145.3" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canterra" data-state="NY" data-n="62"/>
-<circle cx="626.6" cy="151.9" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="716 Cannabis" data-state="NY" data-n="61"/>
-<circle cx="795.7" cy="203.5" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vireo Health" data-state="NY" data-n="60"/>
-<circle cx="771.6" cy="89.1" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hudson &amp; Main Cannabis Company" data-state="NY" data-n="60"/>
-<circle cx="809.6" cy="200.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Days Cannabis Dispensary" data-state="NY" data-n="60"/>
-<circle cx="626.0" cy="139.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="TreeHead Culture" data-state="NY" data-n="60"/>
-<circle cx="794.0" cy="210.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Coney Island Cannabis" data-state="NY" data-n="60"/>
-<circle cx="778.1" cy="122.1" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vireo Health" data-state="NY" data-n="59"/>
-<circle cx="838.7" cy="185.9" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Charlie Fox Hamptons" data-state="NY" data-n="59"/>
-<circle cx="770.4" cy="45.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chesterfield Cannabis Co." data-state="NY" data-n="59"/>
-<circle cx="792.2" cy="203.7" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NY Cannabis Co. 5th Ave" data-state="NY" data-n="58"/>
-<circle cx="791.9" cy="203.2" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NY Cannabis Co." data-state="NY" data-n="58"/>
-<circle cx="794.6" cy="210.6" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Quality Control Dispensary" data-state="NY" data-n="58"/>
-<circle cx="792.5" cy="206.1" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabist" data-state="NY" data-n="57"/>
-<circle cx="650.4" cy="127.2" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Evergreen Retail" data-state="NY" data-n="57"/>
-<circle cx="792.0" cy="203.5" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Twinn Leaf" data-state="NY" data-n="57"/>
-<circle cx="791.7" cy="204.0" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Tree House Chelsea" data-state="NY" data-n="57"/>
-<circle cx="792.4" cy="204.8" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="PRYZM Dispensary" data-state="NY" data-n="56"/>
-<circle cx="792.0" cy="203.8" r="3.1" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Housing Works Cannabis Co" data-state="NY" data-n="55"/>
-<circle cx="798.5" cy="201.8" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Aroma Farms" data-state="NY" data-n="54"/>
-<circle cx="793.3" cy="205.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Awake Store" data-state="NY" data-n="52"/>
-<circle cx="795.8" cy="204.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Cannabis Place Dispensary Weed Delivery NYC" data-state="NY" data-n="52"/>
-<circle cx="791.9" cy="205.0" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery SoHo" data-state="NY" data-n="51"/>
-<circle cx="793.7" cy="205.0" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery - Brooklyn" data-state="NY" data-n="51"/>
-<circle cx="792.2" cy="204.5" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery East Village " data-state="NY" data-n="50"/>
-<circle cx="779.0" cy="122.6" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Capital District Cannabis and Wellness" data-state="NY" data-n="50"/>
-<circle cx="793.4" cy="197.5" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Frass Box Cannabis Bronx Dispensary" data-state="NY" data-n="50"/>
-<circle cx="785.1" cy="189.6" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="50"/>
-<circle cx="794.1" cy="198.7" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Freshly Baked NYC 2" data-state="NY" data-n="49"/>
-<circle cx="792.5" cy="206.5" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Garden Club" data-state="NY" data-n="49"/>
-<circle cx="791.7" cy="186.0" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Up the River Cannabis Dispensary" data-state="NY" data-n="48"/>
-<circle cx="790.4" cy="189.2" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Treehouse Cannabis" data-state="NY" data-n="47"/>
-<circle cx="773.5" cy="117.8" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabicity Schenectady" data-state="NY" data-n="47"/>
-<circle cx="793.2" cy="204.7" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dagmar Cannabis Williamsburg" data-state="NY" data-n="46"/>
-<circle cx="792.1" cy="205.0" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Alta Dispensary" data-state="NY" data-n="46"/>
-<circle cx="676.0" cy="160.3" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Crooked Lake Cannabis, Inc." data-state="NY" data-n="44"/>
-<circle cx="793.6" cy="200.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BX Buddiez" data-state="NY" data-n="44"/>
-<circle cx="789.2" cy="213.5" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Clouditude Dispensary" data-state="NY" data-n="44"/>
-<circle cx="702.6" cy="169.3" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hazy Daze" data-state="NY" data-n="44"/>
-<circle cx="628.3" cy="144.7" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="King of Budz Cannabis Company" data-state="NY" data-n="44"/>
-<circle cx="794.1" cy="202.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High City Cannabis" data-state="NY" data-n="44"/>
-<circle cx="780.1" cy="153.6" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canna Planet Kingston" data-state="NY" data-n="44"/>
-<circle cx="695.7" cy="114.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leafy Wonders" data-state="NY" data-n="44"/>
-<circle cx="794.7" cy="196.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevate Cannabis Dispensary" data-state="NY" data-n="44"/>
-<circle cx="792.6" cy="203.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Etain Health Medical Cannabis Dispensary" data-state="NY" data-n="43"/>
-<circle cx="793.5" cy="198.9" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bleu Leaf Dispensary" data-state="NY" data-n="43"/>
-<circle cx="839.5" cy="185.6" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Hampton Collective" data-state="NY" data-n="43"/>
-<circle cx="625.1" cy="145.9" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kif Doctors: Medical Marijuana Card Buffalo" data-state="NY" data-n="43"/>
-<circle cx="777.3" cy="95.9" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RR Legacy Dispensary" data-state="NY" data-n="42"/>
-<circle cx="693.8" cy="167.2" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Goodie Bag" data-state="NY" data-n="42"/>
-<circle cx="792.0" cy="203.7" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Culture House" data-state="NY" data-n="42"/>
-<circle cx="788.3" cy="188.9" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Dispensary - Bardonia" data-state="NY" data-n="42"/>
-<circle cx="780.5" cy="103.8" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Roots Farm Dispensary**" data-state="NY" data-n="42"/>
-<circle cx="662.5" cy="127.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Browncroft Budz" data-state="NY" data-n="41"/>
-<circle cx="793.9" cy="207.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Plug" data-state="NY" data-n="41"/>
-<circle cx="787.7" cy="210.0" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ZenZest" data-state="NY" data-n="41"/>
-<circle cx="792.2" cy="202.1" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Superfly" data-state="NY" data-n="41"/>
-<circle cx="777.9" cy="121.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Legacy Cannabis &amp; Weed Dispensary Colonie" data-state="NY" data-n="40"/>
-<circle cx="623.8" cy="143.2" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bison Botanics" data-state="NY" data-n="40"/>
-<circle cx="799.3" cy="205.6" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BudKoin" data-state="NY" data-n="39"/>
-<circle cx="654.3" cy="146.4" r="3.0" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nautical Blaze" data-state="NY" data-n="39"/>
-<circle cx="702.4" cy="149.1" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Upstate Haze**" data-state="NY" data-n="38"/>
-<circle cx="796.0" cy="194.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Cannabis Reserve" data-state="NY" data-n="38"/>
-<circle cx="781.9" cy="172.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canna Planet Newburgh" data-state="NY" data-n="38"/>
-<circle cx="660.8" cy="127.8" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="6 Point Cannabis" data-state="NY" data-n="38"/>
-<circle cx="707.2" cy="122.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Thrive Syracuse" data-state="NY" data-n="38"/>
-<circle cx="800.3" cy="205.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Stash Box" data-state="NY" data-n="37"/>
-<circle cx="781.7" cy="120.1" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="No Name Cannabis Company" data-state="NY" data-n="37"/>
-<circle cx="792.7" cy="203.1" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Liberty Buds" data-state="NY" data-n="37"/>
-<circle cx="780.2" cy="123.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hold Up Roll Up, LLC" data-state="NY" data-n="36"/>
-<circle cx="792.1" cy="202.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower Power Dispensers" data-state="NY" data-n="36"/>
-<circle cx="794.8" cy="204.9" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Herbarium Queens " data-state="NY" data-n="36"/>
-<circle cx="773.1" cy="118.9" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Electric City Cannabis Co" data-state="NY" data-n="36"/>
-<circle cx="620.6" cy="160.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Skunky's" data-state="NY" data-n="36"/>
-<circle cx="791.8" cy="203.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NYCBUD Midtown" data-state="NY" data-n="36"/>
-<circle cx="778.9" cy="158.3" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Royal Blend Dispensary" data-state="NY" data-n="36"/>
-<circle cx="795.2" cy="203.9" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower Power Dispensers Maspeth" data-state="NY" data-n="36"/>
-<circle cx="793.5" cy="206.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hold Up Roll Up Brooklyn" data-state="NY" data-n="36"/>
-<circle cx="791.9" cy="203.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nicklz" data-state="NY" data-n="36"/>
-<circle cx="791.7" cy="204.1" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Chelsea" data-state="NY" data-n="35"/>
-<circle cx="794.0" cy="207.8" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="BK Exotic" data-state="NY" data-n="35"/>
-<circle cx="705.7" cy="123.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dazed Syracuse" data-state="NY" data-n="35"/>
-<circle cx="625.8" cy="143.4" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="House of Za Dispensary" data-state="NY" data-n="35"/>
-<circle cx="796.0" cy="203.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="GreenCup" data-state="NY" data-n="33"/>
-<circle cx="791.9" cy="203.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannadreams Dispensary" data-state="NY" data-n="33"/>
-<circle cx="792.3" cy="201.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MetroBud" data-state="NY" data-n="33"/>
-<circle cx="792.2" cy="205.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Flowery LES/Chinatown" data-state="NY" data-n="32"/>
-<circle cx="623.7" cy="140.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Satisfied Mind" data-state="NY" data-n="31"/>
-<circle cx="743.2" cy="141.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dosha" data-state="NY" data-n="31"/>
-<circle cx="792.7" cy="189.3" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mindset Cannabis Shop" data-state="NY" data-n="31"/>
-<circle cx="703.6" cy="82.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Cannabis Depot" data-state="NY" data-n="31"/>
-<circle cx="798.3" cy="202.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Road" data-state="NY" data-n="31"/>
-<circle cx="624.5" cy="146.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Best Budz Dispensary" data-state="NY" data-n="31"/>
-<circle cx="795.4" cy="190.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis Realm" data-state="NY" data-n="31"/>
-<circle cx="794.5" cy="208.3" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="All Good Dispensary Brooklyn" data-state="NY" data-n="30"/>
-<circle cx="791.8" cy="209.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kaya Bliss Dispensary" data-state="NY" data-n="30"/>
-<circle cx="780.9" cy="135.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="THtree" data-state="NY" data-n="30"/>
-<circle cx="799.6" cy="201.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Good Daze Dispensary" data-state="NY" data-n="30"/>
-<circle cx="793.1" cy="203.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NYC BUD" data-state="NY" data-n="30"/>
-<circle cx="717.9" cy="162.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Skalz" data-state="NY" data-n="29"/>
-<circle cx="628.2" cy="148.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Devil's Lettuce" data-state="NY" data-n="29"/>
-<circle cx="792.8" cy="206.8" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Budega NYC" data-state="NY" data-n="29"/>
-<circle cx="794.2" cy="206.6" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Altitude Club" data-state="NY" data-n="28"/>
-<circle cx="772.8" cy="178.7" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Orange County Cannabis Co." data-state="NY" data-n="28"/>
-<circle cx="620.2" cy="138.4" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Times Cannabis Co. Niagara Falls" data-state="NY" data-n="27"/>
-<circle cx="794.7" cy="205.2" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RNR Dispensary" data-state="NY" data-n="27"/>
-<circle cx="790.0" cy="180.0" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kings House Of Fire" data-state="NY" data-n="27"/>
-<circle cx="661.9" cy="127.8" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Wicked Reserve Dispensary" data-state="NY" data-n="27"/>
-<circle cx="791.8" cy="203.9" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Alchemy" data-state="NY" data-n="26"/>
-<circle cx="777.3" cy="95.8" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="RR Legacy Cannabis &amp; Weed Dispensary Glens Falls" data-state="NY" data-n="26"/>
-<circle cx="792.1" cy="204.3" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dazed" data-state="NY" data-n="26"/>
-<circle cx="779.9" cy="155.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lucky Green Ladies" data-state="NY" data-n="26"/>
-<circle cx="789.6" cy="209.5" r="2.9" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gaslight Dispensary" data-state="NY" data-n="26"/>
-<circle cx="723.9" cy="110.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Luxus Botanica" data-state="NY" data-n="25"/>
-<circle cx="791.8" cy="204.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Chelsea Cannabis Co." data-state="NY" data-n="25"/>
-<circle cx="794.3" cy="209.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kushmart" data-state="NY" data-n="25"/>
-<circle cx="662.0" cy="126.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis Corner" data-state="NY" data-n="25"/>
-<circle cx="661.7" cy="125.7" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Acadia Canna &amp; Kratom" data-state="NY" data-n="25"/>
-<circle cx="779.9" cy="163.4" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Goat Cannabis Shoppe**" data-state="NY" data-n="24"/>
-<circle cx="619.3" cy="181.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Yeti Greenery" data-state="NY" data-n="24"/>
-<circle cx="661.2" cy="128.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Acadia Canna &amp; Kratom" data-state="NY" data-n="24"/>
-<circle cx="659.0" cy="127.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buddeez" data-state="NY" data-n="24"/>
-<circle cx="708.5" cy="141.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="LakeHouse Cannabis" data-state="NY" data-n="24"/>
-<circle cx="706.9" cy="56.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Green Door Dispensary" data-state="NY" data-n="24"/>
-<circle cx="783.5" cy="173.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="White Atmoss" data-state="NY" data-n="24"/>
-<circle cx="792.4" cy="203.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cannabis on Lex" data-state="NY" data-n="24"/>
-<circle cx="790.4" cy="210.4" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Stone" data-state="NY" data-n="24"/>
-<circle cx="625.7" cy="142.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buffalo Dreams" data-state="NY" data-n="24"/>
-<circle cx="793.2" cy="204.9" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="7 Leaf Clover" data-state="NY" data-n="23"/>
-<circle cx="661.3" cy="128.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Comfort Dispensary" data-state="NY" data-n="23"/>
-<circle cx="795.4" cy="209.0" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Society House" data-state="NY" data-n="23"/>
-<circle cx="793.9" cy="206.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Jungle Kingdom Flower" data-state="NY" data-n="23"/>
-<circle cx="794.4" cy="196.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sesh NYC" data-state="NY" data-n="22"/>
-<circle cx="794.4" cy="205.6" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Stashmaster" data-state="NY" data-n="21"/>
-<circle cx="798.3" cy="204.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Good Grades Dispensary" data-state="NY" data-n="21"/>
-<circle cx="806.1" cy="203.0" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Natural Remedies" data-state="NY" data-n="21"/>
-<circle cx="773.1" cy="145.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Wintergreen" data-state="NY" data-n="21"/>
-<circle cx="624.8" cy="143.7" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Premier Earth" data-state="NY" data-n="21"/>
-<circle cx="793.3" cy="204.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hii Cannabis Dispensary" data-state="NY" data-n="21"/>
-<circle cx="785.1" cy="189.6" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="21"/>
-<circle cx="774.5" cy="118.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Upstate Canna Co" data-state="NY" data-n="21"/>
-<circle cx="713.7" cy="121.4" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verona Collective" data-state="NY" data-n="21"/>
-<circle cx="793.0" cy="205.0" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gotham Williamsburg" data-state="NY" data-n="21"/>
-<circle cx="783.3" cy="140.3" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Gotham Hudson" data-state="NY" data-n="21"/>
-<circle cx="780.9" cy="103.9" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Canna Cabana" data-state="NY" data-n="20"/>
-<circle cx="730.1" cy="116.1" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mills Cannabis" data-state="NY" data-n="20"/>
-<circle cx="792.2" cy="203.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Torches NYC" data-state="NY" data-n="20"/>
-<circle cx="625.6" cy="143.8" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Cloudz Buffalo" data-state="NY" data-n="19"/>
-<circle cx="773.3" cy="118.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Ripe Cannabis" data-state="NY" data-n="19"/>
-<circle cx="787.0" cy="185.5" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="202 Cannabis Co." data-state="NY" data-n="18"/>
-<circle cx="794.7" cy="198.1" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Smoking Scholars" data-state="NY" data-n="18"/>
-<circle cx="720.8" cy="161.2" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just Breathe Binghamton" data-state="NY" data-n="17"/>
-<circle cx="793.7" cy="208.6" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Brooklyn Buds Dispensary" data-state="NY" data-n="17"/>
-<circle cx="799.6" cy="205.9" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="JFK Cannabis" data-state="NY" data-n="16"/>
-<circle cx="793.5" cy="205.9" r="2.8" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rustik Smokes" data-state="NY" data-n="16"/>
-<circle cx="785.1" cy="189.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="15"/>
-<circle cx="736.4" cy="32.7" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Top Shelf Cannabis Co." data-state="NY" data-n="15"/>
-<circle cx="785.1" cy="189.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="14"/>
-<circle cx="785.1" cy="189.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="14"/>
-<circle cx="785.1" cy="189.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="14"/>
-<circle cx="785.1" cy="189.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="14"/>
-<circle cx="792.7" cy="189.0" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Quality High" data-state="NY" data-n="14"/>
-<circle cx="795.0" cy="205.3" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Caffiend: The Bushwick Dispensary" data-state="NY" data-n="14"/>
-<circle cx="758.5" cy="150.7" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lively Harvest**" data-state="NY" data-n="14"/>
-<circle cx="796.3" cy="190.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Purple Owl Dispensary" data-state="NY" data-n="13"/>
-<circle cx="792.1" cy="201.7" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Sanctuary Garden" data-state="NY" data-n="13"/>
-<circle cx="781.7" cy="119.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Misty Bleu Farm LLC (dba 400 River Dispensary)**" data-state="NY" data-n="13"/>
-<circle cx="786.5" cy="214.9" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Weed Shoppe Inc" data-state="NY" data-n="12"/>
-<circle cx="782.2" cy="117.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Transcend Wellness" data-state="NY" data-n="12"/>
-<circle cx="794.9" cy="195.4" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nuna Harvest" data-state="NY" data-n="11"/>
-<circle cx="794.2" cy="199.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Statis Cannabis Licensed Dispensary (Relocating)** Stay tuned for updates**" data-state="NY" data-n="11"/>
-<circle cx="681.1" cy="136.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Points Dispensary" data-state="NY" data-n="11"/>
-<circle cx="793.1" cy="206.5" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Be. Brooklyn" data-state="NY" data-n="11"/>
-<circle cx="813.1" cy="198.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Long Island Cannabis Club" data-state="NY" data-n="10"/>
-<circle cx="721.6" cy="116.4" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verona Collective" data-state="NY" data-n="10"/>
-<circle cx="721.5" cy="118.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verona Collective" data-state="NY" data-n="10"/>
-<circle cx="793.5" cy="206.3" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="By Any Other Name" data-state="NY" data-n="10"/>
-<circle cx="687.3" cy="120.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Victory Road Farm**" data-state="NY" data-n="9"/>
-<circle cx="779.5" cy="122.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Robinson’s Cannabis" data-state="NY" data-n="9"/>
-<circle cx="792.4" cy="203.0" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NYC Delivery 42" data-state="NY" data-n="9"/>
-<circle cx="624.8" cy="144.8" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Secret Garden 716" data-state="NY" data-n="9"/>
-<circle cx="792.5" cy="203.0" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mary Jane Cannabis Co." data-state="NY" data-n="9"/>
-<circle cx="730.0" cy="116.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Medical Cannabis Dispensary" data-state="NY" data-n="8"/>
-<circle cx="661.0" cy="128.3" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High End New York" data-state="NY" data-n="8"/>
-<circle cx="792.6" cy="206.1" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Munkey Brooklyn" data-state="NY" data-n="8"/>
-<circle cx="792.8" cy="198.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Munkey" data-state="NY" data-n="8"/>
-<circle cx="794.5" cy="206.0" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Happy Buds Brooklyn" data-state="NY" data-n="8"/>
-<circle cx="788.3" cy="188.9" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Medical Cannabis Dispensary" data-state="NY" data-n="8"/>
-<circle cx="705.1" cy="123.5" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FlynnStoned Cannabis Company" data-state="NY" data-n="8"/>
-<circle cx="809.0" cy="196.7" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Medical Cannabis Dispensary" data-state="NY" data-n="8"/>
-<circle cx="657.7" cy="167.3" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Alle-Catt Cannabis Company" data-state="NY" data-n="8"/>
-<circle cx="793.9" cy="202.6" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sky Club" data-state="NY" data-n="8"/>
-<circle cx="791.9" cy="204.0" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verdi" data-state="NY" data-n="8"/>
-<circle cx="793.3" cy="204.9" r="2.7" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunnyside Medical Cannabis Dispensary" data-state="NY" data-n="8"/>
-<circle cx="693.3" cy="166.8" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Dabber Hashery" data-state="NY" data-n="7"/>
-<circle cx="624.4" cy="143.0" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="HONEY Kenmore" data-state="NY" data-n="7"/>
-<circle cx="783.5" cy="140.5" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Riverbend Dispensary" data-state="NY" data-n="7"/>
-<circle cx="785.1" cy="189.6" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="7"/>
-<circle cx="785.1" cy="189.6" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rockland Cannabis Airmont" data-state="NY" data-n="7"/>
-<circle cx="773.2" cy="105.0" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Reef Dispensary" data-state="NY" data-n="6"/>
-<circle cx="793.7" cy="206.4" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beleaf" data-state="NY" data-n="6"/>
-<circle cx="792.9" cy="195.0" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sunny Grams Farms" data-state="NY" data-n="6"/>
-<circle cx="821.1" cy="191.5" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Simply Green" data-state="NY" data-n="6"/>
-<circle cx="792.0" cy="203.6" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Qube" data-state="NY" data-n="5"/>
-<circle cx="796.2" cy="190.5" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Vireo Health" data-state="NY" data-n="5"/>
-<circle cx="778.3" cy="122.1" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Chronic Dispensary" data-state="NY" data-n="5"/>
-<circle cx="793.9" cy="205.6" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="WeednEdiblesny" data-state="NY" data-n="5"/>
-<circle cx="774.4" cy="109.0" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Sashies Dispensary" data-state="NY" data-n="5"/>
-<circle cx="783.9" cy="170.0" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Stellar Dispensary" data-state="NY" data-n="4"/>
-<circle cx="793.7" cy="206.1" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bedford Club: Recreational Cannabis Dispensary" data-state="NY" data-n="4"/>
-<circle cx="710.6" cy="124.5" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just Breathe Syracuse" data-state="NY" data-n="4"/>
-<circle cx="778.9" cy="119.6" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Dispensary" data-state="NY" data-n="4"/>
-<circle cx="638.0" cy="177.7" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SeneCali" data-state="NY" data-n="4"/>
-<circle cx="793.1" cy="206.8" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mr. Nice Guys BK Weed Dispensary" data-state="NY" data-n="4"/>
-<circle cx="796.1" cy="190.4" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leafology Cannabis Company" data-state="NY" data-n="3"/>
-<circle cx="661.1" cy="130.8" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MJ Dispensary" data-state="NY" data-n="3"/>
-<circle cx="800.6" cy="202.7" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="New York City Cannabis Exchange" data-state="NY" data-n="3"/>
-<circle cx="792.4" cy="205.8" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Kaya Bliss Brooklyn Heights" data-state="NY" data-n="3"/>
-<circle cx="827.2" cy="187.4" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beleaf Calverton" data-state="NY" data-n="3"/>
-<circle cx="794.2" cy="195.7" r="2.6" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="NY Medical Marijuana Card Yonkers" data-state="NY" data-n="3"/>
-<circle cx="792.8" cy="202.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lenox Hill Cannabis Co." data-state="NY" data-n="2"/>
-<circle cx="793.9" cy="207.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Brooklyn Bourne Dispensary" data-state="NY" data-n="2"/>
-<circle cx="777.7" cy="96.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Third Rock Cannabis" data-state="NY" data-n="2"/>
-<circle cx="626.1" cy="142.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Leaf Plug" data-state="NY" data-n="2"/>
-<circle cx="794.7" cy="200.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Pharmacann Of New York, Doing Business As: Verilife" data-state="NY" data-n="2"/>
-<circle cx="708.0" cy="140.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Classy Canna" data-state="NY" data-n="2"/>
-<circle cx="707.9" cy="123.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Loudpack Exotics" data-state="NY" data-n="2"/>
-<circle cx="775.5" cy="105.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Peaks Saratoga" data-state="NY" data-n="2"/>
-<circle cx="778.1" cy="154.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Etain - Medical &amp; Recreational Cannabis Dispensary Kingston Hudson Valley" data-state="NY" data-n="2"/>
-<circle cx="763.8" cy="126.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dayzed Cannabis**" data-state="NY" data-n="2"/>
-<circle cx="627.4" cy="148.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Yeti Canna" data-state="NY" data-n="2"/>
-<circle cx="781.0" cy="123.8" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Stage One Dispensary" data-state="NY" data-n="2"/>
-<circle cx="634.3" cy="175.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dancing Turtle Greenery West" data-state="NY" data-n="2"/>
-<circle cx="795.4" cy="208.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FIRELEAF Dispensary" data-state="NY" data-n="2"/>
-<circle cx="785.1" cy="172.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="LotusWorks Wellness" data-state="NY" data-n="2"/>
-<circle cx="792.6" cy="199.8" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Broadway Strains" data-state="NY" data-n="1"/>
-<circle cx="794.3" cy="205.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Emerald Dispensary" data-state="NY" data-n="1"/>
-<circle cx="742.1" cy="37.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="P. Nuggs" data-state="NY" data-n="1"/>
-<circle cx="792.1" cy="201.8" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Pure Blossoms Cannabis" data-state="NY" data-n="1"/>
-<circle cx="791.7" cy="204.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="New Amsterdam NYC" data-state="NY" data-n="1"/>
-<circle cx="799.2" cy="202.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Flower Wellness Oakland Gardens" data-state="NY" data-n="1"/>
-<circle cx="797.7" cy="204.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just A Little Higher Briarwood" data-state="NY" data-n="1"/>
-<circle cx="793.5" cy="203.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just A Little Higher Queens" data-state="NY" data-n="1"/>
-<circle cx="794.1" cy="198.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Guardian Wellness" data-state="NY" data-n="1"/>
-<circle cx="692.2" cy="164.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Archie’s Cannabis Company" data-state="NY" data-n="1"/>
-<circle cx="619.7" cy="181.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Lifted" data-state="NY" data-n="1"/>
-<circle cx="782.1" cy="172.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Leaf Cannabis and Wellness" data-state="NY" data-n="1"/>
-<circle cx="783.2" cy="151.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Upstate Pines Inc. " data-state="NY" data-n="1"/>
-<circle cx="624.9" cy="146.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dank 716" data-state="NY" data-n="1"/>
-<circle cx="792.4" cy="206.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Emerald Dispensary Carroll Gardens" data-state="NY" data-n="1"/>
-<circle cx="625.1" cy="146.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Mammoth Cannabis" data-state="NY" data-n="1"/>
-<circle cx="627.6" cy="146.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="East Leaf Dispensary" data-state="NY" data-n="1"/>
-<circle cx="628.3" cy="144.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Dispensary" data-state="NY" data-n="1"/>
-<circle cx="798.4" cy="209.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Flower Shak" data-state="NY" data-n="1"/>
-<circle cx="624.7" cy="141.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Kokoro Way, LLC" data-state="NY" data-n="1"/>
-<circle cx="624.7" cy="142.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="MARY JANES - A Legacy 2 Legal Dispensary" data-state="NY" data-n="1"/>
-<circle cx="625.8" cy="139.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife Dispensary" data-state="NY" data-n="1"/>
-<circle cx="620.0" cy="136.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Arrow Dispensary" data-state="NY" data-n="1"/>
-<circle cx="618.2" cy="138.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="L.A Ffoca" data-state="NY" data-n="1"/>
-<circle cx="617.9" cy="138.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Nativa Cannabis" data-state="NY" data-n="1"/>
-<circle cx="723.8" cy="49.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Firehaus NY" data-state="NY" data-n="1"/>
-<circle cx="767.9" cy="38.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Herb Cave" data-state="NY" data-n="1"/>
-<circle cx="753.7" cy="58.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevate ADK" data-state="NY" data-n="1"/>
-<circle cx="790.5" cy="211.8" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Studio 57 NY" data-state="NY" data-n="1"/>
-<circle cx="776.5" cy="184.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="A Classy Joint Cannabis Dispensary" data-state="NY" data-n="1"/>
-<circle cx="784.1" cy="162.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grounded" data-state="NY" data-n="1"/>
-<circle cx="629.6" cy="142.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Herbalwai" data-state="NY" data-n="1"/>
-<circle cx="778.7" cy="154.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Domes Dispensary" data-state="NY" data-n="1"/>
-<circle cx="764.3" cy="115.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Amsterdam Cannabis" data-state="NY" data-n="1"/>
-<circle cx="773.5" cy="119.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grass &amp; Goodness" data-state="NY" data-n="1"/>
-<circle cx="773.4" cy="118.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The People’s Joint Cannabis Dispensary" data-state="NY" data-n="1"/>
-<circle cx="779.6" cy="118.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Bakery Cannabis Dispensary" data-state="NY" data-n="1"/>
-<circle cx="783.0" cy="119.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="420 Bliss Troy" data-state="NY" data-n="1"/>
-<circle cx="781.1" cy="121.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Bloom Brothers New York - 442 Broadway Menands" data-state="NY" data-n="1"/>
-<circle cx="780.6" cy="123.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Higher Tolerance" data-state="NY" data-n="1"/>
-<circle cx="707.6" cy="122.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Verilife East Syracuse" data-state="NY" data-n="1"/>
-<circle cx="737.3" cy="147.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Greens Greenery" data-state="NY" data-n="1"/>
-<circle cx="699.8" cy="150.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Highly Connected Dispensary" data-state="NY" data-n="1"/>
-<circle cx="783.2" cy="103.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Green Witch Dispensary" data-state="NY" data-n="1"/>
-<circle cx="767.2" cy="38.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Beechnut Ridge Enterprises LLC (dba The Grass Hole Cannabis)" data-state="NY" data-n="1"/>
-<circle cx="706.8" cy="122.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Diamond Tree Dispensary" data-state="NY" data-n="1"/>
-<circle cx="705.2" cy="123.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Higher Company" data-state="NY" data-n="1"/>
-<circle cx="704.1" cy="124.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Joe's Buds" data-state="NY" data-n="1"/>
-<circle cx="687.7" cy="131.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Just Breathe Fingerlakes Legal Dispensary" data-state="NY" data-n="1"/>
-<circle cx="668.1" cy="134.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="FingerLakes Cannabis Co." data-state="NY" data-n="1"/>
-<circle cx="660.2" cy="127.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Rochesters Finest Cannabis Dispensary" data-state="NY" data-n="1"/>
-<circle cx="664.8" cy="128.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="SessCo Dispensary" data-state="NY" data-n="1"/>
-<circle cx="630.1" cy="145.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dream Daze Dispensary" data-state="NY" data-n="1"/>
-<circle cx="662.2" cy="152.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dansville Dispensary" data-state="NY" data-n="1"/>
-<circle cx="800.8" cy="205.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terminal 420" data-state="NY" data-n="1"/>
-<circle cx="664.6" cy="128.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Grass Roots Wellness**" data-state="NY" data-n="1"/>
-<circle cx="793.1" cy="206.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="The Tree House Dispensary, Inc," data-state="NY" data-n="1"/>
-<circle cx="732.3" cy="115.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Puff Theory Cannabis" data-state="NY" data-n="1"/>
-<circle cx="792.5" cy="206.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Buzzy" data-state="NY" data-n="1"/>
-<circle cx="792.6" cy="206.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Yerba Buena" data-state="NY" data-n="1"/>
-<circle cx="837.7" cy="186.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Brown Budda New York" data-state="NY" data-n="1"/>
-<circle cx="721.7" cy="160.7" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Cotton Mouth Dispensary" data-state="NY" data-n="1"/>
-<circle cx="792.0" cy="202.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Dagga LLC (dba Just A Little Higher Upper West Side)" data-state="NY" data-n="1"/>
-<circle cx="791.9" cy="203.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Elevationhqnyc" data-state="NY" data-n="1"/>
-<circle cx="794.3" cy="202.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Terp Bros" data-state="NY" data-n="1"/>
-<circle cx="792.9" cy="201.9" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Uplift Royal" data-state="NY" data-n="1"/>
-<circle cx="799.2" cy="202.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="New Metro Cannabis Dispensary &amp; Weed Delivery NYC" data-state="NY" data-n="1"/>
-<circle cx="799.0" cy="209.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Munchies Dispensary NY" data-state="NY" data-n="1"/>
-<circle cx="797.7" cy="206.3" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="CannaFamily Dispensary" data-state="NY" data-n="1"/>
-<circle cx="800.8" cy="205.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="ESH Rosedale" data-state="NY" data-n="1"/>
-<circle cx="732.1" cy="115.4" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Exit 31 Exotic" data-state="NY" data-n="1"/>
-<circle cx="796.2" cy="190.2" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Starlife Dispensary" data-state="NY" data-n="1"/>
-<circle cx="764.6" cy="183.1" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="DeMarino's Dispensary" data-state="NY" data-n="1"/>
-<circle cx="635.6" cy="170.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Enchanted Mountains Cannabis Company" data-state="NY" data-n="1"/>
-<circle cx="604.2" cy="182.5" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Organic Blooms" data-state="NY" data-n="1"/>
-<circle cx="776.0" cy="95.0" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="High Rollers Cannabis" data-state="NY" data-n="1"/>
-<circle cx="795.9" cy="205.8" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Hudson Haze" data-state="NY" data-n="1"/>
-<circle cx="794.7" cy="209.6" r="2.5" fill="#DB8C5E" fill-opacity="0.85" stroke="#0A0E1C" stroke-width="0.5" data-name="Twenty8Gramz" data-state="NY" data-n="1"/>
+<g id="diq-dots"></g>
 </g>
 </svg></div>
       <div id="diq-tip" class="diq-tip"></div>
@@ -1057,10 +146,139 @@
 
 <footer class="diq-footer">
   <div class="diq-footer-inner">
-    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span id="diq-footer-date">2026-06-22</span> &middot; <span id="diq-footer-week">W26</span></span>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
+
+<script>
+/* ── Coverage live data ──────────────────────────────────────────────── */
+(function () {
+  const API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/coverage';
+
+  /* Albers Equal-Area Conic projection (US, φ₁=29.5°, φ₂=45.5°, λ₀=-96°, φ₀=37.5°)
+     Calibrated against known dispensary lat/lng vs. the original SVG circle positions.
+     Scale 2417, translate (103.8, 420.44). */
+  var DEG = Math.PI / 180;
+  var n   = (Math.sin(29.5 * DEG) + Math.sin(45.5 * DEG)) / 2;
+  var C   = Math.pow(Math.cos(29.5 * DEG), 2) + 2 * n * Math.sin(29.5 * DEG);
+  var rho0 = Math.sqrt(C - 2 * n * Math.sin(37.5 * DEG)) / n;
+  var SCALE = 2417, TX = 103.8, TY = 420.44;
+
+  function project(lat, lng) {
+    var phi = lat * DEG, lam = (lng - (-96)) * DEG;
+    var rho = Math.sqrt(C - 2 * n * Math.sin(phi)) / n;
+    var theta = n * lam;
+    return {
+      x: TX + SCALE * rho * Math.sin(theta),
+      y: TY - SCALE * (rho0 - rho * Math.cos(theta))
+    };
+  }
+
+  var STATE_COLOR = { IL: '#00B98E', NJ: '#85E4FD', NY: '#DB8C5E', PA: '#A0A0A0' };
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function setText(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function fmt(n) { return Number(n).toLocaleString(); }
+
+  function isoWeek(date) {
+    /* Returns YYYY-Www for a Date object */
+    var d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    var day = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - day);
+    var year = d.getUTCFullYear();
+    var week = Math.ceil(((d - new Date(Date.UTC(year, 0, 1))) / 86400000 + 1) / 7);
+    return year + '-W' + String(week).padStart(2, '0');
+  }
+
+  function currentIsoWeek() { return isoWeek(new Date()); }
+
+  function renderDots(dots) {
+    var g = document.getElementById('diq-dots');
+    if (!g) return;
+    var ns = NS;
+    dots.forEach(function (d) {
+      var pos = project(d.lat, d.lng);
+      if (pos.x < 0 || pos.x > 1100 || pos.y < 0 || pos.y > 460) return;
+      var r = Math.max(2.5, Math.min(11, Math.sqrt(d.n / 100)));
+      var c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', pos.x.toFixed(1));
+      c.setAttribute('cy', pos.y.toFixed(1));
+      c.setAttribute('r', r.toFixed(1));
+      c.setAttribute('fill', STATE_COLOR[d.state] || '#888');
+      c.setAttribute('fill-opacity', '0.85');
+      c.setAttribute('stroke', '#0A0E1C');
+      c.setAttribute('stroke-width', '0.5');
+      c.setAttribute('data-name', d.name);
+      c.setAttribute('data-state', d.state);
+      c.setAttribute('data-n', String(d.n));
+      g.appendChild(c);
+    });
+  }
+
+  function hydrate(data) {
+    var hl = data.headline || {};
+    var goodDoors = hl.good_doors || 0;
+    var distinct  = hl.distinct_products || 0;
+    var week      = data.data_week || '';
+    var weekStart = data.week_start ? data.week_start.slice(0, 10) : '';
+
+    /* Header week badge */
+    setText('diq-v-week', week);
+
+    /* Hero + subtitle */
+    setText('diq-hero-good-doors', fmt(goodDoors));
+    setText('diq-good-doors-subtitle', fmt(goodDoors));
+    setText('diq-distinct-products', fmt(distinct));
+
+    /* Per-state counts */
+    var byState = {};
+    (data.by_state || []).forEach(function (s) { byState[s.state] = s.good_doors; });
+    var il = byState.IL || 0, nj = byState.NJ || 0, ny = byState.NY || 0;
+    var pa = byState.PA || 0;
+    var parts = [fmt(goodDoors) + ' dispensaries'];
+    if (il) parts.push('IL ' + il);
+    if (nj) parts.push('NJ ' + nj);
+    if (ny) parts.push('NY ' + ny);
+    if (pa) parts.push('PA ' + pa);
+    setText('diq-section-meta', parts.join(' · '));
+    setText('diq-legend-IL', String(il));
+    setText('diq-legend-NJ', String(nj));
+    setText('diq-legend-NY', String(ny));
+
+    /* SVG aria-label */
+    var svgEl = document.getElementById('diq-map-svg');
+    if (svgEl) svgEl.setAttribute('aria-label', fmt(goodDoors) + ' dispensaries plotted across Illinois, New Jersey, and New York, sized by product count');
+
+    /* Footer */
+    setText('diq-footer-date', weekStart);
+    setText('diq-footer-week', week);
+
+    /* Stale guard */
+    var banner = document.getElementById('diq-stale-banner');
+    if (banner && week && week < currentIsoWeek()) {
+      document.getElementById('diq-stale-msg').textContent = 'Data is from ' + week + ' · live refresh pending.';
+      banner.style.display = '';
+    }
+
+    /* Map dots */
+    renderDots(data.dots || []);
+  }
+
+  fetch(API)
+    .then(function (r) { return r.json(); })
+    .then(function (data) { hydrate(data); })
+    .catch(function () {
+      var banner = document.getElementById('diq-stale-banner');
+      if (banner) banner.style.display = '';
+    });
+})();
+/* ── End coverage live data ─────────────────────────────────────────── */
+</script>
 
 <script>
 (function() {
