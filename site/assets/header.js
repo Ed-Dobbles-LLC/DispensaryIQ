@@ -28,16 +28,20 @@
   // Mount point each page exposes where the old .diq-nav-links row used to be.
   var MOUNT_ID = 'diq-nav-controls';
 
-  // Page dropdown options — label → file. Order is the deck order.
+  // Navigation pages — label, file, optional css class suffix. Order = deck order.
   var PAGES = [
-    { label: '← Scorecard',        file: 'index.html' },
-    { label: 'Pricing & position', file: 'price-comparison.html' },
-    { label: 'Week-over-week',     file: 'week-over-week.html' },
-    { label: 'Market share',       file: 'market-share.html' },
-    { label: 'Named accounts',     file: 'named-accounts.html' },
-    { label: 'Territory',          file: 'territory.html' },
-    // brand-presence: re-add when brand-presence.html ships
-    { label: 'Coverage over time', file: 'coverage.html' }
+    { label: 'Scorecard',         file: 'index.html' },
+    { label: 'Coverage',          file: 'coverage.html' },
+    { label: 'Products',          file: 'products.html' },
+    { label: 'Price comparison',  file: 'price-comparison.html' },
+    { label: 'Market share',      file: 'market-share.html' },
+    { label: 'Price compliance',  file: 'price-compliance.html' },
+    { label: 'Display quality',   file: 'display-quality.html' },
+    { label: 'NY watchlist',      file: 'ny-find.html' },
+    { label: 'Alerts',            file: 'alerts.html' },
+    { label: 'Week-over-week',    file: 'week-over-week.html' },
+    { label: 'Territory',         file: 'territory.html',       cls: 'phase' },
+    { label: 'Accounts',          file: 'named-accounts.html',  cls: 'phase' }
   ];
 
   var MANIFEST_URL = 'data/weeks_manifest.json';
@@ -111,29 +115,25 @@
     var activeWeek = DIQ.activeWeekParam();
     var defaultWeek = (manifest && manifest.default) || null;
     var weeks = (manifest && Array.isArray(manifest.weeks)) ? manifest.weeks : [];
-    // Selected week = active param, else manifest default, else first listed.
     var selectedWeek = activeWeek || defaultWeek || (weeks[0] && weeks[0].iso_week) || '';
 
-    // Page select
-    var pageSel = document.createElement('select');
-    pageSel.id = 'diq-page-nav';
-    pageSel.className = 'diq-nav-select diq-nav-select-page';
-    pageSel.setAttribute('aria-label', 'Select view');
+    // Page nav — render as links (matching diq-nav-link style)
+    var linksWrap = document.createElement('div');
+    linksWrap.className = 'diq-nav-links';
     PAGES.forEach(function (p) {
-      var o = document.createElement('option');
-      o.value = p.file;
-      o.textContent = p.label;
-      if (p.file.toLowerCase() === here) o.selected = true;
-      pageSel.appendChild(o);
-    });
-    pageSel.addEventListener('change', function () {
-      var target = pageSel.value;
-      var wk = DIQ.activeWeekParam();
-      if (wk) target += '?week=' + encodeURIComponent(wk);
-      window.location.href = target;
+      var a = document.createElement('a');
+      var cls = 'diq-nav-link';
+      if (p.cls) cls += ' ' + p.cls;
+      if (p.file.toLowerCase() === here) cls += ' active';
+      a.className = cls;
+      a.textContent = p.label;
+      var href = p.file;
+      if (activeWeek) href += '?week=' + encodeURIComponent(activeWeek);
+      a.href = href;
+      linksWrap.appendChild(a);
     });
 
-    // Week select
+    // Week select (keep as dropdown — compact)
     var weekSel = document.createElement('select');
     weekSel.id = 'diq-week-nav';
     weekSel.className = 'diq-nav-select diq-nav-select-week';
@@ -149,21 +149,20 @@
       var chosen = weekSel.value;
       var base = window.location.pathname;
       if (defaultWeek && chosen === defaultWeek) {
-        window.location.href = base;                       // canonical URL → default week
+        window.location.href = base;
       } else {
         window.location.href = base + '?week=' + encodeURIComponent(chosen);
       }
     });
 
     mount.innerHTML = '';
-    var pageWrap = document.createElement('span');
-    pageWrap.className = 'diq-nav-select-wrap diq-nav-select-wrap-page';
-    pageWrap.appendChild(pageSel);
-    var weekWrap = document.createElement('span');
-    weekWrap.className = 'diq-nav-select-wrap diq-nav-select-wrap-week';
-    weekWrap.appendChild(weekSel);
-    mount.appendChild(pageWrap);
-    mount.appendChild(weekWrap);
+    mount.appendChild(linksWrap);
+    if (weeks.length > 0) {
+      var weekWrap = document.createElement('span');
+      weekWrap.className = 'diq-nav-select-wrap diq-nav-select-wrap-week';
+      weekWrap.appendChild(weekSel);
+      mount.appendChild(weekWrap);
+    }
 
     // Static pages (no payload to re-fetch) honestly empty-state off the
     // default week. Payload pages handle their own empty-state in init().

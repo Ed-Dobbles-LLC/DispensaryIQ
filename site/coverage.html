@@ -212,6 +212,7 @@
     g.innerHTML = '';
     (dots || []).forEach(function (d) {
       if (!d.lat || !d.lng) return;
+      if (d.state !== 'IL' && d.state !== 'NJ' && d.state !== 'NY') return;
       var pos = project(d.lat, d.lng);
       if (pos.x < 0 || pos.x > 1100 || pos.y < 0 || pos.y > 460) return;
       var r = Math.max(2.5, Math.min(11, Math.sqrt(d.distinct_prod / 100)));
