@@ -53,13 +53,13 @@ a:hover { color: var(--teal-bright); }
   border-bottom: 1px solid var(--rule);
 }
 .diq-nav-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 18px 32px;
+  padding: 0 28px;
+  height: 52px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
+  gap: 0;
 }
 .diq-logo {
   font-family: 'Montserrat', 'Calibri', sans-serif;
@@ -75,9 +75,12 @@ a:hover { color: var(--teal-bright); }
 .diq-logo:hover { color: var(--ink); }
 .diq-nav-links {
   display: flex;
-  gap: 28px;
+  gap: 22px;
   align-items: center;
-  font-size: 14px;
+  font-size: 13.5px;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 .diq-nav-link {
   color: var(--ink-soft);
@@ -85,6 +88,8 @@ a:hover { color: var(--teal-bright); }
   padding: 6px 0;
   border-bottom: 2px solid transparent;
   transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .diq-nav-link:hover { color: var(--ink); }
 .diq-nav-link.active {
@@ -1335,6 +1340,47 @@ a:hover { color: var(--teal-bright); }
   background: rgba(133, 228, 253, 0.06);
 }
 
+/* More ▾ overflow dropdown */
+.diq-nav-more {
+  position: relative;
+  flex-shrink: 0;
+}
+.diq-nav-more-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.diq-nav-more-btn:hover { border-color: var(--teal); color: var(--ink); }
+.diq-nav-more-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--navy-deep);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  padding: 6px 0;
+  min-width: 180px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.diq-nav-more-dropdown .diq-nav-link {
+  display: block;
+  padding: 8px 18px;
+  border-bottom: none;
+  font-size: 13px;
+}
+.diq-nav-more-dropdown .diq-nav-link.active {
+  color: var(--teal);
+  border-bottom: none;
+}
+
 /* Footer pillars */
 .diq-footer-pillars {
   font-size: 10px;
@@ -1933,10 +1979,14 @@ html[data-theme="light"] .diq-map-canvas,
 .diq-nav-aside {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: auto;
+  gap: 10px;
+  flex-shrink: 0;
   padding-left: 14px;
   border-left: 1px solid rgba(255, 255, 255, 0.10);
+}
+/* Pillar stamp moved out of nav — hidden by default in nav context */
+.diq-nav-aside .diq-pillar-stamp {
+  display: none;
 }
 .diq-pillar-stamp {
   display: flex;
@@ -2986,9 +3036,11 @@ body.diq-print-mode .diq-eyebrow {
 .diq-nav-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: auto;      /* hug the right, just left of the utility aside */
+  gap: 10px;
+  flex: 1 1 0;
   min-width: 0;
+  overflow: hidden;
+  margin: 0 16px;
 }
 .diq-nav-select-wrap {
   position: relative;

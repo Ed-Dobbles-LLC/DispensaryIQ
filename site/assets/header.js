@@ -155,6 +155,29 @@
       }
     });
 
+    // Overflow "More ▾" button — populated by setupOverflow after DOM settle
+    var moreWrap = document.createElement('div');
+    moreWrap.className = 'diq-nav-more';
+    moreWrap.style.display = 'none';
+
+    var moreBtn = document.createElement('button');
+    moreBtn.className = 'diq-nav-more-btn';
+    moreBtn.textContent = 'More ▾';
+    moreWrap.appendChild(moreBtn);
+
+    var moreDrop = document.createElement('div');
+    moreDrop.className = 'diq-nav-more-dropdown';
+    moreDrop.style.display = 'none';
+    moreWrap.appendChild(moreDrop);
+
+    moreBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      moreDrop.style.display = moreDrop.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function () { moreDrop.style.display = 'none'; });
+
+    linksWrap.appendChild(moreWrap);
+
     mount.innerHTML = '';
     mount.appendChild(linksWrap);
     if (weeks.length > 0) {
@@ -163,6 +186,39 @@
       weekWrap.appendChild(weekSel);
       mount.appendChild(weekWrap);
     }
+
+    // Collapse low-priority links into More when they overflow
+    var ALWAYS_VISIBLE = ['index.html', 'coverage.html', 'products.html', 'market-share.html'];
+
+    function relayoutNav() {
+      var allLinks = Array.from(linksWrap.querySelectorAll('a.diq-nav-link'));
+      // Reset: show all links, clear dropdown
+      allLinks.forEach(function (a) { a.style.display = ''; });
+      moreDrop.innerHTML = '';
+      moreWrap.style.display = 'none';
+      moreDrop.style.display = 'none';
+
+      // If everything fits, done
+      if (linksWrap.scrollWidth <= linksWrap.offsetWidth + 2) return;
+
+      // Collapse from the right, skip always-visible items
+      for (var i = allLinks.length - 1; i >= 0; i--) {
+        var a = allLinks[i];
+        var file = (a.getAttribute('href') || '').split('?')[0].replace(/.*\//, '') || 'index.html';
+        if (ALWAYS_VISIBLE.indexOf(file) >= 0) continue;
+        var clone = a.cloneNode(true);
+        clone.style.display = '';
+        moreDrop.insertBefore(clone, moreDrop.firstChild);
+        a.style.display = 'none';
+        moreWrap.style.display = '';
+        if (linksWrap.scrollWidth <= linksWrap.offsetWidth + 2) break;
+      }
+    }
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(relayoutNav).observe(mount);
+    }
+    setTimeout(relayoutNav, 0);
 
     // Static pages (no payload to re-fetch) honestly empty-state off the
     // default week. Payload pages handle their own empty-state in init().

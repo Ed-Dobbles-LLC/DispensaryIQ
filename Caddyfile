@@ -23,4 +23,7 @@
 
 	# Discourage indexing
 	header X-Robots-Tag "noindex, nofollow"
+
+	# Rep briefing: /outlet/{id} → outlet.html (id parsed by JS from pathname)
+	rewrite /outlet/* /outlet.html
 }
