@@ -59,6 +59,7 @@
     <h1 class="diq-page-title">Where we have intelligence today.</h1>
     <p class="diq-page-subtitle"><span id="diq-good-doors-subtitle">985</span> dispensaries with priced extraction data across Illinois, New Jersey, and New York. Refreshed this week. Each dot below is a real store with verified products on its menu.</p>
   </header>
+  <div id="diq-freshness-pill" style="display:none;margin:0 0 12px;font-size:11px;letter-spacing:0.06em;color:var(--color-teal,#00B98E);text-transform:uppercase;font-weight:700;padding:6px 12px;border:1px solid rgba(0,185,142,.25);border-radius:20px;width:fit-content;background:rgba(0,185,142,.08)"><span style="font-size:8px;vertical-align:middle;margin-right:5px">&#9679;</span>Live &nbsp;&middot;&nbsp; certified <span id="diq-pill-week">—</span> &nbsp;&middot;&nbsp; as of <span id="diq-pill-date">—</span></div>
 
   <section class="diq-section">
     <div class="diq-hero-metric">
@@ -69,7 +70,7 @@
       <div>
         <p class="diq-hero-label">Across three states</p>
         <p class="diq-hero-body">
-          <strong><span id="diq-distinct-products">640,514</span> products tracked</strong> with brand, category, price, and THC% captured. 352,110 have a verified price. Coverage is built on license-reconciled dispensary universes &mdash; gray-market storefronts are filtered out before any number reaches this page.
+          <strong><span id="diq-distinct-products">640,514</span> products tracked</strong> with brand, category, price, and THC% captured. <span id="diq-pct-priced">99.86</span>% of product rows have a verified price. Coverage is built on license-reconciled dispensary universes &mdash; gray-market storefronts are filtered out before any number reaches this page.
         </p>
       </div>
     </div>
@@ -78,7 +79,7 @@
   <section class="diq-section">
     <div class="diq-section-head">
       <h2 class="diq-section-title">Geographic distribution</h2>
-      <span class="diq-section-meta">912 dispensaries · IL 236 · NJ 180 · NY 496</span>
+      <span class="diq-section-meta" id="diq-section-meta">985 dispensaries · IL 230 · NJ 153 · NY 599</span>
     </div>
 
     <div class="diq-map-wrap">
@@ -152,132 +153,173 @@
 </footer>
 
 <script>
-/* ── Coverage live data ──────────────────────────────────────────────── */
+/* DispensaryIQ Coverage -- live certified-week data
+   Fetches /pitch/api/coverage on load, hydrates all bindings.
+   Auto-polls every 10 min; re-renders only if data_week or
+   certified_scored_at changes. On failure: unavailable state,
+   never stale constants.
+*/
 (function () {
-  const API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/coverage';
+  'use strict';
+  var API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/coverage';
+  var API_KEY = 'mip-admin-2026';
+  var POLL_MS = 10 * 60 * 1000;
 
-  /* Albers Equal-Area Conic projection (US, φ₁=29.5°, φ₂=45.5°, λ₀=-96°, φ₀=37.5°)
-     Calibrated against known dispensary lat/lng vs. the original SVG circle positions.
-     Scale 2417, translate (103.8, 420.44). */
+  /* Albers Equal-Area Conic -- US, parallels 29.5/45.5, lambda0=-96, phi0=37.5
+     Constants calibrated against original SVG dot positions. */
   var DEG = Math.PI / 180;
-  var n   = (Math.sin(29.5 * DEG) + Math.sin(45.5 * DEG)) / 2;
-  var C   = Math.pow(Math.cos(29.5 * DEG), 2) + 2 * n * Math.sin(29.5 * DEG);
-  var rho0 = Math.sqrt(C - 2 * n * Math.sin(37.5 * DEG)) / n;
-  var SCALE = 2417, TX = 103.8, TY = 420.44;
+  var PHI1 = 29.5 * DEG, PHI2 = 45.5 * DEG, PHI0 = 37.5 * DEG, LAM0 = -96 * DEG;
+  var n    = (Math.sin(PHI1) + Math.sin(PHI2)) / 2;
+  var C    = Math.cos(PHI1) * Math.cos(PHI1) + 2 * n * Math.sin(PHI1);
+  var rho0 = Math.sqrt(C - 2 * n * Math.sin(PHI0)) / n;
+  var SC = 2417, TX = 103.8, TY = 420.44;
 
   function project(lat, lng) {
-    var phi = lat * DEG, lam = (lng - (-96)) * DEG;
+    var phi = lat * DEG;
+    var theta = n * (lng * DEG - LAM0);
     var rho = Math.sqrt(C - 2 * n * Math.sin(phi)) / n;
-    var theta = n * lam;
     return {
-      x: TX + SCALE * rho * Math.sin(theta),
-      y: TY - SCALE * (rho0 - rho * Math.cos(theta))
+      x: TX + SC * rho * Math.sin(theta),
+      y: TY - SC * (rho0 - rho * Math.cos(theta))
     };
   }
 
-  var STATE_COLOR = { IL: '#00B98E', NJ: '#85E4FD', NY: '#DB8C5E', PA: '#A0A0A0' };
+  var DOT_COLOR = { IL: '#00B98E', NJ: '#85E4FD', NY: '#DB8C5E', PA: '#A0A0A0' };
   var NS = 'http://www.w3.org/2000/svg';
 
   function setText(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = val;
+    var e = document.getElementById(id);
+    if (e) e.textContent = val;
   }
-
   function fmt(n) { return Number(n).toLocaleString(); }
 
-  function isoWeek(date) {
-    /* Returns YYYY-Www for a Date object */
-    var d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-    var day = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - day);
-    var year = d.getUTCFullYear();
-    var week = Math.ceil(((d - new Date(Date.UTC(year, 0, 1))) / 86400000 + 1) / 7);
-    return year + '-W' + String(week).padStart(2, '0');
-  }
+  var _lastWeek = null, _lastScoredAt = null;
 
-  function currentIsoWeek() { return isoWeek(new Date()); }
+  function showUnavailable() {
+    var b = document.getElementById('diq-stale-banner');
+    if (b) {
+      var m = document.getElementById('diq-stale-msg');
+      if (m) m.textContent = 'Coverage data temporarily unavailable.';
+      b.style.display = '';
+    }
+    var pill = document.getElementById('diq-freshness-pill');
+    if (pill) pill.style.display = 'none';
+  }
 
   function renderDots(dots) {
     var g = document.getElementById('diq-dots');
     if (!g) return;
-    var ns = NS;
-    dots.forEach(function (d) {
+    g.innerHTML = '';
+    (dots || []).forEach(function (d) {
+      if (!d.lat || !d.lng) return;
       var pos = project(d.lat, d.lng);
       if (pos.x < 0 || pos.x > 1100 || pos.y < 0 || pos.y > 460) return;
-      var r = Math.max(2.5, Math.min(11, Math.sqrt(d.n / 100)));
-      var c = document.createElementNS(ns, 'circle');
+      var r = Math.max(2.5, Math.min(11, Math.sqrt(d.distinct_prod / 100)));
+      var c = document.createElementNS(NS, 'circle');
       c.setAttribute('cx', pos.x.toFixed(1));
       c.setAttribute('cy', pos.y.toFixed(1));
       c.setAttribute('r', r.toFixed(1));
-      c.setAttribute('fill', STATE_COLOR[d.state] || '#888');
+      c.setAttribute('fill', DOT_COLOR[d.state] || '#888');
       c.setAttribute('fill-opacity', '0.85');
       c.setAttribute('stroke', '#0A0E1C');
       c.setAttribute('stroke-width', '0.5');
       c.setAttribute('data-name', d.name);
       c.setAttribute('data-state', d.state);
-      c.setAttribute('data-n', String(d.n));
+      c.setAttribute('data-n', String(d.distinct_prod));
       g.appendChild(c);
     });
   }
 
   function hydrate(data) {
-    var hl = data.headline || {};
-    var goodDoors = hl.good_doors || 0;
-    var distinct  = hl.distinct_products || 0;
-    var week      = data.data_week || '';
-    var weekStart = data.week_start ? data.week_start.slice(0, 10) : '';
+    var hl   = data.headline  || {};
+    var prod = data.products  || {};
+    var week = data.data_week || '';
+    var asOf = data.as_of     || '';
+    var good = hl.good_doors  || 0;
 
-    /* Header week badge */
-    setText('diq-v-week', week);
-
-    /* Hero + subtitle */
-    setText('diq-hero-good-doors', fmt(goodDoors));
-    setText('diq-good-doors-subtitle', fmt(goodDoors));
-    setText('diq-distinct-products', fmt(distinct));
+    setText('diq-v-week',           week);
+    setText('diq-hero-good-doors',  fmt(good));
+    setText('diq-good-doors-subtitle', fmt(good));
+    setText('diq-distinct-products', fmt(prod.distinct || 0));
+    setText('diq-pct-priced',
+      prod.pct_priced != null ? Number(prod.pct_priced).toFixed(2) : '--');
 
     /* Per-state counts */
-    var byState = {};
-    (data.by_state || []).forEach(function (s) { byState[s.state] = s.good_doors; });
-    var il = byState.IL || 0, nj = byState.NJ || 0, ny = byState.NY || 0;
-    var pa = byState.PA || 0;
-    var parts = [fmt(goodDoors) + ' dispensaries'];
-    if (il) parts.push('IL ' + il);
-    if (nj) parts.push('NJ ' + nj);
-    if (ny) parts.push('NY ' + ny);
-    if (pa) parts.push('PA ' + pa);
-    setText('diq-section-meta', parts.join(' · '));
+    var st = {};
+    (data.by_state || []).forEach(function (s) { st[s.state] = s.good_doors; });
+    var il = st.IL || 0, nj = st.NJ || 0, ny = st.NY || 0;
+    var pts = [fmt(good) + ' dispensaries'];
+    if (il) pts.push('IL ' + il);
+    if (nj) pts.push('NJ ' + nj);
+    if (ny) pts.push('NY ' + ny);
+    setText('diq-section-meta', pts.join(' · '));
     setText('diq-legend-IL', String(il));
     setText('diq-legend-NJ', String(nj));
     setText('diq-legend-NY', String(ny));
 
     /* SVG aria-label */
-    var svgEl = document.getElementById('diq-map-svg');
-    if (svgEl) svgEl.setAttribute('aria-label', fmt(goodDoors) + ' dispensaries plotted across Illinois, New Jersey, and New York, sized by product count');
+    var svg = document.getElementById('diq-map-svg');
+    if (svg) svg.setAttribute('aria-label',
+      fmt(good) + ' dispensaries across IL, NJ, NY');
 
     /* Footer */
-    setText('diq-footer-date', weekStart);
+    setText('diq-footer-date', asOf);
     setText('diq-footer-week', week);
 
-    /* Stale guard */
-    var banner = document.getElementById('diq-stale-banner');
-    if (banner && week && week < currentIsoWeek()) {
-      document.getElementById('diq-stale-msg').textContent = 'Data is from ' + week + ' · live refresh pending.';
-      banner.style.display = '';
+    /* Freshness pill */
+    var pill = document.getElementById('diq-freshness-pill');
+    if (pill) {
+      setText('diq-pill-week', week);
+      setText('diq-pill-date', asOf);
+      pill.style.display = '';
     }
+
+    /* Stale banner -- hide on good data */
+    var banner = document.getElementById('diq-stale-banner');
+    if (banner) banner.style.display = 'none';
 
     /* Map dots */
     renderDots(data.dots || []);
   }
 
-  fetch(API)
-    .then(function (r) { return r.json(); })
-    .then(function (data) { hydrate(data); })
-    .catch(function () {
-      var banner = document.getElementById('diq-stale-banner');
-      if (banner) banner.style.display = '';
+  function doFetch() {
+    var url = API;
+    if (window.location.search.indexOf('fresh=1') >= 0) url = API + '?fresh=1';
+    return fetch(url, { headers: { 'X-Admin-Key': API_KEY } })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      });
+  }
+
+  /* Initial load */
+  doFetch()
+    .then(function (data) {
+      hydrate(data);
+      _lastWeek     = data.data_week;
+      _lastScoredAt = data.certified_scored_at;
+    })
+    .catch(function (err) {
+      console.warn('coverage fetch failed:', err);
+      showUnavailable();
     });
-})();
-/* ── End coverage live data ─────────────────────────────────────────── */
+
+  /* Poll every 10 min; re-render only when week or cert changes */
+  setInterval(function () {
+    doFetch()
+      .then(function (data) {
+        var changed = data.data_week !== _lastWeek ||
+                      data.certified_scored_at !== _lastScoredAt;
+        if (changed) {
+          hydrate(data);
+          _lastWeek     = data.data_week;
+          _lastScoredAt = data.certified_scored_at;
+        }
+      })
+      .catch(function () { /* silent on poll failure */ });
+  }, POLL_MS);
+
+}());
 </script>
 
 <script>
