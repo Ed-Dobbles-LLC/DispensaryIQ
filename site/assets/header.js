@@ -38,6 +38,7 @@
     { label: 'Price compliance',  file: 'price-compliance.html' },
     { label: 'Display quality',   file: 'display-quality.html' },
     { label: 'NY watchlist',      file: 'ny-find.html' },
+    { label: 'Outlet Briefing',   file: 'outlet.html' },
     { label: 'Alerts',            file: 'alerts.html' },
     { label: 'Week-over-week',    file: 'week-over-week.html' },
     { label: 'Territory',         file: 'territory.html',       cls: 'phase' },
@@ -101,6 +102,8 @@
 
   function currentFile() {
     var path = window.location.pathname;
+    // /outlet/* routes all serve outlet.html via Caddy rewrite
+    if (/^\/outlet(\/|$)/.test(path)) return 'outlet.html';
     var f = path.substring(path.lastIndexOf('/') + 1);
     if (!f || f.indexOf('.') === -1) f = 'index.html';
     return f.toLowerCase();
@@ -189,11 +192,24 @@
 
     // Collapse low-priority links into More when they overflow
     var ALWAYS_VISIBLE = ['index.html', 'coverage.html', 'products.html', 'market-share.html'];
+    // Only select direct-child nav links so clones inside moreDrop aren't included
+    var _navLinkEls = Array.from(linksWrap.children).filter(function (el) {
+      return el.classList && el.classList.contains('diq-nav-link');
+    });
+    var _rafPending = false;
 
     function relayoutNav() {
-      var allLinks = Array.from(linksWrap.querySelectorAll('a.diq-nav-link'));
-      // Reset: show all links, clear dropdown
-      allLinks.forEach(function (a) { a.style.display = ''; });
+      if (_rafPending) return;
+      _rafPending = true;
+      requestAnimationFrame(function () {
+        _rafPending = false;
+        _doRelayout();
+      });
+    }
+
+    function _doRelayout() {
+      // Reset: show all original links, clear dropdown
+      _navLinkEls.forEach(function (a) { a.style.display = ''; });
       moreDrop.innerHTML = '';
       moreWrap.style.display = 'none';
       moreDrop.style.display = 'none';
@@ -202,8 +218,8 @@
       if (linksWrap.scrollWidth <= linksWrap.offsetWidth + 2) return;
 
       // Collapse from the right, skip always-visible items
-      for (var i = allLinks.length - 1; i >= 0; i--) {
-        var a = allLinks[i];
+      for (var i = _navLinkEls.length - 1; i >= 0; i--) {
+        var a = _navLinkEls[i];
         var file = (a.getAttribute('href') || '').split('?')[0].replace(/.*\//, '') || 'index.html';
         if (ALWAYS_VISIBLE.indexOf(file) >= 0) continue;
         var clone = a.cloneNode(true);
