@@ -227,6 +227,8 @@
       c.setAttribute('data-name', d.name);
       c.setAttribute('data-state', d.state);
       c.setAttribute('data-n', String(d.distinct_prod));
+      if (d.id) c.setAttribute('data-id', String(d.id));
+      c.style.cursor = d.id ? 'pointer' : 'default';
       g.appendChild(c);
     });
   }
@@ -352,6 +354,11 @@
     const rect = wrap.getBoundingClientRect();
     tip.style.left = (ev.clientX - rect.left + 12) + 'px';
     tip.style.top = (ev.clientY - rect.top - 8) + 'px';
+  });
+  svg.addEventListener('click', function(ev) {
+    const c = ev.target.closest('circle[data-id]');
+    if (!c) return;
+    window.location.href = '/outlet/' + c.getAttribute('data-id');
   });
 })();
 </script>

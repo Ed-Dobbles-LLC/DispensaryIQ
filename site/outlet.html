@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DispensaryIQ — Rep Briefing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #060A57;
+      --teal:      #00B98E;
+      --coral:     #DB5461;
+      --text:      #F7FBFE;
+      --muted:     rgba(247,251,254,0.6);
+      --card-bg:   rgba(255,255,255,0.06);
+      --border:    rgba(255,255,255,0.1);
+      --neutral-tag: rgba(255,255,255,0.15);
+      --blue:      #3273DB;
+      --font-main: 'Manrope', 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* NAV */
+    #diq-nav-controls {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    /* MAIN LAYOUT */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    /* LOADING */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 20px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0,185,142,0.2);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ERROR */
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 16px;
+      text-align: center;
+    }
+    .error-state h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--coral);
+    }
+    .error-state p { color: var(--muted); font-size: 14px; }
+    .back-link {
+      color: var(--teal);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      border-bottom: 1px solid rgba(0,185,142,0.4);
+      padding-bottom: 1px;
+    }
+    .back-link:hover { border-color: var(--teal); }
+
+    /* OUTLET HEADER */
+    .outlet-header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .outlet-name {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .outlet-address {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-mso    { background: var(--coral); color: #fff; font-family: var(--font-main); }
+    .badge-ind    { background: rgba(255,255,255,0.15); color: var(--text); font-family: var(--font-main); }
+    .badge-platform { background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: var(--muted); font-family: var(--font-mono); }
+    .badge-certified { background: transparent; border: 1px solid var(--teal); color: var(--teal); font-family: var(--font-main); }
+    .outlet-summary {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-family: var(--font-main);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* VERDICT BAR */
+    .verdict-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .verdict-card {
+      flex: 1 1 220px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 20px 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .verdict-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 10px 0 0 10px;
+    }
+    .verdict-card.teal::before  { background: var(--teal); }
+    .verdict-card.coral::before { background: var(--coral); }
+    .verdict-card.neutral::before { background: rgba(255,255,255,0.2); }
+    .verdict-card.dimmed { opacity: 0.45; }
+    .verdict-type {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .verdict-card.teal  .verdict-type { color: var(--teal); }
+    .verdict-card.coral .verdict-type { color: var(--coral); }
+    .verdict-card.neutral .verdict-type { color: var(--muted); }
+    .verdict-main {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .verdict-card.teal  .verdict-main { color: var(--teal); }
+    .verdict-card.coral .verdict-main { color: var(--coral); }
+    .verdict-card.neutral .verdict-main { color: var(--text); }
+    .verdict-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* THREE MOVES */
+    .moves-section { margin-bottom: 24px; }
+    .moves-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .move-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .move-accent {
+      width: 4px;
+      min-width: 4px;
+      border-radius: 2px;
+      align-self: stretch;
+    }
+    .move-accent.defend { background: var(--teal); }
+    .move-accent.fix    { background: var(--coral); }
+    .move-accent.pitch  { background: var(--blue); }
+    .move-body { flex: 1; }
+    .move-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .move-tag.defend { background: rgba(0,185,142,0.18); color: var(--teal); }
+    .move-tag.fix    { background: rgba(219,84,97,0.18); color: var(--coral); }
+    .move-tag.pitch  { background: rgba(50,115,219,0.18); color: var(--blue); }
+    .move-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .move-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* CATEGORY TABLE */
+    .table-section { margin-bottom: 24px; }
+    .table-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      background: rgba(255,255,255,0.05);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 16px;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.1s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.04); }
+    tbody tr.has-curaleaf { background: rgba(0,185,142,0.06); }
+    tbody tr.has-curaleaf:hover { background: rgba(0,185,142,0.1); }
+    tbody td {
+      padding: 11px 16px;
+      vertical-align: middle;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    td.cat-name {
+      font-weight: 600;
+      white-space: normal;
+      min-width: 140px;
+    }
+    td.mono {
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    td.muted-val { color: var(--muted); }
+
+    .read-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .read-you-lead   { background: rgba(0,185,142,0.2); color: var(--teal); }
+    .read-overpriced { background: rgba(219,84,97,0.2); color: var(--coral); }
+    .read-white-space{ background: rgba(219,84,97,0.2); color: var(--coral); }
+    .read-2-push     { background: var(--neutral-tag); color: var(--text); }
+    .read-holding    { background: var(--neutral-tag); color: var(--text); }
+    .read-default    { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+    /* RESPONSIVE */
+    @media (max-width: 680px) {
+      .outlet-header { padding: 20px; }
+      .outlet-name { font-size: 24px; }
+      .verdict-card { flex: 1 1 100%; }
+      .page-wrap { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="diq-nav-controls" id="diq-nav-controls"></div>
+
+<div class="page-wrap" id="page-wrap">
+  <div class="loading-state" id="loading-state">
+    <div class="spinner"></div>
+    <span>Loading briefing…</span>
+  </div>
+</div>
+
+<script src="assets/header.js?v=27"></script>
+<script>
+  /* ── helpers ─────────────────────────────────────────── */
+  function fmt(n)      { return n == null ? '—' : Number(n).toLocaleString(); }
+  function fmtPrice(p) { return p == null ? '—' : '$' + Number(p).toFixed(2); }
+  function fmtPos(p)   { return p == null ? '—' : '#' + Math.round(p); }
+  function fmtPct(p)   { return p == null ? '—' : (p * 100).toFixed(1) + '%'; }
+  function esc(s)      { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fmtAddress(o) {
+    var stateZip = [o.state, o.postcode].filter(Boolean).join(' ');
+    if (o.address && o.city) return [o.address, o.city, stateZip].filter(Boolean).join(', ');
+    if (o.city) return [o.city, stateZip].filter(Boolean).join(', ');
+    return 'Address unavailable';
+  }
+
+  /* ── ID parsing ──────────────────────────────────────── */
+  function getDispensaryId() {
+    const path  = window.location.pathname;
+    const match = path.match(/\/outlet\/(\d+)/);
+    if (match) return match[1];
+    return new URLSearchParams(window.location.search).get('id');
+  }
+
+  /* ── API ─────────────────────────────────────────────── */
+  const API_BASE = 'https://dip-service-production-0db3.up.railway.app';
+  const API_KEY  = 'mip-admin-2026';
+
+  async function loadBriefing(id) {
+    const r = await fetch(`${API_BASE}/pitch/api/outlet/${id}`, {
+      headers: { 'X-Admin-Key': API_KEY }
+    });
+    if (!r.ok) {
+      const body = await r.text().catch(() => '');
+      throw Object.assign(new Error(`HTTP ${r.status}`), { status: r.status, body });
+    }
+    return r.json();
+  }
+
+  /* ── render helpers ──────────────────────────────────── */
+  function readTagClass(read) {
+    if (!read) return 'read-default';
+    const r = read.toLowerCase().replace(/\s+/g, '-');
+    if (r.includes('you-lead') || r === 'you_lead') return 'read-you-lead';
+    if (r.includes('overpriced'))  return 'read-overpriced';
+    if (r.includes('white-space') || r.includes('white_space')) return 'read-white-space';
+    if (r.includes('2-push') || r.includes('2_push') || r.includes('#2')) return 'read-2-push';
+    if (r.includes('holding')) return 'read-holding';
+    return 'read-default';
+  }
+
+  function ownerBadge(outlet) {
+    const type = (outlet.ownership_type || outlet.outlet_type || '').toUpperCase();
+    if (type.includes('MSO')) return `<span class="badge badge-mso">MSO</span>`;
+    return `<span class="badge badge-ind">INDEPENDENT</span>`;
+  }
+
+  function platformBadge(outlet) {
+    const plat = outlet.platform || outlet.pos_platform || outlet.menu_source;
+    if (!plat) return '';
+    return `<span class="badge badge-platform">${esc(plat)}</span>`;
+  }
+
+  /* ── main render ─────────────────────────────────────── */
+  function render(data) {
+    const outlet     = data.outlet     || {};
+    const verdict    = data.verdict    || {};
+    const moves      = data.moves      || [];
+    const categories = data.categories || [];
+    const summary    = data.summary    || {};
+
+    // page title
+    document.title = `DispensaryIQ — ${outlet.name || 'Rep Briefing'}`;
+
+    /* ── outlet header ── */
+    const nCats  = summary.category_count ?? categories.length;
+    const nProds = summary.total_products ?? outlet.total_products ?? '—';
+    const nBrands= summary.competing_brands ?? outlet.competing_brands ?? '—';
+
+    const headerHTML = `
+      <div class="outlet-header">
+        <div class="outlet-name">${esc(outlet.name || 'Unknown Outlet')}</div>
+        <div class="outlet-address">${esc(fmtAddress(outlet))}</div>
+        <div class="badge-row">
+          ${ownerBadge(outlet)}
+          ${platformBadge(outlet)}
+          <span class="badge badge-certified">SHELF READ · CERTIFIED</span>
+        </div>
+        <div class="outlet-summary">${fmt(nCats)} categories · ${fmt(nProds)} on menu · ${fmt(nBrands)} competing</div>
+      </div>`;
+
+    /* ── verdict bar ── */
+    const win = verdict.you_win_here || verdict.win || {};
+    const ovp = verdict.overpriced   || {};
+    const nc  = verdict.not_carried  || verdict.white_space || {};
+    const sho = verdict.shelf_owner  || verdict.competitor_leads || {};
+
+    function verdictCard(cssClass, typeLabel, mainVal, subText, dimmed) {
+      return `
+        <div class="verdict-card ${cssClass}${dimmed ? ' dimmed' : ''}">
+          <div class="verdict-type">${esc(typeLabel)}</div>
+          <div class="verdict-main">${mainVal}</div>
+          <div class="verdict-sub">${subText}</div>
+        </div>`;
+    }
+
+    const winCard = win.category
+      ? verdictCard('teal', 'YOU WIN HERE',
+          esc(win.brand || 'Curaleaf'),
+          esc(win.category), false)
+      : verdictCard('teal', 'YOU WIN HERE', '—', 'No win identified', true);
+
+    const ovpCard = ovp.brand
+      ? verdictCard('coral', 'OVERPRICED',
+          esc(ovp.brand),
+          `${esc(ovp.category || '')} · <span style="color:var(--coral);font-family:var(--font-mono)">${fmtPrice(ovp.price)}</span>${ovp.position ? ' · ' + esc(ovp.position) : ''}`,
+          false)
+      : verdictCard('coral', 'OVERPRICED', '—', 'No pricing issue found', true);
+
+    const ncCount = nc.count ?? nc.category_count;
+    const ncCard = (ncCount != null && ncCount > 0)
+      ? verdictCard('coral', 'NOT CARRIED',
+          fmt(ncCount),
+          'categories with zero Curaleaf', false)
+      : verdictCard('coral', 'NOT CARRIED', '—', 'No gaps identified', true);
+
+    const shoCard = sho.brand
+      ? verdictCard('neutral', 'SHELF OWNER',
+          esc(sho.brand),
+          `leads ${fmt(sho.category_count ?? sho.count ?? '')} categories`, false)
+      : verdictCard('neutral', 'SHELF OWNER', '—', 'No dominant competitor', true);
+
+    const verdictHTML = `
+      <div class="section-label">VERDICT</div>
+      <div class="verdict-bar">
+        ${winCard}${ovpCard}${ncCard}${shoCard}
+      </div>`;
+
+    /* ── three moves ── */
+    const moveOrder = ['defend', 'fix', 'pitch'];
+    const moveMap   = {};
+    moves.forEach(m => {
+      const t = (m.type || '').toLowerCase();
+      moveMap[t] = m;
+    });
+
+    let movesInner = '';
+    moveOrder.forEach(type => {
+      const m = moveMap[type];
+      if (!m) return;
+      movesInner += `
+        <div class="move-card">
+          <div class="move-accent ${type}"></div>
+          <div class="move-body">
+            <span class="move-tag ${type}">${type.toUpperCase()}</span>
+            <div class="move-title">${esc(m.title || '')}</div>
+            <div class="move-text">${esc(m.body || m.text || m.description || '')}</div>
+          </div>
+        </div>`;
+    });
+
+    const movesHTML = movesInner ? `
+      <div class="moves-section">
+        <div class="section-label">THREE MOVES</div>
+        <div class="moves-grid">${movesInner}</div>
+      </div>` : '';
+
+    /* ── category table ── */
+    let tableRows = '';
+    categories.forEach(cat => {
+      const hasCuraleaf = cat.has_curaleaf ?? (cat.curaleaf_brand != null);
+      const read = cat.read || cat.position_label || cat.read_label || '';
+      const tagClass = readTagClass(read);
+      const tagLabel = read || 'Unknown';
+      tableRows += `
+        <tr class="${hasCuraleaf ? 'has-curaleaf' : ''}">
+          <td class="cat-name">${esc(cat.category || cat.category_name || '—')}</td>
+          <td>${esc(cat.shelf_leader || cat.leader_brand || '—')}</td>
+          <td>${esc(cat.curaleaf_brand || (hasCuraleaf ? 'Yes' : '—'))}</td>
+          <td class="mono">${fmt(cat.sku_count ?? cat.skus)}</td>
+          <td class="mono">${fmtPrice(cat.curaleaf_price ?? cat.price)}</td>
+          <td class="mono muted-val">${fmtPos(cat.curaleaf_position ?? cat.position)}</td>
+          <td><span class="read-tag ${tagClass}">${esc(tagLabel)}</span></td>
+        </tr>`;
+    });
+
+    const tableHTML = `
+      <div class="table-section">
+        <div class="section-label">BY CATEGORY</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Shelf Leader</th>
+                <th>Curaleaf Brand</th>
+                <th>SKUs</th>
+                <th>Price</th>
+                <th>Position</th>
+                <th>Read</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No category data</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>`;
+
+    /* ── inject ── */
+    const wrap = document.getElementById('page-wrap');
+    wrap.innerHTML = headerHTML + verdictHTML + movesHTML + tableHTML;
+  }
+
+  /* ── error render ──────────────────────────────────── */
+  function renderError(status, message) {
+    const wrap = document.getElementById('page-wrap');
+    if (status === 404) {
+      wrap.innerHTML = `
+        <div class="error-state">
+          <h2>Outlet not found</h2>
+          <p>No briefing data exists for this dispensary ID.</p>
+          <a class="back-link" href="coverage.html">← Back to coverage</a>
+        </div>`;
+    } else {
+      wrap.innerHTML = `
+        <div class="error-state">
+          <h2>Error loading briefing</h2>
+          <p>${esc(message || 'An unexpected error occurred.')}</p>
+          <a class="back-link" href="coverage.html">← Back to coverage</a>
+        </div>`;
+    }
+  }
+
+  /* ── boot ─────────────────────────────────────────── */
+  (async function init() {
+    const id = getDispensaryId();
+    if (!id) {
+      renderError(400, 'No dispensary ID in URL. Expected /outlet/{id}');
+      return;
+    }
+    try {
+      const data = await loadBriefing(id);
+      render(data);
+    } catch (err) {
+      renderError(err.status, err.message);
+    }
+  })();
+</script>
+</body>
+</html>
