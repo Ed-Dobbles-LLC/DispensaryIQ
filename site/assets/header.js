@@ -39,6 +39,7 @@
     { label: 'Price compliance',  file: 'price-compliance.html' },
     { label: 'Display quality',   file: 'display-quality.html' },
     { label: 'NY watchlist',      file: 'ny-find.html' },
+    { label: 'Outlet Briefing',   file: 'outlet.html' },
     { label: 'Alerts',            file: 'alerts.html' },
     { label: 'Week-over-week',    file: 'week-over-week.html' },
     { label: 'Territory',         file: 'territory.html',       cls: 'phase' },
