@@ -383,7 +383,6 @@
   'use strict';
 
   var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
-  var API_KEY  = 'mip-admin-2026';
 
   var _index    = [];
   var _activeId = null;
@@ -423,7 +422,7 @@
 
   /* index fetch */
   function fetchIndex() {
-    return fetch(API_BASE + '/pitch/api/outlet-index', { headers: { 'X-Admin-Key': API_KEY } })
+    return fetch(API_BASE + '/pitch/api/outlet-index')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (data) { _index = data.outlets || []; buildQuickPicks(); })
       .catch(function (e) { console.warn('outlet-index fetch failed', e); });
@@ -593,7 +592,7 @@
 
   function loadBriefing(id) {
     showLoading();
-    fetch(API_BASE + '/pitch/api/outlet/' + id, { headers: { 'X-Admin-Key': API_KEY } })
+    fetch(API_BASE + '/pitch/api/outlet/' + id)
       .then(function (r) {
         if (!r.ok) return r.text().then(function (t) { throw { status: r.status, message: t }; });
         return r.json();
