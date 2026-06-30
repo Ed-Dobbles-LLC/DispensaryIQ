@@ -171,11 +171,21 @@
     var moreDrop = document.createElement('div');
     moreDrop.className = 'diq-nav-more-dropdown';
     moreDrop.style.display = 'none';
-    moreWrap.appendChild(moreDrop);
+    // Append to body so it escapes the overflow:hidden on linksWrap
+    document.body.appendChild(moreDrop);
 
     moreBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      moreDrop.style.display = moreDrop.style.display === 'none' ? 'block' : 'none';
+      if (moreDrop.style.display !== 'none') {
+        moreDrop.style.display = 'none';
+        return;
+      }
+      var rect = moreBtn.getBoundingClientRect();
+      moreDrop.style.position = 'fixed';
+      moreDrop.style.top = (rect.bottom + 6) + 'px';
+      moreDrop.style.right = (window.innerWidth - rect.right) + 'px';
+      moreDrop.style.left = 'auto';
+      moreDrop.style.display = 'block';
     });
     document.addEventListener('click', function () { moreDrop.style.display = 'none'; });
 
@@ -191,7 +201,7 @@
     }
 
     // Collapse low-priority links into More when they overflow
-    var ALWAYS_VISIBLE = ['index.html', 'coverage.html', 'products.html', 'market-share.html'];
+    var ALWAYS_VISIBLE = ['coverage.html', 'index.html', 'outlet.html', 'products.html', 'market-share.html'];
     // Only select direct-child nav links so clones inside moreDrop aren't included
     var _navLinkEls = Array.from(linksWrap.children).filter(function (el) {
       return el.classList && el.classList.contains('diq-nav-link');
