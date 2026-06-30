@@ -30,6 +30,7 @@
 
   // Page dropdown options — label → file. Order is the deck order.
   var PAGES = [
+    { label: '← Scorecard',        file: 'index.html' },
     { label: 'Pricing & position', file: 'price-comparison.html' },
     { label: 'Week-over-week',     file: 'week-over-week.html' },
     { label: 'Market share',       file: 'market-share.html' },
