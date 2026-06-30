@@ -30,8 +30,9 @@
 
   // Navigation pages — label, file, optional css class suffix. Order = deck order.
   var PAGES = [
-    { label: 'Scorecard',         file: 'index.html' },
     { label: 'Coverage',          file: 'coverage.html' },
+    { label: 'Scorecard',         file: 'index.html' },
+    { label: 'Outlet Briefing',   file: 'outlet.html' },
     { label: 'Products',          file: 'products.html' },
     { label: 'Price comparison',  file: 'price-comparison.html' },
     { label: 'Market share',      file: 'market-share.html' },
