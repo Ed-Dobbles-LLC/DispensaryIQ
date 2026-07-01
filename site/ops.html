@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DIP Ops · DispensaryIntelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
@@ -138,8 +138,47 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .footer-note{margin-top:20px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
 .footer-note b{color:var(--muted)}
 
-/* Auth overlay */
-.auth-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(3,5,31,.92);backdrop-filter:blur(8px)}
+/* ── Executive attention triage (brief #373) ─────────────────────────── */
+.triage{margin-bottom:8px}
+.triage-block{margin-bottom:22px}
+.triage-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.triage-head h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;letter-spacing:.01em}
+.triage-count{font-family:Consolas,'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:24px;height:24px;padding:0 8px;border-radius:100px;display:inline-flex;align-items:center;justify-content:center}
+.triage-count.coral{background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
+.triage-count.teal{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.triage-count.neutral{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+.triage-count.muted{background:rgba(232,230,220,.05);color:var(--muted-d);border:1px solid var(--line)}
+.triage-sub{font-size:11px;color:var(--muted);font-weight:500}
+
+.tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.tcard{border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-left-width:3px}
+.tcard-blurb{font-size:13.5px;font-weight:600;line-height:1.4;margin-bottom:8px;color:var(--ink)}
+.tcard-title{font-family:Consolas,'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px}
+.tcard-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-verdict{font-family:Consolas,'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
+.tcard-link{font-size:11px;font-weight:600;color:var(--sky);text-decoration:none}
+.tcard-link:hover{text-decoration:underline}
+
+.triage-needs-ed .tcard{border-left-color:var(--coral)}
+.triage-needs-ed .tcard-verdict{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
+.triage-running .tcard{border-left-color:var(--teal)}
+.triage-running .tcard-verdict{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.triage-queued .tcard{border-left-color:var(--muted-d)}
+.triage-queued .tcard-verdict{background:rgba(133,228,253,.1);color:var(--sky);border:1px solid rgba(133,228,253,.25)}
+.triage-done .tcard{border-left-color:var(--muted-d);opacity:.82}
+.triage-done .tcard-verdict{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+
+.triage-empty{display:flex;align-items:center;gap:10px;padding:20px 22px;border-radius:14px;background:rgba(0,185,142,.06);border:1px solid rgba(0,185,142,.22);color:var(--teal);font-size:13px;font-weight:600}
+.triage-empty .check{width:20px;height:20px;border-radius:50%;background:rgba(0,185,142,.18);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.triage-loading{font-size:12px;color:var(--muted);padding:16px 0}
+.triage-err{font-size:12px;color:var(--coral);padding:10px 0}
+.triage-hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+.detail-note{font-size:11px;color:var(--muted-d);text-align:center;margin-bottom:10px}
+
+/* Auth overlay — scoped to .detail-section, not the whole viewport, so the
+   public attention-triage panels above stay visible without a key */
+.detail-section{position:relative;min-height:640px}
+.auth-overlay{position:absolute;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(3,5,31,.92);backdrop-filter:blur(8px);border-radius:16px}
 .auth-box{background:rgba(6,10,45,.95);border:1px solid rgba(0,185,142,.25);border-radius:20px;padding:36px 40px;width:360px;text-align:center}
 .auth-box h2{font-size:18px;font-weight:800;margin-bottom:6px}
 .auth-box p{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.55}
@@ -157,17 +196,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 </head>
 <body>
 
-<!-- Auth overlay — shown when no key in sessionStorage -->
-<div class="auth-overlay" id="auth-overlay">
-  <div class="auth-box">
-    <h2>DIP Ops Access</h2>
-    <p>Enter the ops admin key to view the pipeline control panel.<br>Internal use only.</p>
-    <input type="password" id="key-input" placeholder="Admin key" autocomplete="off">
-    <button id="key-submit">Unlock</button>
-    <div class="auth-err" id="auth-err">Incorrect key — try again</div>
-  </div>
-</div>
-
 <header>
   <div style="display:flex;align-items:center;gap:20px">
     <a href="index.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Back to deck">← Deck</a>
@@ -182,6 +210,65 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <div class="wrap">
 
   <div class="err-banner" id="err-banner"></div>
+
+  <!-- EXECUTIVE ATTENTION TRIAGE (brief #373) — public, no admin key -->
+  <div class="triage" id="triage">
+    <div class="triage-block triage-needs-ed">
+      <div class="triage-head">
+        <h2>Needs your attention</h2>
+        <span class="triage-count coral" id="triage-needs-ed-count">—</span>
+      </div>
+      <div class="tcards" id="triage-needs-ed-cards"></div>
+      <div class="triage-empty" id="triage-needs-ed-empty" style="display:none">
+        <span class="check">✓</span> All clear — nothing needs Ed right now.
+      </div>
+    </div>
+
+    <div class="triage-block triage-running">
+      <div class="triage-head">
+        <h2>Running</h2>
+        <span class="triage-count teal" id="triage-running-count">—</span>
+      </div>
+      <div class="tcards" id="triage-running-cards"></div>
+    </div>
+
+    <div class="triage-block triage-queued">
+      <div class="triage-head">
+        <h2>Queued</h2>
+        <span class="triage-count neutral" id="triage-queued-count">—</span>
+        <span class="triage-sub">by priority</span>
+      </div>
+      <div class="tcards" id="triage-queued-cards"></div>
+    </div>
+
+    <div class="triage-block triage-done">
+      <div class="triage-head">
+        <h2>Done</h2>
+        <span class="triage-count muted" id="triage-done-count">—</span>
+        <span class="triage-sub">last 48h</span>
+      </div>
+      <div class="tcards" id="triage-done-cards"></div>
+    </div>
+
+    <div class="triage-loading" id="triage-loading">Loading triage…</div>
+    <div class="triage-err" id="triage-err" style="display:none"></div>
+  </div>
+
+  <hr class="triage-hr">
+  <div class="detail-note">Pipeline detail below · behind admin key</div>
+
+  <div class="detail-section" id="detail-section">
+
+  <!-- Auth overlay — scoped to the pipeline-detail section only, shown when no key in sessionStorage -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-box">
+      <h2>DIP Ops Access</h2>
+      <p>Enter the ops admin key to view the pipeline control panel.<br>Internal use only.</p>
+      <input type="password" id="key-input" placeholder="Admin key" autocomplete="off">
+      <button id="key-submit">Unlock</button>
+      <div class="auth-err" id="auth-err">Incorrect key — try again</div>
+    </div>
+  </div>
 
   <!-- HEADLINE -->
   <div class="headline">
@@ -300,11 +387,79 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     Tables: <span class="mono">weekly_qc_scorecard · weekly_run_log · watcher_alerts · extraction_priority_queue · menu_capture_backfill_queue · regression_manual_queue</span><br>
     Internal ops cockpit · behind auth · not the public DispensaryIntelligence.com marketing site.
   </div>
-</div>
+
+  </div><!-- /detail-section -->
+</div><!-- /wrap -->
 
 <script>
 const API = 'https://dip-service-production-0db3.up.railway.app/ops/api/state';
+const BRIEFS_API = 'https://dip-service-production-0db3.up.railway.app/ops/api/briefs';
 const KEY_STORE = 'dip_ops_key';
+
+// ── Executive attention triage (brief #373) — public, no admin key ────
+// Independent of the auth-gated /ops/api/state panels below: this fetch
+// runs unconditionally so Ed sees "what needs me" the instant the page loads.
+
+function tcardHtml(it, kind) {
+  const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
+  const blurb = esc_html(it.intent_blurb || it.title || 'no blurb on file');
+  let verdictLabel;
+  if (kind === 'queued') verdictLabel = `priority ${esc_html(it.priority)}`;
+  else if (kind === 'running') verdictLabel = it.age_s != null ? `${fmt_dur(it.age_s)} running` : 'running';
+  else verdictLabel = it.latest_verdict ? esc_html(it.latest_verdict) : 'no verdict yet';
+  const link = it.session_url
+    ? `<a class="tcard-link" href="${esc_html(it.session_url)}" target="_blank" rel="noopener noreferrer">session ↗</a>`
+    : '';
+  return `<div class="tcard">`+
+    `<div class="tcard-blurb">${blurb}</div>`+
+    `<div class="tcard-title">${title}</div>`+
+    `<div class="tcard-meta"><span class="tcard-verdict">${verdictLabel}</span>${link}</div>`+
+  `</div>`;
+}
+
+function renderTriageBucket(items, cardsId, kind) {
+  const el = document.getElementById(cardsId);
+  if (el) el.innerHTML = (items || []).map(it => tcardHtml(it, kind)).join('');
+}
+
+function renderTriage(d) {
+  const needsEd = d.needs_ed || [];
+  const needsEdCount = document.getElementById('triage-needs-ed-count');
+  needsEdCount.textContent = needsEd.length;
+  needsEdCount.className = 'triage-count ' + (needsEd.length ? 'coral' : 'muted');
+  renderTriageBucket(needsEd, 'triage-needs-ed-cards', 'needs_ed');
+  document.getElementById('triage-needs-ed-cards').style.display = needsEd.length ? '' : 'none';
+  document.getElementById('triage-needs-ed-empty').style.display = needsEd.length ? 'none' : 'flex';
+
+  const running = d.running || [];
+  document.getElementById('triage-running-count').textContent = running.length;
+  renderTriageBucket(running, 'triage-running-cards', 'running');
+
+  const queued = d.queued || [];
+  document.getElementById('triage-queued-count').textContent = queued.length;
+  renderTriageBucket(queued, 'triage-queued-cards', 'queued');
+
+  const done = d.recent_done || [];
+  document.getElementById('triage-done-count').textContent = done.length;
+  renderTriageBucket(done, 'triage-done-cards', 'done');
+
+  document.getElementById('triage-loading').style.display = 'none';
+}
+
+async function fetchTriage() {
+  try {
+    const r = await fetch(BRIEFS_API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    document.getElementById('triage-err').style.display = 'none';
+    renderTriage(json);
+  } catch (e) {
+    document.getElementById('triage-loading').style.display = 'none';
+    const err = document.getElementById('triage-err');
+    err.textContent = `Triage refresh failed: ${e.message}`;
+    err.style.display = 'block';
+  }
+}
 
 // ── Auth gate ────────────────────────────────────────────────────────
 const overlay = document.getElementById('auth-overlay');
@@ -525,6 +680,9 @@ function hydrate(d) {
 }
 
 // ── Init + 60s refresh ───────────────────────────────────────────────
+fetchTriage();
+setInterval(fetchTriage, 60000);
+
 if (getKey()) fetchState();
 setInterval(() => { if (getKey()) fetchState(); }, 60000);
 </script>
