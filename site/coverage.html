@@ -162,7 +162,6 @@
 (function () {
   'use strict';
   var API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/coverage';
-  var API_KEY = 'mip-admin-2026';
   var POLL_MS = 10 * 60 * 1000;
 
   /* Albers Equal-Area Conic -- US, parallels 29.5/45.5, lambda0=-96, phi0=37.5
@@ -288,7 +287,7 @@
   function doFetch() {
     var url = API;
     if (window.location.search.indexOf('fresh=1') >= 0) url = API + '?fresh=1';
-    return fetch(url, { headers: { 'X-Admin-Key': API_KEY } })
+    return fetch(url)
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
