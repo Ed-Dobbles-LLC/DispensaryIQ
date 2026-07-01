@@ -1,1 +1,32 @@
-IyBEaXNhYmxlIENhZGR5J3MgYXV0b21hdGljIEhUVFBTIOKAlCBSYWlsd2F5IHRlcm1pbmF0ZXMgVExTIGF0IGl0cyBlZGdlCglhdXRvX2h0dHBzIG9mZgoJYWRtaW4gb2ZmCn0KCjoke1BPUlQ6ODA4MH0gewoJcm9vdCAqIC9zcnYKCWVuY29kZSBnemlwIHpzdGQKCWZpbGVfc2VydmVyCgoJIyBGcmllbmRseSA0MDQKCWhhbmRsZV9lcnJvcnMgewoJCXJlc3BvbmQgIntlcnIuc3RhdHVzX2NvZGV9IHtlcnIuc3RhdHVzX3RleHR9IiB7ZXJyLnN0YXR1c19jb2RlfQoJfQoKCSMgTG9uZyBjYWNoZSBvbiBzdGF0aWMgYXNzZXRzLCBubyBjYWNoZSBvbiBIVE1MCglAYXNzZXRzIHBhdGggL2Fzc2V0cy8qCgloZWFkZXIgQGFzc2V0cyBDYWNoZS1Db250cm9sICJwdWJsaWMsIG1heC1hZ2U9NjA0ODAwLCBpbW11dGFibGUiCgoJQGh0bWwgcGF0aCAqLmh0bWwKCWhlYWRlciBAaHRtbCBDYWNoZS1Db250cm9sICJuby1jYWNoZSwgbXVzdC1yZXZhbGlkYXRlIgoKCSMgRGlzY291cmFnZSBpbmRleGluZwoJaGVhZGVyIFgtUm9ib3RzLVRhZyAibm9pbmRleCwgbm9mb2xsb3ciCgoJIyBSZXAgYnJpZWZpbmc6IC9vdXRsZXQve2lkfSDihpIgb3V0bGV0Lmh0bWwgKGlkIHBhcnNlZCBieSBKUyBmcm9tIHBhdGhuYW1lKQoJcmV3cml0ZSAvb3V0bGV0LyogL291dGxldC5odG1sCgoJIyBPcHMgZGFzaGJvYXJkOiAvb3BzIOKGkiBvcHMuaHRtbCAoR2F0ZSBWZXJkaWN0cyBwYW5lbCwgYnJpZWYgIzM1NCkKCXJld3JpdGUgL29wcyAvb3BzLmh0bWwKfQo=
+{
+	# Disable Caddy's automatic HTTPS — Railway terminates TLS at its edge
+	auto_https off
+	admin off
+}
+
+:{$PORT:8080} {
+	root * /srv
+	encode gzip zstd
+	file_server
+
+	# Friendly 404
+	handle_errors {
+		respond "{err.status_code} {err.status_text}" {err.status_code}
+	}
+
+	# Long cache on static assets, no cache on HTML
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=604800, immutable"
+
+	@html path *.html
+	header @html Cache-Control "no-cache, must-revalidate"
+
+	# Discourage indexing
+	header X-Robots-Tag "noindex, nofollow"
+
+	# Rep briefing: /outlet/{id} → outlet.html (id parsed by JS from pathname)
+	rewrite /outlet/* /outlet.html
+
+	# Ops dashboard: /ops → ops.html (Gate Verdicts panel, brief #354)
+	rewrite /ops /ops.html
+}
