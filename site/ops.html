@@ -279,6 +279,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     </div>
   </div>
 
+  <!-- GATE VERDICTS -->
+  <div class="sec-h">
+    <h2>Gate verdicts <span class="qm" data-help="GATE VERDICTS — independent acceptance verdicts the dip-skeptic Routine writes to cc_reports.verifier_verdict after checking each brief's LIVE evidence.&#10;&#10;DECISION: PASS = skeptic independently confirmed the live evidence. FAIL or NEEDS ED = do not trust the brief's own claim — it needs your attention.">?</span></h2>
+    <span class="note" id="gate-verdicts-note">loading…</span>
+  </div>
+  <div class="card">
+    <table class="outlet-tbl" id="gate-verdicts-tbl" style="display:none">
+      <thead><tr><th>Brief</th><th>Verdict</th><th>Deployed SHA</th><th>When</th></tr></thead>
+      <tbody id="gate-verdicts-rows"></tbody>
+    </table>
+    <div class="lbl" id="gate-verdicts-empty" style="display:none">No gate verdicts yet</div>
+  </div>
+
   <div class="decision-key">
     <span><b>Hover legend:</b> every tile, gate, phase and metric has a tooltip — top line is <b>what it is</b>, "DECISION:" line is <b>the call it drives</b>.</span>
   </div>
@@ -315,6 +328,7 @@ keySubmit.addEventListener('click', async () => {
       overlay.style.display = 'none';
       const json = await r.json();
       hydrate(json.dashboard || json);
+      renderGateVerdicts(json.gate_verdicts);
     } else {
       authErr.style.display = 'block';
     }
@@ -338,6 +352,7 @@ async function fetchState() {
     errBanner.style.display = 'none';
     const json = await r.json();
     hydrate(json.dashboard || json); // fall back to top-level for backwards compat
+    renderGateVerdicts(json.gate_verdicts);
   } catch (e) {
     errBanner.textContent = `Refresh failed: ${e.message}`;
     errBanner.style.display = 'block';
@@ -356,6 +371,58 @@ function fmt_dur(dur_s) {
 }
 
 function fmt_num(n) { return n.toLocaleString(); }
+
+function fmt_relative(iso) {
+  if (!iso) return '—';
+  const diffS = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diffS < 0) return 'just now';
+  if (diffS < 60) return `${diffS}s ago`;
+  const diffM = Math.floor(diffS / 60);
+  if (diffM < 60) return `${diffM}m ago`;
+  const diffH = Math.floor(diffM / 60);
+  if (diffH < 24) return `${diffH}h ago`;
+  return `${Math.floor(diffH / 24)}d ago`;
+}
+
+function esc_html(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ── Gate verdicts panel ──────────────────────────────────────────────
+function renderGateVerdicts(rows) {
+  const tbl = document.getElementById('gate-verdicts-tbl');
+  const tbody = document.getElementById('gate-verdicts-rows');
+  const empty = document.getElementById('gate-verdicts-empty');
+  const note = document.getElementById('gate-verdicts-note');
+  if (!tbl || !tbody || !empty || !note) return;
+  if (!Array.isArray(rows) || !rows.length) {
+    tbl.style.display = 'none';
+    empty.style.display = 'block';
+    note.textContent = 'no verdicts yet';
+    tbody.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+  tbl.style.display = '';
+  note.textContent = `${rows.length} most recent`;
+  tbody.innerHTML = rows.map(v => {
+    const verdict = v.verifier_verdict;
+    const badgeClass = verdict === 'pass' ? 'tag-real' : 'tag-cap';
+    const badgeLabel = verdict === 'pass' ? 'PASS' : verdict === 'needs-ed-review' ? 'NEEDS ED' : 'FAIL';
+    const headRaw = v.brief_head || '';
+    const head = headRaw.length > 80 ? headRaw.slice(0, 80) + '…' : headRaw;
+    const sha = v.deployed_sha ? String(v.deployed_sha).slice(0, 8) : '—';
+    const help = esc_html(v.acceptance_check || 'no acceptance notes on file');
+    return `<tr>`+
+      `<td><span style="font-weight:700">#${esc_html(v.brief_id)}</span> <span style="color:var(--muted)">${esc_html(head)}</span></td>`+
+      `<td><span class="${badgeClass}">${badgeLabel}</span> <span class="qm" data-help="${help}">?</span></td>`+
+      `<td class="mono">${esc_html(sha)}</td>`+
+      `<td class="mono" style="color:var(--muted)">${esc_html(fmt_relative(v.evidence_captured_at))}</td>`+
+      `</tr>`;
+  }).join('');
+}
 
 function hydrate(d) {
   document.getElementById('last-refreshed').textContent =
