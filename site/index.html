@@ -12,6 +12,7 @@
   <script src="assets/header.js?v=29"></script>
   <script src="assets/alerts-data.js?v=20"></script>
   <link rel="stylesheet" href="assets/style.css?v=28">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
 <body>
 
@@ -153,6 +154,8 @@
   var API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/scorecard';
 
   var _apiData = null;   // full response from /pitch/api/scorecard
+  // expose for diqExportPNG (outside IIFE)
+  window._diqApiData = null;
   var _dimsData = null;  // the dims payload (PILOT/IL/NJ/NY keyed object)
   var DIQ_STATE = 'PILOT';
 
@@ -343,6 +346,7 @@
     })
     .then(function(data) {
       _apiData = data;
+      window._diqApiData = data;
       _dimsData = data.dims || null;
       hydrateHeader(data);
       render();
@@ -360,6 +364,7 @@
   document.querySelectorAll('.diq-toggle').forEach(function(b) {
     b.addEventListener('click', function() {
       DIQ_STATE = b.getAttribute('data-view');
+      window._diqState = DIQ_STATE;
       render();
     });
   });
@@ -367,6 +372,39 @@
   // Initial fetch
   fetchScorecard();
 })();
+
+function diqExportPNG() {
+  if (typeof html2canvas === 'undefined') {
+    alert('Screenshot library not loaded yet — try again in a moment.');
+    return;
+  }
+  var btn = document.querySelector('.diq-export-btn[onclick*="PNG"]');
+  var week = (window._diqApiData && window._diqApiData.iso_week) || 'unknown';
+  var state = window._diqState || 'PILOT';
+  var filename = 'DIQ_Scorecard_' + week + '_' + state + '.png';
+
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+  var target = document.querySelector('main.diq-main') || document.body;
+  html2canvas(target, {
+    backgroundColor: getComputedStyle(document.body).getPropertyValue('background-color') || '#0A0E1C',
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    ignoreElements: function(el) {
+      return el.classList && (el.classList.contains('diq-nav') || el.classList.contains('diq-nav-more-dropdown'));
+    }
+  }).then(function(canvas) {
+    var link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+  }).catch(function() {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    alert('Screenshot failed — try again.');
+  });
+}
 </script>
 
 </body>
