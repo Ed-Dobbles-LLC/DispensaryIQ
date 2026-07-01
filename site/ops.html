@@ -154,6 +154,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .tcard{border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-left-width:3px}
 .tcard-blurb{font-size:13.5px;font-weight:600;line-height:1.4;margin-bottom:8px;color:var(--ink)}
 .tcard-title{font-family:Consolas,'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px}
+.tcard-hint{font-size:11px;color:var(--muted);font-weight:500;line-height:1.4;margin-bottom:6px;font-style:italic}
 .tcard-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .tcard-verdict{font-family:Consolas,'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
 .tcard-link{font-size:11px;font-weight:600;color:var(--sky);text-decoration:none}
@@ -410,9 +411,16 @@ function tcardHtml(it, kind) {
   const link = it.session_url
     ? `<a class="tcard-link" href="${esc_html(it.session_url)}" target="_blank" rel="noopener noreferrer">session ↗</a>`
     : '';
+  const hint = kind === 'needs_ed'
+    ? `<div class="tcard-hint">cleared by recording a disposition</div>`
+    : '';
+  const disposition = it.disposition
+    ? `<div class="tcard-hint">${esc_html(it.disposition)}</div>`
+    : '';
   return `<div class="tcard">`+
     `<div class="tcard-blurb">${blurb}</div>`+
     `<div class="tcard-title">${title}</div>`+
+    hint+disposition+
     `<div class="tcard-meta"><span class="tcard-verdict">${verdictLabel}</span>${link}</div>`+
   `</div>`;
 }
