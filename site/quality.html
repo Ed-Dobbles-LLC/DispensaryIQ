@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quality Board - Dispensary · DispensaryIntelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
+  --ink:#E8E6DC; --ink-dim:rgba(232,230,220,.6); --ink-faint:rgba(232,230,220,.32);
+  --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
+  --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
+  --indigo1:#332CB3; --indigo2:#456FDD;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(51,44,179,.5) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0,185,142,.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(51,44,179,.35),transparent);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));box-shadow:0 0 0 4px rgba(69,111,221,.18)}
+.brand h1{font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+.refreshed{font-size:10.5px;color:var(--muted);font-weight:500}
+
+.wrap{max-width:1240px;margin:0 auto;padding:26px 28px 60px}
+.err-banner{background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.3);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--coral);margin-bottom:16px;display:none}
+
+.card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:16px;padding:20px 22px;position:relative}
+.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--indigo2)}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:30px 0 14px}
+.sec-h:first-of-type{margin-top:0}
+.sec-h h2{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.sec-h .note{font-size:11px;color:var(--muted);font-weight:500}
+
+.badge{font-size:10px;font-weight:700;letter-spacing:.1em;border-radius:100px;padding:4px 10px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+.badge.pass{color:var(--teal);border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.1)}
+.badge.fail{color:var(--coral);border:1px solid rgba(219,84,97,.35);background:rgba(219,84,97,.1)}
+.badge.off{color:var(--muted);border:1px solid var(--line);background:rgba(232,230,220,.05)}
+
+.cert-headline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.cert-headline .big{font-size:48px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--teal)}
+.cert-legs{display:flex;gap:22px;margin-top:14px;flex-wrap:wrap}
+.cert-legs .leg b{display:block;font-size:20px;font-weight:700}
+.cert-legs .leg span{font-size:11px;color:var(--muted);font-weight:500}
+.cert-footnote{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.state-card .num{font-size:30px;font-weight:800;line-height:1}
+.state-card .lbl{font-size:11px;color:var(--muted);font-weight:500;margin-top:8px}
+.state-card .pct{font-size:12px;font-weight:700;margin-top:10px}
+
+.lane-row{display:flex;align-items:center;gap:12px;padding:9px 0}
+.lane-row .lane-name{width:130px;font-size:12.5px;font-weight:600;flex:none}
+.lane-row .lane-bar{flex:1;height:9px;border-radius:100px;background:rgba(255,255,255,.06);overflow:hidden}
+.lane-row .lane-bar i{display:block;height:100%;border-radius:100px}
+.lane-row .lane-n{width:64px;text-align:right;font-size:12px;font-weight:700;flex:none}
+.lane-dutchie i{background:linear-gradient(90deg,var(--indigo1),var(--indigo2))}
+.lane-playwright i{background:linear-gradient(90deg,var(--teal),var(--teal-bright))}
+.lane-other i{background:var(--muted-d)}
+
+.gate-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.gate-row:last-child{border-bottom:none}
+.gate-row .gn{font-size:13px;font-weight:500}
+
+.qrow{display:flex;gap:10px;flex-wrap:wrap}
+.qchip{flex:1;min-width:150px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.qchip .qn{font-size:22px;font-weight:800;line-height:1}
+.qchip .ql{font-size:11px;color:var(--muted);font-weight:500;margin-top:6px}
+
+.rem-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px}
+.rem-tbl th{text-align:left;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 12px 10px 0;border-bottom:1px solid var(--line)}
+.rem-tbl td{padding:10px 12px 10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-weight:500}
+.rem-tbl tr:last-child td{border-bottom:none}
+
+.sched-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.sched-row:last-child{border-bottom:none}
+.sched-row .sl{color:var(--muted);font-weight:500}
+.sched-row .sv{font-weight:700}
+
+.loading{font-size:12px;color:var(--muted);padding:16px 0}
+.empty-note{font-size:12px;color:var(--muted-d);padding:6px 0}
+.footer-note{margin-top:24px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
+.footer-note a{color:var(--indigo2);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
+
+@media(max-width:900px){.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:20px">
+    <a href="cpo.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Back to AI CPO">← AI CPO</a>
+    <div class="brand"><span class="dot"></span><div><h1>Quality Board - Dispensary</h1><small>DispensaryIntelligence · latest-run status</small></div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="refreshed" id="last-refreshed">loading…</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="err-banner" id="err-banner"></div>
+  <div class="loading" id="loading">Loading quality board…</div>
+
+  <div id="board" style="display:none">
+
+  <!-- CERTIFIED WEEK BANNER -->
+  <div class="sec-h"><h2>Certified week</h2><span class="note" id="cert-note">—</span></div>
+  <div class="card">
+    <div class="eyebrow">Most recent certified coverage</div>
+    <div class="cert-headline">
+      <span class="big"><span id="cert-pct">—</span>%</span>
+      <span class="badge pass" id="cert-badge">Certified</span>
+    </div>
+    <div class="cert-legs">
+      <div class="leg"><b id="cert-good">—</b><span>good doors / <span id="cert-cohort">—</span></span></div>
+      <div class="leg"><b id="cert-week">—</b><span>iso week</span></div>
+      <div class="leg"><b id="cert-scored">—</b><span>scored at</span></div>
+    </div>
+    <div class="cert-footnote" id="cert-footnote">Active-cohort footnote loading…</div>
+  </div>
+
+  <!-- PER-STATE COVERAGE -->
+  <div class="sec-h"><h2>Per-state coverage</h2><span class="note" id="state-note">active cohort · cohort_excluded_reason IS NULL</span></div>
+  <div class="grid3" id="state-cards"></div>
+
+  <!-- LANE / METHOD DISTRIBUTION -->
+  <div class="sec-h"><h2>Lane / method distribution</h2><span class="note">latest run</span></div>
+  <div class="card">
+    <div class="eyebrow">Capture method mix <span class="badge off" id="method-fidelity-badge" style="margin-left:8px">method-fidelity —</span></div>
+    <div id="lane-rows"></div>
+  </div>
+
+  <!-- QUALITY GATES -->
+  <div class="sec-h"><h2>Quality gates</h2><span class="note" id="gates-note">latest wow_gate_results</span></div>
+  <div class="card">
+    <div class="gate-row"><span class="gn">Coverage gate</span><span class="badge" id="g-coverage">—</span></div>
+    <div class="gate-row"><span class="gn">Product-count gate</span><span class="badge" id="g-product">—</span></div>
+    <div class="gate-row"><span class="gn">Named-brand gate</span><span class="badge" id="g-brand">—</span></div>
+    <div class="gate-row"><span class="gn">Platform gate</span><span class="badge" id="g-platform">—</span></div>
+    <div class="gate-row"><span class="gn">Price-shift gate</span><span class="badge" id="g-price">—</span></div>
+    <div class="gate-row"><span class="gn">Overall</span><span class="badge" id="g-overall">—</span></div>
+    <div class="empty-note" id="g-halt-reason" style="display:none"></div>
+    <div class="empty-note">Invariant sweep outcome is not tracked in a dedicated table today — not shown to avoid inventing a status.</div>
+  </div>
+
+  <!-- REMEDIATION -->
+  <div class="sec-h"><h2>Remediation</h2><span class="note">remediation_door_state</span></div>
+  <div class="card">
+    <div class="qrow">
+      <div class="qchip"><div class="qn" id="rem-lane-drop">—</div><div class="ql">open LANE-DROP alerts</div></div>
+      <div class="qchip"><div class="qn" id="rem-depth">—</div><div class="ql">doors in remediation queue</div></div>
+      <div class="qchip"><div class="qn"><span class="badge off" id="rem-shadow">—</span></div><div class="ql">auto-spend loop mode</div></div>
+    </div>
+    <table class="rem-tbl" id="rem-tbl" style="display:none">
+      <thead><tr><th>State</th><th>Diagnosis</th><th>Doors</th></tr></thead>
+      <tbody id="rem-rows"></tbody>
+    </table>
+    <div class="empty-note" id="rem-empty" style="display:none">No remediation queue rows</div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div class="sec-h"><h2>Schedule</h2><span class="note">America/Chicago</span></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="eyebrow">Last capture</div>
+      <div class="sched-row"><span class="sl">Run ID</span><span class="sv mono" id="sched-run-id">—</span></div>
+      <div class="sched-row"><span class="sl">Finished</span><span class="sv" id="sched-finished">—</span></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Next runs</div>
+      <div class="sched-row"><span class="sl">Weekly capture</span><span class="sv" id="sched-next-capture">—</span></div>
+      <div class="sched-row"><span class="sl">Org-worker</span><span class="sv" id="sched-next-orgworker">—</span></div>
+    </div>
+  </div>
+
+  <!-- QC DOC -->
+  <div class="sec-h"><h2>QC doc</h2><span class="note">qc_weekly_docs</span></div>
+  <div class="card">
+    <div id="qc-doc-present" style="display:none">
+      <div class="sched-row"><span class="sl">Latest week</span><span class="sv" id="qc-doc-week">—</span></div>
+      <div class="sched-row"><span class="sl">Filed</span><span class="sv" id="qc-doc-created">—</span></div>
+    </div>
+    <div class="empty-note" id="qc-doc-empty" style="display:none">No QC weekly doc filed yet.</div>
+  </div>
+
+  </div><!-- /board -->
+
+  <div class="footer-note">
+    Live data via <span class="mono">dip-service /ops/api/quality</span> · refreshes every 60 s · as of <span id="as-of">—</span>.<br>
+    Executive actions moved to <a href="cpo.html">AI CPO - Dispensary →</a><br>
+    Internal ops cockpit · behind CF Access · not the public DispensaryIntelligence.com marketing site.
+  </div>
+</div><!-- /wrap -->
+
+<script>
+const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const API = `${BASE}/ops/api/quality`;
+
+function esc_html(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function fmt_num(n) { return n == null ? '—' : Number(n).toLocaleString(); }
+function fmt_relative(iso) {
+  if (!iso) return '—';
+  const diffS = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diffS < 0) return 'just now';
+  if (diffS < 60) return `${diffS}s ago`;
+  const diffM = Math.floor(diffS / 60);
+  if (diffM < 60) return `${diffM}m ago`;
+  const diffH = Math.floor(diffM / 60);
+  if (diffH < 24) return `${diffH}h ago`;
+  return `${Math.floor(diffH / 24)}d ago`;
+}
+function gateBadge(pass) {
+  if (pass === true) return { cls: 'pass', label: 'PASS' };
+  if (pass === false) return { cls: 'fail', label: 'FAIL' };
+  return { cls: 'off', label: 'N/A' };
+}
+function setGate(id, pass) {
+  const el = document.getElementById(id);
+  const b = gateBadge(pass);
+  el.className = 'badge ' + b.cls;
+  el.textContent = b.label;
+}
+
+// Next occurrence of a weekly (weekday+hour:minute) or daily (hour:minute)
+// cadence, rendered in America/Chicago. Approximate (minute-resolution,
+// not DST-transition-exact) — this is a schedule display, not a scheduler.
+function nextOccurrence(weekday, hour, minute) {
+  const tz = 'America/Chicago';
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz, weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false,
+  });
+  const map = {};
+  fmt.formatToParts(now).forEach(p => { map[p.type] = p.value; });
+  const weekdayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const curWeekday = weekdayMap[map.weekday];
+  const curHour = parseInt(map.hour === '24' ? '0' : map.hour, 10);
+  const curMinute = parseInt(map.minute, 10);
+  const isPast = curHour > hour || (curHour === hour && curMinute >= minute);
+
+  let daysAhead;
+  if (weekday == null) {
+    daysAhead = isPast ? 1 : 0;
+  } else {
+    daysAhead = (weekday - curWeekday + 7) % 7;
+    if (daysAhead === 0 && isPast) daysAhead = 7;
+  }
+  const target = new Date(now.getTime() + daysAhead * 86400000);
+  const dateFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, month: 'short', day: 'numeric' });
+  const dayLabel = daysAhead === 0 ? 'today' : daysAhead === 1 ? 'tomorrow' : dateFmt.format(target);
+  const hh = String(hour).padStart(2, '0'), mm = String(minute).padStart(2, '0');
+  return `${dayLabel} · ${hh}:${mm} CT`;
+}
+
+function render(d) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('board').style.display = '';
+  document.getElementById('last-refreshed').textContent =
+    `live · refreshed ${new Date().toLocaleTimeString()}`;
+  document.getElementById('as-of').textContent = fmt_relative(d.as_of);
+
+  // Certified week banner
+  const c = d.certified;
+  if (c) {
+    document.getElementById('cert-pct').textContent = c.coverage_pct != null ? c.coverage_pct.toFixed(2) : '—';
+    document.getElementById('cert-badge').textContent = c.certified ? 'Certified' : 'Uncertified';
+    document.getElementById('cert-badge').className = 'badge ' + (c.certified ? 'pass' : 'off');
+    document.getElementById('cert-good').textContent = fmt_num(c.good_doors);
+    document.getElementById('cert-cohort').textContent = fmt_num(c.cohort_doors);
+    document.getElementById('cert-week').textContent = c.week_iso || '—';
+    document.getElementById('cert-scored').textContent = fmt_relative(c.scored_at);
+    document.getElementById('cert-note').textContent = c.week_run_id || '—';
+    const byState = c.active_cohort_by_state || {};
+    const stateStr = Object.entries(byState).map(([s, n]) => `${s} ${n}`).join(' / ');
+    document.getElementById('cert-footnote').textContent =
+      `Active pitch cohort: ${fmt_num(c.active_cohort_total)} doors (${stateStr}). Figures above are the certified full-cohort scorecard, not cohort-scoped — see /pitch/api/coverage for the cohort-scoped pitch view.`;
+  } else {
+    document.getElementById('cert-note').textContent = 'no certified week yet';
+  }
+
+  // Per-state coverage
+  const stateCards = document.getElementById('state-cards');
+  if (d.by_state && d.by_state.states) {
+    document.getElementById('state-note').textContent = `measured ${fmt_relative(d.by_state.measured_at)} · ${d.by_state.week_run_id}`;
+    stateCards.innerHTML = d.by_state.states.map(s => `
+      <div class="card state-card">
+        <div class="eyebrow">${esc_html(s.state)}</div>
+        <div class="num">${fmt_num(s.good_doors)}</div>
+        <div class="lbl">good doors / ${fmt_num(s.cohort_doors)}</div>
+        <div class="pct" style="color:var(--teal)">${s.good_pct}% good</div>
+      </div>
+    `).join('');
+  } else {
+    stateCards.innerHTML = '<div class="empty-note">No per-state data yet</div>';
+  }
+
+  // Lane / method distribution
+  const lanes = d.lane_distribution;
+  const laneRows = document.getElementById('lane-rows');
+  const fidelityBadge = document.getElementById('method-fidelity-badge');
+  if (lanes) {
+    const total = lanes.total || 1;
+    const rows = [
+      { cls: 'lane-dutchie', name: 'Dutchie API', n: lanes.dutchie_api },
+      { cls: 'lane-playwright', name: 'Playwright', n: lanes.playwright },
+      { cls: 'lane-other', name: 'Other', n: lanes.other },
+    ];
+    laneRows.innerHTML = rows.map(r => `
+      <div class="lane-row ${r.cls}">
+        <span class="lane-name">${r.name}</span>
+        <span class="lane-bar"><i style="width:${Math.min(100, (r.n / total) * 100)}%"></i></span>
+        <span class="lane-n mono">${fmt_num(r.n)}</span>
+      </div>
+    `).join('');
+    const statusLabel = { complete: 'complete', running: 'running', not_run: 'not run' }[lanes.method_fidelity_status] || '—';
+    const statusCls = lanes.method_fidelity_status === 'complete' ? 'pass' : lanes.method_fidelity_status === 'running' ? 'off' : 'fail';
+    fidelityBadge.textContent = `method-fidelity: ${statusLabel}`;
+    fidelityBadge.className = 'badge ' + statusCls;
+  } else {
+    laneRows.innerHTML = '<div class="empty-note">No lane distribution data yet</div>';
+    fidelityBadge.textContent = 'method-fidelity —';
+    fidelityBadge.className = 'badge off';
+  }
+
+  // Quality gates
+  const g = d.gates;
+  document.getElementById('gates-note').textContent = g ? `${g.iso_week || g.run_id} · ${fmt_relative(g.eval_at)}` : 'no gate run yet';
+  setGate('g-coverage', g ? g.gate_coverage_pass : null);
+  setGate('g-product', g ? g.gate_product_pass : null);
+  setGate('g-brand', g ? g.gate_named_brand_pass : null);
+  setGate('g-platform', g ? g.gate_platform_pass : null);
+  setGate('g-price', g ? g.gate_price_pass : null);
+  setGate('g-overall', g ? g.gate_overall_pass : null);
+  const haltEl = document.getElementById('g-halt-reason');
+  if (g && g.halt_reason) {
+    haltEl.textContent = `Halt reason: ${g.halt_reason}`;
+    haltEl.style.display = 'block';
+  } else {
+    haltEl.style.display = 'none';
+  }
+
+  // Remediation
+  const rem = d.remediation || { queue_depth: [], lane_drop_open: 0, shadow_mode: true };
+  const totalDepth = rem.queue_depth.reduce((s, r) => s + r.count, 0);
+  document.getElementById('rem-lane-drop').textContent = fmt_num(rem.lane_drop_open);
+  document.getElementById('rem-depth').textContent = fmt_num(totalDepth);
+  const shadowEl = document.getElementById('rem-shadow');
+  shadowEl.textContent = rem.shadow_mode ? 'SHADOW' : 'LIVE';
+  shadowEl.className = 'badge ' + (rem.shadow_mode ? 'off' : 'pass');
+  const remTbl = document.getElementById('rem-tbl');
+  const remEmpty = document.getElementById('rem-empty');
+  if (rem.queue_depth.length) {
+    remTbl.style.display = '';
+    remEmpty.style.display = 'none';
+    document.getElementById('rem-rows').innerHTML = rem.queue_depth.map(r => `
+      <tr><td>${esc_html(r.state)}</td><td>${esc_html(r.diagnosis)}</td><td class="mono">${fmt_num(r.count)}</td></tr>
+    `).join('');
+  } else {
+    remTbl.style.display = 'none';
+    remEmpty.style.display = 'block';
+  }
+
+  // Schedule
+  const sched = d.schedule;
+  document.getElementById('sched-run-id').textContent = sched ? sched.last_run_id : '—';
+  document.getElementById('sched-finished').textContent = sched ? fmt_relative(sched.finished_at) : '—';
+  document.getElementById('sched-next-capture').textContent = nextOccurrence(6, 9, 0);   // Saturday 09:00 CT
+  document.getElementById('sched-next-orgworker').textContent = nextOccurrence(null, 7, 0); // daily 07:00 CT
+
+  // QC doc
+  const doc = d.qc_doc;
+  if (doc) {
+    document.getElementById('qc-doc-present').style.display = 'block';
+    document.getElementById('qc-doc-empty').style.display = 'none';
+    document.getElementById('qc-doc-week').textContent = doc.week_iso || '—';
+    document.getElementById('qc-doc-created').textContent = fmt_relative(doc.created_at);
+  } else {
+    document.getElementById('qc-doc-present').style.display = 'none';
+    document.getElementById('qc-doc-empty').style.display = 'block';
+  }
+}
+
+async function fetchQuality() {
+  try {
+    const r = await fetch(API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    document.getElementById('err-banner').style.display = 'none';
+    render(json);
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    const err = document.getElementById('err-banner');
+    err.textContent = `Refresh failed: ${e.message}`;
+    err.style.display = 'block';
+  }
+}
+
+fetchQuality();
+setInterval(fetchQuality, 60000);
+</script>
+</body>
+</html>
