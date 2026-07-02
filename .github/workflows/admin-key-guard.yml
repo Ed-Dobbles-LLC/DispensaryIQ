@@ -1,0 +1,23 @@
+name: Admin key guard
+
+# brief #392: fails the build if a real-looking admin-key literal is
+# committed anywhere in the repo, especially site/ (served verbatim to
+# every browser via Caddy). Companion to the same guard in dip-service.
+on:
+  push:
+    branches: ['claude/**', main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 scripts/admin_key_guard.py .
