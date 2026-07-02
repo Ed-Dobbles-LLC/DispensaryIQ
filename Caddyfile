@@ -4,6 +4,8 @@
 	admin off
 }
 
+# CI check: .github/workflows/caddy-validate.yml validates this file on every
+# change (brief #370, guards the #371 corruption class).
 :{$PORT:8080} {
 	root * /srv
 	encode gzip zstd
