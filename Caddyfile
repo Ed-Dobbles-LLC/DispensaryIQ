@@ -29,8 +29,16 @@
 	# Rep briefing: /outlet/{id} → outlet.html (id parsed by JS from pathname)
 	rewrite /outlet/* /outlet.html
 
-	# Ops dashboard: /ops → ops.html (Gate Verdicts panel, brief #354)
-	rewrite /ops /ops.html
+	# AI CPO - Dispensary: /cpo → cpo.html (brief #386 page split)
+	rewrite /cpo /cpo.html
+
+	# Quality Board - Dispensary: /quality → quality.html (brief #386)
+	rewrite /quality /quality.html
+
+	# Ops dashboard retired in favor of the two-page split (brief #386):
+	# executive triage/action layer moved to /cpo, latest-run quality detail
+	# moved to /quality. Redirect so old /ops bookmarks keep working.
+	redir /ops /quality 301
 
 	# Always-current CEO status page: /status → status.html (brief #367)
 	rewrite /status /status.html

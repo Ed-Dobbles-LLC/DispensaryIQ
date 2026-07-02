@@ -59,7 +59,7 @@ promote-to-prod any change that alters a Curaleaf-facing pitch page.
   them. Every PR touching these opens, posts preview evidence, and stops.
 - **Non-pitch-facing (may auto-merge on CI-green once repo policy allows):**
   `README.md`, `docs/*`, `.github/workflows/*`, ops-only surfaces
-  (`site/ops.html`, `site/alerts.html` — internal dashboards, not
+  (`site/cpo.html`, `site/quality.html`, `site/alerts.html` — internal dashboards, not
   client-facing). Until Stage 1 route-checks exist, these still open a PR and
   pause rather than auto-merge — see "Report" note below.
 - Every claimed web brief posts a `cc_reports` row with `preview URL +

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI CPO - Dispensary · DispensaryIntelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
+  --ink:#E8E6DC; --ink-dim:rgba(232,230,220,.6); --ink-faint:rgba(232,230,220,.32);
+  --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
+  --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
+  --sky:#00D3A3;
+  --indigo1:#332CB3; --indigo2:#456FDD;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(51,44,179,.5) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0,185,142,.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(51,44,179,.35),transparent);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));box-shadow:0 0 0 4px rgba(69,111,221,.18)}
+.brand h1{font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+.status-pill{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;padding:8px 14px;border-radius:100px;background:rgba(0,185,142,.12);border:1px solid rgba(0,185,142,.3);color:var(--teal)}
+.status-pill .ping{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,185,142,.5)}70%{box-shadow:0 0 0 7px rgba(0,185,142,0)}100%{box-shadow:0 0 0 0 rgba(0,185,142,0)}}
+.refreshed{font-size:10.5px;color:var(--muted);font-weight:500}
+
+.wrap{max-width:1240px;margin:0 auto;padding:26px 28px 60px}
+
+/* ── Directive box (brief #377), pinned top ─────────────────────────── */
+.directive-box{display:flex;gap:10px;align-items:center;margin-bottom:24px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.directive-box input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none}
+.directive-box input:focus{border-color:rgba(69,111,221,.5)}
+
+.btn-action{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.12);color:var(--teal);white-space:nowrap}
+.btn-action:hover{background:rgba(0,185,142,.22)}
+.btn-action:disabled{opacity:.5;cursor:default}
+
+/* ── Sections (brief #386 page split — Directive / Needs Attention /
+   Running / Queued / Done, in that order) ──────────────────────────── */
+.section-block{margin-bottom:26px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.section-head h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;letter-spacing:.01em}
+.section-count{font-family:Consolas,'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:24px;height:24px;padding:0 8px;border-radius:100px;display:inline-flex;align-items:center;justify-content:center}
+.section-count.coral{background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
+.section-count.teal{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.section-count.neutral{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+.section-count.muted{background:rgba(232,230,220,.05);color:var(--muted-d);border:1px solid var(--line)}
+.section-sub{font-size:11px;color:var(--muted);font-weight:500}
+
+.tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.tcard{border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-left-width:3px}
+.tcard-blurb{font-size:13.5px;font-weight:600;line-height:1.4;margin-bottom:8px;color:var(--ink)}
+.tcard-title{font-family:Consolas,'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px}
+.tcard-hint{font-size:11px;color:var(--muted);font-weight:500;line-height:1.4;margin-bottom:6px;font-style:italic}
+.tcard-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-verdict{font-family:Consolas,'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+.tcard-link{font-size:11px;font-weight:600;color:var(--indigo2);text-decoration:none}
+.tcard-link:hover{text-decoration:underline}
+
+.section-needs-ed .tcard{border-left-color:var(--coral)}
+.section-needs-ed .tcard-verdict{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
+.section-running .tcard{border-left-color:var(--teal)}
+.section-running .tcard-verdict{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.section-queued .tcard{border-left-color:var(--muted-d)}
+.section-queued .tcard-verdict{background:rgba(69,111,221,.12);color:var(--indigo2);border:1px solid rgba(69,111,221,.28)}
+.section-done .tcard{border-left-color:var(--muted-d);opacity:.82}
+.section-done .tcard-verdict{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+
+/* Running-card live timer + pulse dot (brief #386 amendment) */
+.tcard-pulse{width:7px;height:7px;border-radius:50%;background:var(--teal);flex:none;animation:ping 2s infinite}
+
+.section-empty{display:flex;align-items:center;gap:10px;padding:20px 22px;border-radius:14px;background:rgba(0,185,142,.06);border:1px solid rgba(0,185,142,.22);color:var(--teal);font-size:13px;font-weight:600}
+.section-empty .check{width:20px;height:20px;border-radius:50%;background:rgba(0,185,142,.18);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.section-loading{font-size:12px;color:var(--muted);padding:16px 0}
+.section-err{font-size:12px;color:var(--coral);padding:10px 0}
+
+/* ── Action layer (brief #377): dispose / verify-approval / requeue ──── */
+.tcard-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-approval-block{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-approval{display:flex;gap:8px;align-items:center}
+.tcard-approval input{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:7px;padding:7px 10px;color:var(--ink);font-family:inherit;font-size:11.5px;outline:none}
+.tcard-approval input:focus{border-color:rgba(0,185,142,.4)}
+.tcard-verify-msg{font-size:10.5px;font-weight:600;margin-top:6px}
+.tcard-verify-msg.ok{color:var(--teal)} .tcard-verify-msg.bad{color:var(--coral)}
+
+.action-toast{position:fixed;top:18px;right:28px;z-index:300;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);display:none}
+.action-toast.ok{display:block;background:rgba(0,185,142,.16);color:var(--teal);border:1px solid rgba(0,185,142,.35)}
+.action-toast.bad{display:block;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
+
+.footer-note{margin-top:24px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
+.footer-note b{color:var(--muted)}
+.footer-note a{color:var(--indigo2);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
+
+@media(max-width:900px){.tcards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:20px">
+    <a href="index.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Back to deck">← Deck</a>
+    <div class="brand"><span class="dot"></span><div><h1>AI CPO - Dispensary</h1><small>DispensaryIntelligence · executive control</small></div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="refreshed" id="last-refreshed">loading…</span>
+    <a href="quality.html" class="btn-action" style="text-decoration:none;display:inline-flex;align-items:center">Quality Board →</a>
+  </div>
+</header>
+
+<div class="action-toast" id="action-toast"></div>
+
+<div class="wrap">
+
+  <!-- 1. DIRECTIVE — pinned top, requires admin key to submit -->
+  <div class="directive-box">
+    <input type="text" id="directive-input" placeholder="New directive for the CPO to brief… (Enter to submit)" maxlength="4000">
+    <button class="btn-action" id="directive-submit">Submit directive</button>
+  </div>
+
+  <!-- 2. NEEDS ATTENTION -->
+  <div class="section-block section-needs-ed">
+    <div class="section-head">
+      <h2>Needs your attention</h2>
+      <span class="section-count coral" id="needs-ed-count">—</span>
+    </div>
+    <div class="tcards" id="needs-ed-cards"></div>
+    <div class="section-empty" id="needs-ed-empty" style="display:none">
+      <span class="check">✓</span> All clear — nothing needs Ed right now.
+    </div>
+  </div>
+
+  <!-- 3. RUNNING (live, ticking timer) -->
+  <div class="section-block section-running">
+    <div class="section-head">
+      <h2>Running</h2>
+      <span class="section-count teal" id="running-count">—</span>
+    </div>
+    <div class="tcards" id="running-cards"></div>
+  </div>
+
+  <!-- 4. QUEUED -->
+  <div class="section-block section-queued">
+    <div class="section-head">
+      <h2>Queued</h2>
+      <span class="section-count neutral" id="queued-count">—</span>
+      <span class="section-sub">by priority</span>
+    </div>
+    <div class="tcards" id="queued-cards"></div>
+  </div>
+
+  <!-- 5. DONE (last 48h, with dispositions) -->
+  <div class="section-block section-done">
+    <div class="section-head">
+      <h2>Done</h2>
+      <span class="section-count muted" id="done-count">—</span>
+      <span class="section-sub">last 48h</span>
+    </div>
+    <div class="tcards" id="done-cards"></div>
+  </div>
+
+  <div class="section-loading" id="section-loading">Loading…</div>
+  <div class="section-err" id="section-err" style="display:none"></div>
+
+  <div class="footer-note">
+    Live data via <span class="mono">dip-service /ops/api/briefs</span> · refreshes every 60 s · running timers tick every second, client-side.<br>
+    Pipeline quality &amp; latest-run status moved to <a href="quality.html">Quality Board - Dispensary →</a><br>
+    Internal ops cockpit · behind CF Access · not the public DispensaryIntelligence.com marketing site.
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const BRIEFS_API = `${BASE}/ops/api/briefs`;
+const KEY_STORE = 'dip_ops_key';
+const REQUEUE_ALLOWED = new Set(['failed', 'needs-ed-review', 'cancelled']);
+
+function esc_html(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function fmt_dur(dur_s) {
+  if (!dur_s) return '—';
+  if (dur_s < 60) return `${dur_s}s`;
+  const h = Math.floor(dur_s / 3600);
+  const m = Math.floor((dur_s % 3600) / 60);
+  const s = dur_s % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+}
+
+// Elapsed MM:SS (rolling to H:MM:SS past an hour), always recomputed from a
+// fixed timestamp rather than an accumulated tick count — see fmt_elapsed()
+// callers below. Never drifts on tab refocus/throttled intervals.
+function fmt_elapsed(ms) {
+  const totalS = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(totalS / 3600);
+  const m = Math.floor((totalS % 3600) / 60);
+  const s = totalS % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+// ── Card rendering ──────────────────────────────────────────────────
+function tcardHtml(it, kind) {
+  const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
+  const blurb = esc_html(it.intent_blurb || it.title || 'no blurb on file');
+  let verdictLabel;
+  if (kind === 'running') {
+    const claimedAt = it.claimed_at ? esc_html(it.claimed_at) : '';
+    verdictLabel = claimedAt
+      ? `<span class="tcard-pulse"></span><span class="tcard-timer mono" data-claimed-at="${claimedAt}">--:--</span>`
+      : `<span class="tcard-pulse"></span><span>running</span>`;
+  } else if (kind === 'queued') {
+    verdictLabel = `priority ${esc_html(it.priority)}`;
+  } else {
+    verdictLabel = it.latest_verdict ? esc_html(it.latest_verdict) : 'no verdict yet';
+  }
+  const link = it.session_url
+    ? `<a class="tcard-link" href="${esc_html(it.session_url)}" target="_blank" rel="noopener noreferrer">session ↗</a>`
+    : '';
+  const hint = kind === 'needs_ed'
+    ? `<div class="tcard-hint">cleared by recording a disposition</div>`
+    : '';
+  const disposition = it.disposition
+    ? `<div class="tcard-hint">${esc_html(it.disposition)}</div>`
+    : '';
+
+  const actions = [];
+  if (kind === 'needs_ed') {
+    actions.push(`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Resolve</button>`);
+  }
+  if (REQUEUE_ALLOWED.has(it.status)) {
+    actions.push(`<button class="btn-action" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
+  }
+  const actionsHtml = actions.length ? `<div class="tcard-actions">${actions.join('')}</div>` : '';
+
+  const approvalsHtml = (it.approval_requests || []).map(a => `
+    <div class="tcard-approval-block" data-approval-id="${esc_html(a.approval_id)}">
+      <div class="tcard-approval">
+        <input type="password" class="approval-pass-input" placeholder="Passphrase for approval #${esc_html(a.approval_id)}" autocomplete="off">
+        <button class="btn-action" data-action="verify" data-approval-id="${esc_html(a.approval_id)}" data-brief-id="${esc_html(it.brief_id)}">Verify</button>
+      </div>
+      <div class="tcard-verify-msg"></div>
+    </div>
+  `).join('');
+
+  return `<div class="tcard">`+
+    `<div class="tcard-blurb">${blurb}</div>`+
+    `<div class="tcard-title">${title}</div>`+
+    hint+disposition+
+    `<div class="tcard-meta"><span class="tcard-verdict">${verdictLabel}</span>${link}</div>`+
+    actionsHtml+approvalsHtml+
+  `</div>`;
+}
+
+function renderBucket(items, cardsId, kind) {
+  const el = document.getElementById(cardsId);
+  if (el) el.innerHTML = (items || []).map(it => tcardHtml(it, kind)).join('');
+}
+
+// Live per-second elapsed timer on running cards (brief #386 amendment) —
+// recomputed from claimed_at every tick, never from an accumulated counter,
+// so it can't drift when the tab is backgrounded and refocused. Purely
+// client-side: no extra API polling, independent of the 60s data refresh.
+function tickTimers() {
+  document.querySelectorAll('.tcard-timer[data-claimed-at]').forEach(el => {
+    const iso = el.dataset.claimedAt;
+    if (!iso) return;
+    const claimedMs = new Date(iso).getTime();
+    if (Number.isNaN(claimedMs)) return;
+    el.textContent = fmt_elapsed(Date.now() - claimedMs);
+  });
+}
+setInterval(tickTimers, 1000);
+
+function render(d) {
+  document.getElementById('last-refreshed').textContent =
+    `live · refreshed ${new Date().toLocaleTimeString()}`;
+
+  const needsEd = d.needs_ed || [];
+  const needsEdCount = document.getElementById('needs-ed-count');
+  needsEdCount.textContent = needsEd.length;
+  needsEdCount.className = 'section-count ' + (needsEd.length ? 'coral' : 'muted');
+  renderBucket(needsEd, 'needs-ed-cards', 'needs_ed');
+  document.getElementById('needs-ed-cards').style.display = needsEd.length ? '' : 'none';
+  document.getElementById('needs-ed-empty').style.display = needsEd.length ? 'none' : 'flex';
+
+  const running = d.running || [];
+  document.getElementById('running-count').textContent = running.length;
+  renderBucket(running, 'running-cards', 'running');
+
+  const queued = d.queued || [];
+  document.getElementById('queued-count').textContent = queued.length;
+  renderBucket(queued, 'queued-cards', 'queued');
+
+  const done = d.recent_done || [];
+  document.getElementById('done-count').textContent = done.length;
+  renderBucket(done, 'done-cards', 'done');
+
+  document.getElementById('section-loading').style.display = 'none';
+  tickTimers();
+}
+
+async function fetchTriage() {
+  try {
+    const r = await fetch(BRIEFS_API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    document.getElementById('section-err').style.display = 'none';
+    render(json);
+  } catch (e) {
+    document.getElementById('section-loading').style.display = 'none';
+    const err = document.getElementById('section-err');
+    err.textContent = `Refresh failed: ${e.message}`;
+    err.style.display = 'block';
+  }
+}
+
+// ── Admin key (brief #386: no gated pipeline-detail section on this page
+// anymore, so the key is collected inline, on demand, the first time an
+// action needs it — same ADMIN_API_KEY as before, just no dedicated unlock
+// panel to hold it). ──────────────────────────────────────────────────
+function getKey() { return sessionStorage.getItem(KEY_STORE) || ''; }
+function setKey(k) { sessionStorage.setItem(KEY_STORE, k); }
+function clearKey() { sessionStorage.removeItem(KEY_STORE); }
+
+function requireKey() {
+  let k = getKey();
+  if (k) return k;
+  const entered = prompt('Ops admin key required for this action:');
+  if (!entered || !entered.trim()) {
+    toast('Action cancelled — admin key required', false);
+    return null;
+  }
+  setKey(entered.trim());
+  return getKey();
+}
+
+function toast(msg, ok) {
+  const t = document.getElementById('action-toast');
+  t.textContent = msg;
+  t.className = 'action-toast ' + (ok ? 'ok' : 'bad');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.className = 'action-toast'; }, 4000);
+}
+
+async function resolveBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  const reason = prompt(`Reason for resolving brief #${briefId}?`);
+  if (reason == null || !reason.trim()) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/dispose`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ reason: reason.trim() }),
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    toast(`Brief #${briefId} resolved`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Resolve failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+async function requeueBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/requeue`, {
+      method: 'POST',
+      headers: { 'X-Admin-Key': k },
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.detail || `HTTP ${r.status}`);
+    const fireMsg = json.fired ? 're-fired' : 'requeue-only — dispatcher fire not configured';
+    toast(`Brief #${briefId} requeued (${fireMsg})`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Re-run failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+async function verifyApproval(approvalId, inputEl, msgEl, btn) {
+  const k = requireKey();
+  if (!k) return;
+  const passphrase = inputEl.value;
+  if (!passphrase) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/approvals/${approvalId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ passphrase }),
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    const json = await r.json();
+    inputEl.value = '';
+    if (json.ok) {
+      msgEl.textContent = 'Approved ✓';
+      msgEl.className = 'tcard-verify-msg ok';
+      toast(`Approval #${approvalId} confirmed`, true);
+      fetchTriage();
+    } else {
+      msgEl.textContent = json.reason || 'Passphrase did not match';
+      msgEl.className = 'tcard-verify-msg bad';
+    }
+  } catch (e) {
+    msgEl.textContent = `Verify failed: ${e.message}`;
+    msgEl.className = 'tcard-verify-msg bad';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function submitDirective() {
+  const k = requireKey();
+  if (!k) return;
+  const input = document.getElementById('directive-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = document.getElementById('directive-submit');
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/directives`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ text }),
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    input.value = '';
+    toast('Directive received', true);
+  } catch (e) {
+    toast(`Directive failed: ${e.message}`, false);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('directive-submit').addEventListener('click', submitDirective);
+document.getElementById('directive-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitDirective(); });
+
+// Delegated click handling — cards are re-rendered wholesale on every
+// fetchTriage(), so listeners live on the stable .wrap container instead.
+document.querySelector('.wrap').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  if (action === 'resolve') {
+    resolveBrief(btn.dataset.briefId, btn);
+  } else if (action === 'requeue') {
+    requeueBrief(btn.dataset.briefId, btn);
+  } else if (action === 'verify') {
+    const block = btn.closest('.tcard-approval-block');
+    const input = block.querySelector('.approval-pass-input');
+    const msg = block.querySelector('.tcard-verify-msg');
+    verifyApproval(btn.dataset.approvalId, input, msg, btn);
+  }
+});
+
+document.querySelector('.wrap').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.classList.contains('approval-pass-input')) {
+    const block = e.target.closest('.tcard-approval-block');
+    const btn = block.querySelector('button[data-action="verify"]');
+    if (btn) btn.click();
+  }
+});
+
+// ── Init + 60s refresh ───────────────────────────────────────────────
+fetchTriage();
+setInterval(fetchTriage, 60000);
+</script>
+</body>
+</html>

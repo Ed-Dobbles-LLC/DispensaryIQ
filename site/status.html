@@ -97,7 +97,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 <header>
   <div style="display:flex;align-items:center;gap:20px">
-    <a href="ops.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Full ops cockpit">← Ops</a>
+    <a href="cpo.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="AI CPO - Dispensary">← AI CPO</a>
     <div class="brand"><span class="dot"></span><div><h1>DIP Status</h1><small>always current · glance and go</small></div></div>
   </div>
   <span class="refreshed" id="last-refreshed">loading…</span>
@@ -158,7 +158,7 @@ function fmt_relative(iso) {
   return `${Math.floor(diffH / 24)}d ago`;
 }
 
-// ── Auth gate (same admin key as ops.html, sessionStorage-shared) ──────────
+// ── Auth gate (same admin key as cpo.html, sessionStorage-shared) ──────────
 const overlay = document.getElementById('auth-overlay');
 const keyInput = document.getElementById('key-input');
 const keySubmit = document.getElementById('key-submit');
