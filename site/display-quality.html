@@ -21,7 +21,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span id="diq-v-week">—</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -73,33 +73,25 @@
         <span class="diq-toggle-label">New York</span>
       </button>
     </div>
-    <div class="diq-toggle-bar diq-toggle-secondary" role="tablist" aria-label="Filter dispensary universe">
-      <button class="diq-toggle-sm active" data-chain="all" role="tab" aria-selected="true">
-        <span class="diq-toggle-label">All dispensaries</span>
-      </button>
-      <button class="diq-toggle-sm" data-chain="indie" role="tab" aria-selected="false">
-        <span class="diq-toggle-label">Independents only</span>
-        <span class="diq-toggle-sub">non-chain · wholesale-addressable</span>
-      </button>
-    </div>
+    <div class="diq-toggle-bar diq-toggle-secondary" role="tablist" aria-label="Select product type" id="diq-type-toggle-bar"></div>
   </section>
 
 
   <section class="diq-section">
     <div class="diq-tiles">
       <div class="diq-tile">
-        <p class="diq-tile-label">Shelf score &middot; <span data-bind="view-label">Pilot</span></p>
-        <p class="diq-tile-value"><span data-bind="curaleaf-shelf">48</span></p>
-        <p class="diq-tile-sub">Higher = closer to top of menu section. 50 = middle. Curaleaf vs all observed positions.</p>
+        <p class="diq-tile-label">Priced rows &middot; pilot-wide</p>
+        <p class="diq-tile-value"><span data-bind="curaleaf-priced-rows">—</span></p>
+        <p class="diq-tile-sub">Curaleaf SKU-observation rows with a captured price this week.</p>
       </div>
       <div class="diq-tile">
-        <p class="diq-tile-label">Promo intensity</p>
-        <p class="diq-tile-value"><span data-bind="curaleaf-promo">17.7</span>%</p>
+        <p class="diq-tile-label">Promo intensity &middot; pilot-wide</p>
+        <p class="diq-tile-value"><span data-bind="curaleaf-promo">—</span>%</p>
         <p class="diq-tile-sub">Share of Curaleaf SKUs carrying a discount on capture day.</p>
       </div>
       <div class="diq-tile">
-        <p class="diq-tile-label">Featured share</p>
-        <p class="diq-tile-value"><span data-bind="curaleaf-featured">1.03</span>%</p>
+        <p class="diq-tile-label">Featured share &middot; pilot-wide</p>
+        <p class="diq-tile-value"><span data-bind="curaleaf-featured">—</span>%</p>
         <p class="diq-tile-sub">Curaleaf SKUs flagged "featured" or "staff pick" by the dispensary.</p>
       </div>
     </div>
@@ -107,18 +99,17 @@
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title" data-bind="table-title">Top 8 brands by SKU count &middot; Pilot</h2>
-      <span class="diq-section-meta">Curaleaf vs the field</span>
+      <h2 class="diq-section-title" data-bind="table-title">Top-10 section share by portfolio &middot; Pilot</h2>
+      <span class="diq-section-meta">Curaleaf vs the field, by product type</span>
     </div>
     <table class="diq-cat-table">
       <thead>
         <tr>
           <th style="width: 48px;">Rank</th>
-          <th>Brand</th>
-          <th class="r">SKUs</th>
-          <th class="r">Shelf score</th>
-          <th class="r">Promo %</th>
-          <th class="r">Featured %</th>
+          <th>Portfolio</th>
+          <th class="r">Top-10 SKUs</th>
+          <th class="r">Section total</th>
+          <th class="r">Top-10 share</th>
         </tr>
       </thead>
       <tbody id="diq-quality-tbody"></tbody>
@@ -128,7 +119,7 @@
   <section class="diq-section">
     <div class="diq-callout">
       <p class="diq-callout-label">&#9656; The actionable read</p>
-      <p style="margin:0"><strong>Curaleaf shelf score sits at <span data-bind="curaleaf-shelf-inline">48</span></strong>, meaning portfolio products land mid-page rather than top-of-section &mdash; an addressable shelf-execution opportunity for the trade-marketing team. Jetpacks (shelf 31) and Rythm (shelf 38) sit lower; Shine (shelf 81) and Aeriz (shelf 67) earn top-of-section placement in IL. The store-level data is where the action list lives &mdash; coming with named accounts in Phase 2.</p>
+      <p style="margin:0" data-bind="callout-body">Loading live display-quality read&hellip;</p>
     </div>
   </section>
 
@@ -136,57 +127,147 @@
 
 <footer class="diq-footer">
   <div class="diq-footer-inner">
-    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+    <span>DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span id="diq-footer-date">—</span> &middot; <span id="diq-footer-week">—</span></span>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
 
 <script>
-const DIQ_DATA = {"PILOT": {"all": {"label": "Pilot \u00b7 all", "curaleaf_shelf": 48, "curaleaf_promo": 17.7, "curaleaf_featured": 1.03, "top_brands": [{"rk": 1, "brand": "Curaleaf portfolio", "n_skus": 12841, "shelf": 48, "promo": 17.7, "featured": 1.03, "curaleaf": true}, {"rk": 2, "brand": "Ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 3, "brand": "Rythm", "n_skus": 6955, "shelf": 38, "promo": 25.4, "featured": 1.38, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n_skus": 6378, "shelf": 41, "promo": 21.1, "featured": 0.36, "curaleaf": false}, {"rk": 5, "brand": "MFNY", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 6, "brand": "Jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 7, "brand": "Jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 8, "brand": "Florist Farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}]}, "indie": {"label": "Pilot \u00b7 independents", "curaleaf_shelf": 47, "curaleaf_promo": 21.5, "curaleaf_featured": 1.1, "top_brands": [{"rk": 1, "brand": "Ayrloom", "n_skus": 10754, "shelf": 51, "promo": 3.8, "featured": 0.53, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 9746, "shelf": 47, "promo": 21.5, "featured": 1.1, "curaleaf": true}, {"rk": 3, "brand": "MFNY", "n_skus": 6196, "shelf": 58, "promo": 14.5, "featured": 1.74, "curaleaf": false}, {"rk": 4, "brand": "Rove", "n_skus": 6060, "shelf": 41, "promo": 20.0, "featured": 0.37, "curaleaf": false}, {"rk": 5, "brand": "Jaunty", "n_skus": 5984, "shelf": 53, "promo": 8.2, "featured": 0.42, "curaleaf": false}, {"rk": 6, "brand": "Jetpacks", "n_skus": 5190, "shelf": 31, "promo": 17.2, "featured": 0.25, "curaleaf": false}, {"rk": 7, "brand": "Florist Farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 8, "brand": "Off Hours", "n_skus": 4808, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}]}}, "IL": {"all": {"label": "Illinois \u00b7 all", "curaleaf_shelf": 52, "curaleaf_promo": 12.2, "curaleaf_featured": 0.9, "top_brands": [{"rk": 1, "brand": "high_supply", "n_skus": 4394, "shelf": 38, "promo": 35.3, "featured": 0.11, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 4209, "shelf": 52, "promo": 12.2, "featured": 0.9, "curaleaf": true}, {"rk": 3, "brand": "dogwalkers", "n_skus": 2758, "shelf": 51, "promo": 40.2, "featured": 0.25, "curaleaf": false}, {"rk": 4, "brand": "daze_off", "n_skus": 2389, "shelf": 58, "promo": 44.8, "featured": 0.25, "curaleaf": false}, {"rk": 5, "brand": "savvy", "n_skus": 2381, "shelf": 35, "promo": 11.7, "featured": 0.21, "curaleaf": false}, {"rk": 6, "brand": "aeriz", "n_skus": 2119, "shelf": 67, "promo": 44.5, "featured": 0.66, "curaleaf": false}, {"rk": 7, "brand": "rythm", "n_skus": 2081, "shelf": 32, "promo": 16.7, "featured": 2.26, "curaleaf": false}, {"rk": 8, "brand": "shine", "n_skus": 1997, "shelf": 81, "promo": 46.0, "featured": 0.0, "curaleaf": false}]}, "indie": {"label": "Illinois \u00b7 independents", "curaleaf_shelf": 52, "curaleaf_promo": 13.0, "curaleaf_featured": 1.44, "top_brands": [{"rk": 1, "brand": "high_supply", "n_skus": 2706, "shelf": 42, "promo": 41.2, "featured": 0.0, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1870, "shelf": 52, "promo": 13.0, "featured": 1.44, "curaleaf": true}, {"rk": 3, "brand": "daze_off", "n_skus": 1505, "shelf": 59, "promo": 47.1, "featured": 0.33, "curaleaf": false}, {"rk": 4, "brand": "dogwalkers", "n_skus": 1412, "shelf": 51, "promo": 45.4, "featured": 0.5, "curaleaf": false}, {"rk": 5, "brand": "aeriz", "n_skus": 1368, "shelf": 65, "promo": 48.4, "featured": 0.73, "curaleaf": false}, {"rk": 6, "brand": "shine", "n_skus": 1265, "shelf": 78, "promo": 41.9, "featured": 0.0, "curaleaf": false}, {"rk": 7, "brand": "rythm", "n_skus": 1167, "shelf": 31, "promo": 23.9, "featured": 3.6, "curaleaf": false}, {"rk": 8, "brand": "cresco", "n_skus": 1054, "shelf": 59, "promo": 45.6, "featured": 0.76, "curaleaf": false}]}}, "NJ": {"all": {"label": "New Jersey \u00b7 all", "curaleaf_shelf": 51, "curaleaf_promo": 49.8, "curaleaf_featured": 1.05, "top_brands": [{"rk": 1, "brand": "rythm", "n_skus": 2454, "shelf": 44, "promo": 46.3, "featured": 0.49, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1801, "shelf": 51, "promo": 49.8, "featured": 1.05, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n_skus": 1369, "shelf": 52, "promo": 45.9, "featured": 0.73, "curaleaf": false}, {"rk": 4, "brand": "rove", "n_skus": 1128, "shelf": 36, "promo": 30.1, "featured": 0.53, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n_skus": 1004, "shelf": 49, "promo": 43.6, "featured": 0.3, "curaleaf": false}, {"rk": 6, "brand": "legend", "n_skus": 925, "shelf": 41, "promo": 39.6, "featured": 0.76, "curaleaf": false}, {"rk": 7, "brand": "the_essence", "n_skus": 846, "shelf": 57, "promo": 52.1, "featured": 2.6, "curaleaf": false}, {"rk": 8, "brand": "illicit", "n_skus": 786, "shelf": 51, "promo": 8.0, "featured": 0.51, "curaleaf": false}]}, "indie": {"label": "New Jersey \u00b7 independents", "curaleaf_shelf": 50, "curaleaf_promo": 51.4, "curaleaf_featured": 1.14, "top_brands": [{"rk": 1, "brand": "rythm", "n_skus": 1863, "shelf": 50, "promo": 51.8, "featured": 0.64, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 1661, "shelf": 50, "promo": 51.4, "featured": 1.14, "curaleaf": true}, {"rk": 3, "brand": "ozone", "n_skus": 1308, "shelf": 52, "promo": 47.5, "featured": 0.76, "curaleaf": false}, {"rk": 4, "brand": "rove", "n_skus": 1091, "shelf": 36, "promo": 31.1, "featured": 0.55, "curaleaf": false}, {"rk": 5, "brand": "kind_tree", "n_skus": 964, "shelf": 49, "promo": 44.5, "featured": 0.31, "curaleaf": false}, {"rk": 6, "brand": "legend", "n_skus": 873, "shelf": 40, "promo": 40.9, "featured": 0.8, "curaleaf": false}, {"rk": 7, "brand": "the_essence", "n_skus": 759, "shelf": 54, "promo": 53.4, "featured": 0.92, "curaleaf": false}, {"rk": 8, "brand": "illicit", "n_skus": 701, "shelf": 51, "promo": 7.4, "featured": 0.57, "curaleaf": false}]}}, "NY": {"all": {"label": "New York \u00b7 all", "curaleaf_shelf": 44, "curaleaf_promo": 12.6, "curaleaf_featured": 1.11, "top_brands": [{"rk": 1, "brand": "ayrloom", "n_skus": 10813, "shelf": 51, "promo": 3.8, "featured": 0.54, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 6831, "shelf": 44, "promo": 12.6, "featured": 1.11, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n_skus": 6213, "shelf": 58, "promo": 14.5, "featured": 1.75, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n_skus": 6068, "shelf": 53, "promo": 8.0, "featured": 0.41, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n_skus": 5191, "shelf": 31, "promo": 17.2, "featured": 0.27, "curaleaf": false}, {"rk": 6, "brand": "florist_farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 7, "brand": "off_hours", "n_skus": 4810, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}, {"rk": 8, "brand": "rove", "n_skus": 4430, "shelf": 41, "promo": 14.6, "featured": 0.29, "curaleaf": false}]}, "indie": {"label": "New York \u00b7 independents", "curaleaf_shelf": 44, "curaleaf_promo": 13.9, "curaleaf_featured": 0.98, "top_brands": [{"rk": 1, "brand": "ayrloom", "n_skus": 10754, "shelf": 51, "promo": 3.8, "featured": 0.53, "curaleaf": false}, {"rk": 2, "brand": "Curaleaf portfolio", "n_skus": 6215, "shelf": 44, "promo": 13.9, "featured": 0.98, "curaleaf": true}, {"rk": 3, "brand": "mfny", "n_skus": 6196, "shelf": 58, "promo": 14.5, "featured": 1.74, "curaleaf": false}, {"rk": 4, "brand": "jaunty", "n_skus": 5984, "shelf": 53, "promo": 8.2, "featured": 0.42, "curaleaf": false}, {"rk": 5, "brand": "jetpacks", "n_skus": 5190, "shelf": 31, "promo": 17.2, "featured": 0.25, "curaleaf": false}, {"rk": 6, "brand": "florist_farms", "n_skus": 5110, "shelf": 46, "promo": 3.2, "featured": 0.37, "curaleaf": false}, {"rk": 7, "brand": "off_hours", "n_skus": 4808, "shelf": 51, "promo": 2.3, "featured": 0.56, "curaleaf": false}, {"rk": 8, "brand": "rove", "n_skus": 4430, "shelf": 41, "promo": 14.6, "featured": 0.29, "curaleaf": false}]}}};
-let DIQ_STATE = 'PILOT';
-let DIQ_CHAIN = 'all';
+var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
+var LIVE = null;         // full fetched payload
+var DIQ_STATE = 'PILOT';
+var DIQ_TYPE = null;
 
 function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
+function fmtPct(n) { return n == null ? '—' : Number(n).toFixed(1); }
 function fmtBrand(b) {
   if (!b) return '';
-  if (b === 'Curaleaf portfolio') return b;
-  return b.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  if (/curaleaf/i.test(b)) return b;
+  return b.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+function isCuraleaf(name) { return !!(name && /curaleaf/i.test(name)); }
+
+function availableTypes(state) {
+  if (!LIVE) return [];
+  var lbs = LIVE.leaderboards_by_state || {};
+  if (state === 'PILOT') {
+    var set = {};
+    ['IL', 'NJ', 'NY'].forEach(function (st) {
+      Object.keys(lbs[st] || {}).forEach(function (pt) { set[pt] = true; });
+    });
+    return Object.keys(set);
+  }
+  return Object.keys(lbs[state] || {});
+}
+
+function leaderboardFor(state, productType) {
+  var lbs = (LIVE && LIVE.leaderboards_by_state) || {};
+  if (state === 'PILOT') {
+    var merged = {};
+    ['IL', 'NJ', 'NY'].forEach(function (st) {
+      var rows = (lbs[st] || {})[productType] || [];
+      rows.forEach(function (r) {
+        var key = r.portfolio_name;
+        if (!merged[key]) merged[key] = { portfolio_id: r.portfolio_id, portfolio_name: r.portfolio_name, top10_sku_count: 0, section_total: 0 };
+        merged[key].top10_sku_count += r.top10_sku_count || 0;
+        merged[key].section_total += r.section_total || 0;
+      });
+    });
+    var arr = Object.keys(merged).map(function (k) {
+      var r = merged[k];
+      r.top10_share_pct = r.section_total ? (r.top10_sku_count / r.section_total * 100) : null;
+      return r;
+    });
+    arr.sort(function (a, b) { return (b.top10_sku_count || 0) - (a.top10_sku_count || 0); });
+    arr.forEach(function (r, i) { r.rank = i + 1; });
+    return arr.slice(0, 10);
+  }
+  var rows = ((lbs[state] || {})[productType] || []).slice();
+  rows.sort(function (a, b) { return (a.rank || 999) - (b.rank || 999); });
+  return rows;
+}
+
+function renderTypeToggle() {
+  var bar = document.getElementById('diq-type-toggle-bar');
+  if (!bar) return;
+  var types = availableTypes(DIQ_STATE);
+  if (!DIQ_TYPE || types.indexOf(DIQ_TYPE) === -1) DIQ_TYPE = types[0] || null;
+  bar.innerHTML = types.map(function (t) {
+    return '<button class="diq-toggle-sm' + (t === DIQ_TYPE ? ' active' : '') + '" data-type="' + t + '" role="tab" aria-selected="' + (t === DIQ_TYPE ? 'true' : 'false') + '">' +
+      '<span class="diq-toggle-label">' + fmtBrand(t) + '</span></button>';
+  }).join('');
+  bar.querySelectorAll('.diq-toggle-sm').forEach(function (b) {
+    b.addEventListener('click', function () { DIQ_TYPE = b.getAttribute('data-type'); render(); });
+  });
 }
 
 function render() {
-  const d = DIQ_DATA[DIQ_STATE][DIQ_CHAIN];
-  if (!d) return;
-  document.querySelector('[data-bind="view-label"]').textContent = d.label;
-  document.querySelector('[data-bind="curaleaf-shelf"]').textContent = d.curaleaf_shelf;
-  document.querySelector('[data-bind="curaleaf-shelf-inline"]').textContent = d.curaleaf_shelf;
-  document.querySelector('[data-bind="curaleaf-promo"]').textContent = d.curaleaf_promo.toFixed(1);
-  document.querySelector('[data-bind="curaleaf-featured"]').textContent = d.curaleaf_featured.toFixed(2);
-  document.querySelector('[data-bind="table-title"]').textContent = `Top 8 brands by SKU count · ${d.label}`;
+  if (!LIVE) return;
+  renderTypeToggle();
+  var stateLabel = DIQ_STATE === 'PILOT' ? 'Pilot' : DIQ_STATE;
+  document.querySelector('[data-bind="table-title"]').textContent = 'Top-10 section share by portfolio · ' + stateLabel + (DIQ_TYPE ? ' · ' + fmtBrand(DIQ_TYPE) : '');
 
-  const tbody = document.getElementById('diq-quality-tbody');
-  tbody.innerHTML = d.top_brands.map(row => `
-    <tr class="${row.curaleaf ? 'diq-row-curaleaf' : ''}">
-      <td><strong>#${row.rk}</strong></td>
-      <td>${fmtBrand(row.brand)}${row.curaleaf ? ' <span class="diq-curaleaf-tag">Curaleaf</span>' : ''}</td>
-      <td class="r">${fmt(row.n_skus)}</td>
-      <td class="r"><strong>${row.shelf}</strong></td>
-      <td class="r">${row.promo.toFixed(1)}%</td>
-      <td class="r">${row.featured.toFixed(2)}%</td>
-    </tr>
-  `).join('');
+  var rows = DIQ_TYPE ? leaderboardFor(DIQ_STATE, DIQ_TYPE) : [];
+  var tbody = document.getElementById('diq-quality-tbody');
+  tbody.innerHTML = rows.length ? rows.map(function (row) {
+    var cura = isCuraleaf(row.portfolio_name);
+    return '<tr class="' + (cura ? 'diq-row-curaleaf' : '') + '">' +
+      '<td><strong>#' + row.rank + '</strong></td>' +
+      '<td>' + fmtBrand(row.portfolio_name) + (cura ? ' <span class="diq-curaleaf-tag">Curaleaf</span>' : '') + '</td>' +
+      '<td class="r">' + fmt(row.top10_sku_count) + '</td>' +
+      '<td class="r">' + fmt(row.section_total) + '</td>' +
+      '<td class="r"><strong>' + fmtPct(row.top10_share_pct) + '%</strong></td>' +
+      '</tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint)">No leaderboard data for this state / product type.</td></tr>';
 
-  document.querySelectorAll('.diq-toggle').forEach(b => {
-    const a = b.getAttribute('data-view') === DIQ_STATE;
-    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
-  });
-  document.querySelectorAll('.diq-toggle-sm').forEach(b => {
-    const a = b.getAttribute('data-chain') === DIQ_CHAIN;
-    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
+  /* Actionable-read callout: find Curaleaf's row (if present) in the current leaderboard */
+  var curaRow = rows.find(function (r) { return isCuraleaf(r.portfolio_name); });
+  var calloutEl = document.querySelector('[data-bind="callout-body"]');
+  if (calloutEl) {
+    if (curaRow) {
+      calloutEl.innerHTML = '<strong>Curaleaf holds ' + fmtPct(curaRow.top10_share_pct) + '% of the top-10 ' + fmtBrand(DIQ_TYPE) + ' section</strong> in ' + stateLabel +
+        ' (rank #' + curaRow.rank + ', ' + fmt(curaRow.top10_sku_count) + ' of ' + fmt(curaRow.section_total) + ' top-10 SKUs). See the full leaderboard above for where competitor portfolios are winning shelf-section share.';
+    } else {
+      calloutEl.textContent = 'Curaleaf does not appear in the top-10 ' + fmtBrand(DIQ_TYPE || '') + ' section leaderboard for ' + stateLabel + ' this week.';
+    }
+  }
+
+  document.querySelectorAll('.diq-toggle').forEach(function (b) {
+    var a = b.getAttribute('data-view') === DIQ_STATE;
+    b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true' : 'false');
   });
 }
-document.querySelectorAll('.diq-toggle').forEach(b => b.addEventListener('click', () => { DIQ_STATE = b.getAttribute('data-view'); render(); }));
-document.querySelectorAll('.diq-toggle-sm').forEach(b => b.addEventListener('click', () => { DIQ_CHAIN = b.getAttribute('data-chain'); render(); }));
-render();
+document.querySelectorAll('.diq-toggle').forEach(function (b) {
+  b.addEventListener('click', function () { DIQ_STATE = b.getAttribute('data-view'); DIQ_TYPE = null; render(); });
+});
+
+function showUnavailable() {
+  document.getElementById('diq-quality-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint)">Display-quality data temporarily unavailable.</td></tr>';
+  var calloutEl = document.querySelector('[data-bind="callout-body"]');
+  if (calloutEl) calloutEl.textContent = 'Display-quality data temporarily unavailable.';
+  var week = document.getElementById('diq-v-week'); if (week) week.textContent = '—';
+  var fd = document.getElementById('diq-footer-date'); if (fd) fd.textContent = '—';
+  var fw = document.getElementById('diq-footer-week'); if (fw) fw.textContent = '—';
+}
+
+fetch(API_BASE + '/pitch/api/display-quality')
+  .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+  .then(function (data) {
+    LIVE = data;
+    var manifest = data.manifest || {};
+    var cura = data.curaleaf || {};
+    var week = document.getElementById('diq-v-week'); if (week) week.textContent = manifest.week_iso || '—';
+    var fd = document.getElementById('diq-footer-date'); if (fd) fd.textContent = manifest.generated_at ? manifest.generated_at.slice(0, 10) : '—';
+    var fw = document.getElementById('diq-footer-week'); if (fw) fw.textContent = manifest.week_iso || '—';
+    document.querySelector('[data-bind="curaleaf-priced-rows"]').textContent = fmt(cura.priced_rows);
+    document.querySelector('[data-bind="curaleaf-promo"]').textContent = fmtPct(cura.promo_pct);
+    document.querySelector('[data-bind="curaleaf-featured"]').textContent = fmtPct(cura.featured_pct);
+    render();
+  })
+  .catch(function (err) {
+    console.warn('display-quality fetch failed:', err);
+    showUnavailable();
+  });
 </script>
 
 <script src="assets/export.js?v=20"></script>

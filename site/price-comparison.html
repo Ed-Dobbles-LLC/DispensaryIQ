@@ -13,7 +13,8 @@
   <link rel="stylesheet" href="assets/style.css?v=28">
   <style>
     /* ──────────────────────────────────────────────────────────
-       Product tab row — 5 default tabs + 1 dropdown trigger
+       Product tab row — default tabs (JS-built from the live feed) +
+       1 dropdown trigger
        ────────────────────────────────────────────────────────── */
     .pc-product-tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     @media (max-width: 900px) { .pc-product-tabs { grid-template-columns: repeat(2, 1fr); } }
@@ -28,7 +29,7 @@
     .pc-dropdown-trigger.active .pc-tab-brand { color: var(--teal-bright); }
 
     /* ──────────────────────────────────────────────────────────
-       Dropdown panel — grouped 17 additional SKUs
+       Dropdown panel — remaining SKUs grouped by brand (JS-built)
        ────────────────────────────────────────────────────────── */
     .pc-dropdown-panel {
       margin-top: 10px; background: var(--surface);
@@ -63,12 +64,9 @@
        ────────────────────────────────────────────────────────── */
     .pc-verdict-hero { display: inline-block; padding: 4px 10px; border-radius: 4px; font-family: Consolas, monospace; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px; }
     .pc-dual-price { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 8px; }
-    .pc-dp-reg-label, .pc-dp-eff-label { font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--ink-faint); font-family: 'Montserrat', sans-serif; }
+    .pc-dp-reg-label { font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--ink-faint); font-family: 'Montserrat', sans-serif; }
     .pc-dp-reg-value { font-size: 32px; font-weight: 700; color: var(--ink); font-family: 'Montserrat', sans-serif; font-variant-numeric: tabular-nums; line-height: 1.1; }
-    .pc-dp-eff-value { font-size: 18px; color: var(--ink-soft); font-family: 'Montserrat', sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 4px; }
-    .pc-dp-eff-value.discounted { color: var(--coral); }
     .pc-promo-line { font-size: 12px; color: var(--ink-faint); margin: 6px 0 0; font-family: 'Calibri', sans-serif; }
-    .pc-promo-line .pc-promo-pct { color: var(--coral); font-weight: 700; }
     .pc-dp-inline-meth { font-size: 11px; color: var(--ink-faint); margin-top: 10px; font-family: 'Calibri', sans-serif; font-style: italic; line-height: 1.45; }
 
     .pc-delta-pos { color: var(--coral); font-weight: 700; }
@@ -76,27 +74,6 @@
     .pc-delta-flat { color: var(--ink-soft); font-weight: 600; }
     .pc-no-anchor { padding: 18px 22px; background: rgba(133, 228, 253, 0.05); border-left: 3px solid var(--sky); border-radius: 4px; color: var(--ink-soft); font-size: 14px; }
     .pc-no-anchor strong { color: var(--ink); }
-
-    /* ──────────────────────────────────────────────────────────
-       Brand chart (top of page) — one horizontal bar per brand, two-tone
-       (regular underlay + effective overlay). Curaleaf brand rows get
-       teal fill; the row matching the current SKU's brand gets a coral
-       dot prefix as the "this is your brand" indicator.
-       ────────────────────────────────────────────────────────── */
-    .pc-brands { width: 100%; }
-    .pc-brands-row { display: grid; grid-template-columns: 220px 1fr 90px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
-    .pc-brands-name { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Calibri', sans-serif; }
-    .pc-brands-bar-wrap { background: rgba(255,255,255,0.04); height: 18px; border-radius: 2px; position: relative; overflow: hidden; }
-    .pc-brands-bar-reg { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,0.10); border-radius: 2px; }
-    .pc-brands-bar-eff { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(133, 228, 253, 0.45); border-radius: 2px; }
-    .pc-brands-bar-eff.own { background: var(--teal); }
-    .pc-brands-price { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
-    .pc-brands-price-sub { font-size: 10px; color: var(--ink-faint); display: block; }
-    .pc-brands-row.own .pc-brands-name { color: var(--teal-bright); font-weight: 700; }
-    .pc-brands-row.own .pc-brands-price { color: var(--teal-bright); }
-    .pc-brands-legend { display: flex; gap: 16px; font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
-    .pc-brands-legend-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
-    .pc-brands-target-dot { display: inline-block; width: 8px; height: 8px; background: var(--coral); border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
     /* Sortable table-header chrome — applied to <th class="diq-sortable">
        on the retailer table. Click handler lives on the thead via
@@ -231,27 +208,14 @@
       .diq-hero-label { font-size: 7.5pt !important; margin: 0 0 2pt !important; }
       .diq-hero-number { font-size: 18pt !important; margin: 0 !important; line-height: 1.05 !important; }
       .diq-hero-body { font-size: 8pt !important; margin: 1pt 0 !important; }
-      .pc-dp-reg-label, .pc-dp-eff-label { font-size: 7pt !important; }
+      .pc-dp-reg-label { font-size: 7pt !important; }
       .pc-dp-reg-value { font-size: 18pt !important; line-height: 1.05 !important; }
-      .pc-dp-eff-value { font-size: 12pt !important; }
       .pc-promo-line { font-size: 8pt !important; margin-top: 2pt !important; }
       .pc-dp-inline-meth { font-size: 6.5pt !important; margin-top: 2pt !important; line-height: 1.3 !important; }
       .pc-verdict-hero { font-size: 7.5pt !important; padding: 1pt 5pt !important; margin-top: 3pt !important; }
 
-      /* Brand chart — slim rows, compact bars, height-clamped to leftover
-         space on page 1. Max 12 brands by design (server-capped), so no
-         nth-of-type guard needed. */
-      .pc-brands { max-height: 5.5in !important; overflow: hidden !important; }
-      .pc-brands-legend { font-size: 7.5pt !important; margin-bottom: 3pt !important; }
-      .pc-brands-row { padding: 1pt 0 !important; font-size: 8pt !important;
-                       grid-template-columns: 160pt 1fr 60pt !important; }
-      .pc-brands-bar-wrap { height: 10pt !important; }
-      .pc-brands-name { font-size: 8pt !important; }
-      .pc-brands-price { font-size: 8pt !important; }
-      .pc-brands-price-sub { font-size: 6.5pt !important; }
-      .pc-brands-target-dot { width: 6pt !important; height: 6pt !important; margin-right: 4pt !important; }
-
-      /* Retailer table — slim cells; top-25 cap is applied by JS via .print-hidden.
+      /* State-comparison table — slim cells; only 3 rows max (one per pilot
+         state), so no print truncation/cap is needed here.
          v5: tightened padding (~25%) and stripped on-screen sort UX (note text,
          indicators, hover bg) to keep print at 2 pages letter portrait. */
       .diq-cat-table { font-size: 8.5pt !important; width: 100% !important; }
@@ -286,7 +250,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W3 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span data-bind="pillar-week">W3</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -317,11 +281,11 @@
     </div>
 
     <h1 class="diq-page-title">Are we overpriced in the marketplace?</h1>
-    <p class="diq-page-subtitle">Dual-price view: median <strong>regular</strong> (MSRP) and median <strong>effective</strong> (post-promo) across qualified retailers in each pilot state, anchored against Curaleaf-owned stores when available. Pick a SKU below &mdash; 5 default tabs plus 17 more in the dropdown &mdash; then choose a state.</p>
+    <p class="diq-page-subtitle">Median Curaleaf-owned price vs. median market price (non-Curaleaf retailers) across qualified retailers in each pilot state, sourced live from the certified pricing cohort. Pick a brand &middot; category below, then choose a state.</p>
   </header>
 
   <!-- ============================================================
-       PAGE 1 — Picker, state toggle, anchor, market dual-price, ladder
+       PAGE 1 — Picker, state toggle, Curaleaf-owned vs market median
        ============================================================ -->
   <section class="page-1">
 
@@ -341,34 +305,9 @@
     <section class="diq-section pc-screen-only" style="background: transparent; border: none; padding: 0; box-shadow: none">
       <div class="diq-section-head" style="margin-bottom: 10px">
         <h2 class="diq-section-title">Pick a product</h2>
-        <span class="diq-section-meta">5 default SKUs &middot; 17 more in dropdown &middot; <span data-bind="sku-meta">&mdash;</span></span>
+        <span class="diq-section-meta"><span data-bind="tabs-meta">&mdash;</span> &middot; <span data-bind="sku-meta">&mdash;</span></span>
       </div>
-      <div class="pc-product-tabs" role="tablist" aria-label="Curaleaf product">
-        <button class="pc-product-tab" data-key="select-2g-vape" role="tab">
-          <span class="pc-tab-brand">Select</span>
-          <span class="pc-tab-pack">2g vape</span>
-        </button>
-        <button class="pc-product-tab" data-key="grassroots-3.5g-flower" role="tab">
-          <span class="pc-tab-brand">Grassroots</span>
-          <span class="pc-tab-pack">3.5g flower</span>
-        </button>
-        <button class="pc-product-tab" data-key="find-3.5g-flower" role="tab">
-          <span class="pc-tab-brand">Find</span>
-          <span class="pc-tab-pack">3.5g flower</span>
-        </button>
-        <button class="pc-product-tab" data-key="anthem-1g-preroll" role="tab">
-          <span class="pc-tab-brand">Anthem</span>
-          <span class="pc-tab-pack">1g pre-roll</span>
-        </button>
-        <button class="pc-product-tab" data-key="jams-100mg-edible" role="tab">
-          <span class="pc-tab-brand">JAMS</span>
-          <span class="pc-tab-pack">100mg edible</span>
-        </button>
-        <button class="pc-product-tab pc-dropdown-trigger" id="pc-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false">
-          <span class="pc-tab-brand" data-bind="dropdown-trigger-brand">Choose your own product</span>
-          <span class="pc-tab-pack" data-bind="dropdown-trigger-pack">17 more SKUs &#9662;</span>
-        </button>
-      </div>
+      <div class="pc-product-tabs" id="pc-product-tabs" role="tablist" aria-label="Curaleaf product"></div>
       <div class="pc-dropdown-panel" id="pc-dropdown-panel" hidden role="menu" aria-label="More SKUs"></div>
     </section>
 
@@ -402,39 +341,23 @@
         <div>
           <p class="diq-hero-label">Market median &middot; non-Curaleaf retailers</p>
           <div class="pc-dual-price">
-            <span class="pc-dp-reg-label">Regular (MSRP)</span>
-            <span class="pc-dp-reg-value" data-bind="mkt-reg">&mdash;</span>
-            <span class="pc-dp-eff-label" style="margin-top:8px">Effective (post-promo)</span>
-            <span class="pc-dp-eff-value" data-bind="mkt-eff">&mdash;</span>
+            <span class="pc-dp-reg-label">Market median</span>
+            <span class="pc-dp-reg-value" data-bind="mkt-price">&mdash;</span>
           </div>
-          <p class="pc-promo-line" data-bind="mkt-promo">&mdash;</p>
+          <p class="pc-promo-line" data-bind="mkt-meta">&mdash;</p>
           <span class="diq-verdict pc-verdict-hero" data-bind="hero-verdict-pill">&mdash;</span>
           <p class="pc-dp-inline-meth">
-            Regular = median list price across N retailers. Effective = median price customers actually pay after observed promos. Promo participation = % of observations discounted below MSRP.
+            Curaleaf-owned median and market median are each the median price across qualifying priced observations reported by the live pricing feed for this brand &middot; category &middot; state cohort. Delta vs market and positioning come directly from the feed&rsquo;s certified call &mdash; this page does not recompute them.
           </p>
         </div>
       </div>
-    </section>
-
-    <section class="diq-section pc-brands-section">
-      <div class="diq-section-head">
-        <h2 class="diq-section-title" data-bind="brands-title">Competitive brands</h2>
-        <span class="diq-section-meta" data-bind="brands-meta">&mdash;</span>
-      </div>
-      <div class="pc-brands-legend">
-        <span><span class="pc-brands-legend-swatch" style="background: rgba(255,255,255,0.10)"></span>Regular (MSRP)</span>
-        <span><span class="pc-brands-legend-swatch" style="background: rgba(133, 228, 253, 0.45)"></span>Effective (post-promo)</span>
-        <span><span class="pc-brands-legend-swatch" style="background: var(--teal)"></span>Curaleaf brand</span>
-        <span><span class="pc-brands-target-dot"></span>This product&rsquo;s brand</span>
-      </div>
-      <div id="pc-brands" class="pc-brands"></div>
     </section>
 
     <div class="pc-page-divider">Page 1 of 2 &middot; Continued overleaf &#10142;</div>
   </section>
 
   <!-- ============================================================
-       PAGE 2 — Full retailer detail table + methodology
+       PAGE 2 — Per-state comparison table + methodology
        ============================================================ -->
   <section class="page-2">
 
@@ -446,18 +369,19 @@
 
     <section class="diq-section">
       <div class="diq-section-head">
-        <h2 class="diq-section-title" data-bind="table-title">Retailer detail</h2>
+        <h2 class="diq-section-title" data-bind="table-title">State comparison</h2>
         <span class="diq-section-meta" data-bind="table-meta">&mdash;</span>
       </div>
       <table class="diq-cat-table">
         <thead>
           <tr>
-            <th>Retailer</th>
-            <th class="r">Obs</th>
-            <th class="r diq-sortable" data-sort-key="reg"    aria-sort="none">Regular <span class="diq-sort-ind">&#8597;</span></th>
-            <th class="r diq-sortable" data-sort-key="eff"    aria-sort="none">Effective <span class="diq-sort-ind">&#8597;</span></th>
-            <th class="r diq-sortable" data-sort-key="pctoff" aria-sort="none">% off <span class="diq-sort-ind">&#8597;</span></th>
-            <th class="r diq-sortable" data-sort-key="anchor" aria-sort="none">vs Curaleaf anchor <span class="diq-sort-ind">&#8597;</span></th>
+            <th>State</th>
+            <th class="r diq-sortable" data-sort-key="cur"   aria-sort="none">Curaleaf median <span class="diq-sort-ind">&#8597;</span></th>
+            <th class="r">Curaleaf n</th>
+            <th class="r diq-sortable" data-sort-key="mkt"   aria-sort="none">Market median <span class="diq-sort-ind">&#8597;</span></th>
+            <th class="r">Market n</th>
+            <th class="r diq-sortable" data-sort-key="delta" aria-sort="none">Delta vs market <span class="diq-sort-ind">&#8597;</span></th>
+            <th>Positioning</th>
           </tr>
         </thead>
         <tbody id="pc-table-body"></tbody>
@@ -470,12 +394,10 @@
       <div class="diq-callout" style="border-color: var(--sky); background: rgba(133, 228, 253, 0.06)">
         <p class="diq-callout-label" style="color: var(--sky)">&#9656; Methodology</p>
         <p style="margin:0">
-          <strong>Anchor.</strong> Median price across Curaleaf-owned stores carrying this SKU in the selected state. Multi-tier product lines (e.g., Select Elite, Essentials, Flavor) are represented by their SKU-mix median rather than the price of any single SKU. Verdict compares the Curaleaf-owned median-effective to the cross-retailer market-effective median (independents + non-Curaleaf chains).<br>
-          <strong>Competitive brands chart.</strong> Median price for each brand across all retailers stocking that brand in the selected state, including Curaleaf-owned dispensaries. This differs from the hero anchor (Curaleaf-owned price for this specific SKU) &mdash; the chart answers brand positioning, the anchor answers our pricing decision.<br>
-          <strong>Regular vs Effective.</strong> Regular = median list price (MSRP) before promos. Effective = median price customers actually pay after observed discounts. The gap between the two is the promo intensity in that cell.<br>
-          <strong>Promo participation.</strong> Share of priced observations in the cell that were on sale (price &lt; regular). Average discount depth = mean of discount_pct across those on-promo observations.<br>
-          <strong>Bands.</strong> &plusmn;5% in-line. 5&ndash;15% slight premium / value. &gt;15% material premium / value. Below-market is reported as a positive (Curaleaf retail underpricing the market is a competitive position, not a problem).<br>
-          <strong>Coverage.</strong> Quality filter: dispensaries with &ge;5 priced items on their menu, aggregator websites excluded. Cells without a Curaleaf-owned store fall back to market spread for context. Empty cells indicate no qualifying observations.
+          <strong>Curaleaf median.</strong> Median price across Curaleaf-owned pricing observations for this brand &middot; category cohort in the selected state, as reported by the live pricing feed.<br>
+          <strong>Market median.</strong> Median price across qualifying non-Curaleaf market observations for the same cohort and state.<br>
+          <strong>Delta vs market &amp; positioning.</strong> Computed upstream by the certified pricing pipeline and passed through unchanged &mdash; this page does not re-derive them from the raw medians.<br>
+          <strong>Coverage.</strong> Cohorts without a Curaleaf-owned observation fall back to market spread for context. Empty cells indicate no qualifying observations met the feed&rsquo;s minimum-observation threshold this week.
         </p>
       </div>
     </section>
@@ -500,33 +422,40 @@
 // ─────────────────────────────────────────────────────────────
 // State
 // ─────────────────────────────────────────────────────────────
-// Category labels for the brand chart title. Keep in sync with CATEGORIES
-// in scripts/build_price_comparison_payload.py.
-const CATEGORY_LABELS = {
-  "2g_vape":      "2g vape",
-  "1g_vape":      "1g vape",
-  "0.5g_vape":    "0.5g vape",
-  "3.5g_flower":  "3.5g flower",
-  "7g_flower":    "7g flower",
-  "1g_preroll":   "1g pre-roll",
-  "0.5g_preroll": "0.5g pre-roll",
-  "100mg_edible": "100mg edible",
-  "50mg_edible":  "50mg edible",
-};
+var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
 
-let PC_DATA = null;                            // payload from data/price_comparison_payload.json
+// Known Curaleaf house-brand names (used to order default tabs / dropdown
+// groups the same way the page always has). This is display taxonomy, not
+// a fabricated metric — the live feed's `brand` field is a lowercase slug
+// (e.g. "select"); we title-case it for display and special-case the one
+// brand that is stylized in all-caps.
+const PRIORITY_BRANDS = ["select", "grassroots", "find", "anthem", "jams"];
+const BRAND_DISPLAY_OVERRIDES = { jams: "JAMS" };
+const PRODUCT_TYPE_LABELS = {
+  vape: "vape", flower: "flower", preroll: "pre-roll",
+  edible: "edible", concentrate: "concentrate"
+};
+const STATE_NAMES = { IL: "Illinois", NJ: "New Jersey", NY: "New York" };
+const POS_CLASS = { above_market: "verdict-chaotic", below_market: "verdict-wide", at_market: "verdict-tight", no_market_baseline: "verdict-mod" };
+const POS_LABEL_BASE = { above_market: "Above market", below_market: "Below market", at_market: "At market", no_market_baseline: "No market baseline" };
+
+let PC_DATA = null;                            // { manifest, rows } from the live pricing API
+let PC_SKUS = [];                              // brand+category cohorts built from rows[]
 let PC_SKU_MAP = {};                           // sku.key → sku
-let pcCurrentKey   = "select-2g-vape";
+let PC_DEFAULT_TABS = [];                      // keys shown as top-row tabs
+let PC_DROPDOWN_GROUPED = {};                  // brand_display → [keys] for the "more SKUs" panel
+let pcCurrentKey   = null;
 let pcCurrentState = "IL";
 
-// Retailer-table sort state. Reset to default (Effective DESC) by render()
-// on every dropdown/state change; mutated by onTableHeaderClick when the
-// user clicks a column header. renderTable() reads this to order the rows.
-const PC_TABLE_SORT_DEFAULT = { col: 'eff', dir: 'desc' };
+// Table sort state. Reset to default (Curaleaf median DESC) by render() on
+// every dropdown/state change; mutated by onTableHeaderClick when the user
+// clicks a column header. renderTable() reads this to order the rows.
+const PC_TABLE_SORT_DEFAULT = { col: 'cur', dir: 'desc' };
 let pcTableSort = { ...PC_TABLE_SORT_DEFAULT };
-const PC_SORT_LABEL = { reg: "Regular", eff: "Effective", pctoff: "% off", anchor: "vs Curaleaf anchor" };
+const PC_SORT_LABEL = { cur: "Curaleaf median", mkt: "Market median", delta: "Delta vs market" };
 let pcDropdownKeys = new Set();                // keys that live inside the dropdown
-let pcGroupOrder = ["Select", "Grassroots", "Find", "Anthem"];
+let pcGroupOrder = [];                         // ordered brand_display keys for the dropdown panel
+let pcDropdownCount = 0;
 
 // ─────────────────────────────────────────────────────────────
 // Helpers
@@ -541,16 +470,6 @@ function escapeHtml(s) {
     .replace(/'/g, "&#39;");
 }
 
-// Only accept http(s) URLs as link targets — strips javascript:/data:/file:
-// and other schemes that would be unsafe in a target=_blank href even with
-// rel=noopener. Returns null when the URL isn't a usable web link.
-function safeMenuHref(url) {
-  if (typeof url !== "string") return null;
-  const trimmed = url.trim();
-  if (!/^https?:\/\//i.test(trimmed)) return null;
-  return trimmed;
-}
-
 function fmtMoney(n) {
   if (n === null || n === undefined || isNaN(n)) return "—";
   return "$" + Number(n).toFixed(2);
@@ -560,17 +479,14 @@ function fmtPct(n, sign) {
   const s = (sign && n > 0) ? "+" : "";
   return s + Number(n).toFixed(1) + "%";
 }
-function pctDelta(a, b) {
-  if (a === null || a === undefined || b === null || b === undefined || !b) return null;
-  return ((a - b) / b) * 100;
-}
-function verdictForDelta(delta) {
-  if (delta === null || isNaN(delta)) return { cls: "verdict-mod", label: "No anchor in this state" };
-  if (delta <= -15) return { cls: "verdict-tight",   label: "Material value · " + delta.toFixed(0) + "% below market" };
-  if (delta <= -5)  return { cls: "verdict-tight",   label: "Below market · " + delta.toFixed(1) + "%" };
-  if (delta <   5)  return { cls: "verdict-mod",     label: "In line · " + (delta>=0?"+":"") + delta.toFixed(1) + "% vs market" };
-  if (delta <  15)  return { cls: "verdict-wide",    label: "Slight premium · +" + delta.toFixed(1) + "%" };
-  return            { cls: "verdict-chaotic", label: "Material premium · +" + delta.toFixed(0) + "% above market" };
+// Bands the live feed's own delta_vs_market_pct / positioning into the
+// page's existing verdict-pill styling. Does not recompute the delta or
+// the positioning call itself — both come straight from the API.
+function positioningVerdict(positioning, delta) {
+  const cls = POS_CLASS[positioning] || "verdict-mod";
+  const base = POS_LABEL_BASE[positioning] || (positioning || "Unknown");
+  const label = (typeof delta === "number") ? (base + " · " + fmtPct(delta, true)) : base;
+  return { cls, label };
 }
 function setText(bind, text) {
   document.querySelectorAll('[data-bind="'+bind+'"]').forEach(el => { el.textContent = text; });
@@ -586,34 +502,144 @@ function getCell(key, state) {
 function firstStateWithData(key) {
   for (const s of ["IL","NJ","NY"]) {
     const c = getCell(key, s);
-    if (c && (c.curaleaf_anchor || c.market)) return s;
+    if (c && (c.curaleaf || c.market)) return s;
   }
   return "IL";
 }
+function slug(s) {
+  return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+function brandDisplay(brand) {
+  const lower = String(brand || "").toLowerCase();
+  if (BRAND_DISPLAY_OVERRIDES[lower]) return BRAND_DISPLAY_OVERRIDES[lower];
+  return lower.replace(/(^|\s)\w/g, c => c.toUpperCase());
+}
+function productTypeLabel(pt) {
+  if (PRODUCT_TYPE_LABELS[pt]) return PRODUCT_TYPE_LABELS[pt];
+  return pt ? (String(pt).charAt(0).toUpperCase() + String(pt).slice(1)) : "product";
+}
 
 // ─────────────────────────────────────────────────────────────
-// Dropdown wiring
+// Build the brand+category cohort model from the live rows[] array.
+// Each row is one (brand, product_type, state) cohort. We group rows by
+// (brand, product_type) into a "sku" — the finest grain the live feed
+// offers (it does not carry the old static payload's per-size SKU keys
+// or per-retailer breakdown) — with one cell per state.
 // ─────────────────────────────────────────────────────────────
+function buildSkusFromRows(rows) {
+  const map = {};
+  (rows || []).forEach(r => {
+    if (!r || !r.brand || !r.product_type || !r.state) return;
+    const key = slug(r.brand) + "-" + slug(r.product_type);
+    if (!map[key]) {
+      map[key] = {
+        key,
+        brand: r.brand,
+        brand_display: brandDisplay(r.brand),
+        product_type: r.product_type,
+        label: brandDisplay(r.brand) + " " + productTypeLabel(r.product_type),
+        n_observations_total: 0,
+        states: {}
+      };
+    }
+    const sku = map[key];
+    const curaleaf = (typeof r.curaleaf_median_price === "number")
+      ? { median: r.curaleaf_median_price, n: (typeof r.curaleaf_n === "number" ? r.curaleaf_n : null) }
+      : null;
+    const market = (typeof r.market_median_price === "number")
+      ? { median: r.market_median_price, n: (typeof r.market_n === "number" ? r.market_n : null) }
+      : null;
+    sku.states[r.state] = {
+      curaleaf,
+      market,
+      delta_vs_market_pct: (typeof r.delta_vs_market_pct === "number") ? r.delta_vs_market_pct : null,
+      positioning: r.positioning || null
+    };
+    sku.n_observations_total += (curaleaf && curaleaf.n) ? curaleaf.n : 0;
+    sku.n_observations_total += (market && market.n) ? market.n : 0;
+  });
+  return Object.values(map).sort((a, b) => a.label.localeCompare(b.label));
+}
+
+// Choose up to 5 "default tab" cohorts, preferring one per Curaleaf house
+// brand (matching the page's long-standing tab layout), then filling any
+// remaining slots from whatever other cohorts the live feed returned.
+function pickDefaultTabs(skus) {
+  const used = new Set();
+  const defaults = [];
+  PRIORITY_BRANDS.forEach(pb => {
+    if (defaults.length >= 5) return;
+    const match = skus.find(s => slug(s.brand) === pb && !used.has(s.key));
+    if (match) { defaults.push(match.key); used.add(match.key); }
+  });
+  for (const s of skus) {
+    if (defaults.length >= 5) break;
+    if (!used.has(s.key)) { defaults.push(s.key); used.add(s.key); }
+  }
+  return defaults;
+}
+
+// Group every non-default cohort by brand for the "more SKUs" dropdown.
+function buildDropdownGrouped(skus, defaultKeys) {
+  const defaultSet = new Set(defaultKeys);
+  const grouped = {};
+  skus.forEach(s => {
+    if (defaultSet.has(s.key)) return;
+    if (!grouped[s.brand_display]) grouped[s.brand_display] = [];
+    grouped[s.brand_display].push(s.key);
+  });
+  return grouped;
+}
+function orderedGroupKeys(grouped) {
+  const keys = Object.keys(grouped);
+  const priorityDisplay = PRIORITY_BRANDS.map(brandDisplay);
+  const inPriority = priorityDisplay.filter(k => keys.includes(k));
+  const rest = keys.filter(k => !inPriority.includes(k)).sort();
+  return inPriority.concat(rest);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tab + dropdown wiring
+// ─────────────────────────────────────────────────────────────
+function buildTabs() {
+  const container = document.getElementById('pc-product-tabs');
+  let html = '';
+  PC_DEFAULT_TABS.forEach(key => {
+    const sku = getSku(key);
+    if (!sku) return;
+    const packLabel = sku.label.replace(sku.brand_display + " ", "");
+    html += '<button class="pc-product-tab" data-key="' + key + '" role="tab">' +
+            '<span class="pc-tab-brand">' + escapeHtml(sku.brand_display) + '</span>' +
+            '<span class="pc-tab-pack">' + escapeHtml(packLabel) + '</span>' +
+            '</button>';
+  });
+  html += '<button class="pc-product-tab pc-dropdown-trigger" id="pc-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false">' +
+          '<span class="pc-tab-brand" data-bind="dropdown-trigger-brand">Choose your own product</span>' +
+          '<span class="pc-tab-pack" data-bind="dropdown-trigger-pack">' + pcDropdownCount + (pcDropdownCount === 1 ? ' more SKU' : ' more SKUs') + ' &#9662;</span>' +
+          '</button>';
+  container.innerHTML = html;
+}
+
 function buildDropdown() {
   const panel = document.getElementById('pc-dropdown-panel');
-  const grouped = PC_DATA.manifest.dropdown_grouped;
+  const grouped = PC_DROPDOWN_GROUPED;
   let html = '';
   for (const g of pcGroupOrder) {
     const keys = grouped[g] || [];
     if (!keys.length) continue;
     html += '<div class="pc-dropdown-group">';
-    html += '  <p class="pc-dropdown-group-title">' + g + '</p>';
+    html += '  <p class="pc-dropdown-group-title">' + escapeHtml(g) + '</p>';
     for (const k of keys) {
       const sku = getSku(k);
       if (!sku) continue;
-      const sizeLabel = sku.label.replace(sku.brand_display + " ", "");
+      const packLabel = sku.label.replace(sku.brand_display + " ", "");
       const hasData = ["IL","NJ","NY"].some(s => {
         const c = sku.states[s];
-        return c && (c.curaleaf_anchor || c.market);
+        return c && (c.curaleaf || c.market);
       });
       html += '<button class="pc-dropdown-item' + (hasData ? '' : ' no-data') + '" data-key="' + k + '" role="menuitem">' +
-              sizeLabel +
-              '<span class="pc-dropdown-item-meta">' + sku.n_retailers_total + ' retailer' + (sku.n_retailers_total===1?'':'s') + '</span>' +
+              escapeHtml(packLabel) +
+              '<span class="pc-dropdown-item-meta">' + sku.n_observations_total + ' obs</span>' +
               '</button>';
       pcDropdownKeys.add(k);
     }
@@ -650,7 +676,7 @@ function selectSku(key) {
   pcCurrentKey = key;
   // If current state has no data, fall back
   const c = getCell(key, pcCurrentState);
-  if (!c || (!c.curaleaf_anchor && !c.market)) {
+  if (!c || (!c.curaleaf && !c.market)) {
     pcCurrentState = firstStateWithData(key);
   }
   render();
@@ -662,22 +688,25 @@ function selectSku(key) {
 function render() {
   const sku = getSku(pcCurrentKey);
   if (!sku) return;
-  // Every dropdown/state change resets the retailer-table sort to default.
+  // Every dropdown/state change resets the table sort to default.
   // Per-column ordering does not persist across SKU/state switches.
   pcTableSort = { ...PC_TABLE_SORT_DEFAULT };
   const cell = getCell(pcCurrentKey, pcCurrentState);
-  const anchor = cell ? cell.curaleaf_anchor : null;
+  const cur = cell ? cell.curaleaf : null;
   const market = cell ? cell.market : null;
-  const retailers = cell ? (cell.retailers || []) : [];
 
   // SKU meta line
+  const statesWithData = ["IL","NJ","NY"].filter(s => {
+    const c = sku.states[s];
+    return c && (c.curaleaf || c.market);
+  }).length;
   setHTML("sku-meta",
-    "Showing <strong>" + sku.label + "</strong> · " + sku.n_retailers_total +
-    " retailer" + (sku.n_retailers_total===1?'':'s') + " across IL+NJ+NY"
+    "Showing <strong>" + sku.label + "</strong> · data in " + statesWithData +
+    " of 3 pilot states"
   );
 
   // Print-only header strip — appears in PDF on both pages
-  const stateName = { IL: "Illinois", NJ: "New Jersey", NY: "New York" }[pcCurrentState] || pcCurrentState;
+  const stateName = STATE_NAMES[pcCurrentState] || pcCurrentState;
   const wk = (PC_DATA.manifest && PC_DATA.manifest.week_iso) ? PC_DATA.manifest.week_iso : "";
   setText("print-header-sku",    sku.label);
   setText("print-header-state",  stateName);
@@ -690,9 +719,9 @@ function render() {
   ["IL","NJ","NY"].forEach(s => {
     const c = sku.states[s];
     let sub;
-    if (!c || (!c.curaleaf_anchor && !c.market)) sub = "no data";
-    else if (c.curaleaf_anchor) sub = "anchor · " + c.curaleaf_anchor.n_stores + " store" + (c.curaleaf_anchor.n_stores===1?'':'s');
-    else sub = "market only · " + (c.market ? c.market.n_retailers : 0) + " retailers";
+    if (!c || (!c.curaleaf && !c.market)) sub = "no data";
+    else if (c.curaleaf) sub = "curaleaf · n=" + (c.curaleaf.n != null ? c.curaleaf.n : "—");
+    else sub = "market only · n=" + (c.market && c.market.n != null ? c.market.n : "—");
     setHTML(s.toLowerCase()+"-sub", sub);
   });
 
@@ -707,7 +736,7 @@ function render() {
         setText('dropdown-trigger-pack',  sku.label.replace(sku.brand_display + " ", "") + " ▾");
       } else {
         setText('dropdown-trigger-brand', "Choose your own product");
-        setText('dropdown-trigger-pack',  "17 more SKUs ▾");
+        setText('dropdown-trigger-pack',  pcDropdownCount + (pcDropdownCount === 1 ? ' more SKU' : ' more SKUs') + " ▾");
       }
     } else {
       b.classList.toggle('active', k === pcCurrentKey);
@@ -719,190 +748,82 @@ function render() {
     b.classList.toggle('active', s === pcCurrentState);
     b.setAttribute('aria-selected', s === pcCurrentState ? 'true' : 'false');
     const c = sku.states[s];
-    const isEmpty = !c || (!c.curaleaf_anchor && !c.market);
+    const isEmpty = !c || (!c.curaleaf && !c.market);
     b.style.opacity = isEmpty ? '0.45' : '';
   });
 
   // BLUF
-  setHTML('bluf', composeBluf(sku, anchor, market));
+  setHTML('bluf', composeBluf(sku, cell));
 
-  // Hero — anchor
-  if (anchor) {
-    setHTML("hero-anchor", fmtMoney(anchor.median_effective));
-    const rangeBit = (anchor.min_effective !== anchor.max_effective)
-      ? (" · range " + fmtMoney(anchor.min_effective) + "&ndash;" + fmtMoney(anchor.max_effective))
-      : "";
+  // Hero — Curaleaf-owned median
+  if (cur) {
+    setHTML("hero-anchor", fmtMoney(cur.median));
     setHTML("hero-anchor-sub",
-      "Median across <strong>" + anchor.n_stores + "</strong> Curaleaf-owned " +
-      (anchor.n_stores===1?"store":"stores") + " in " + pcCurrentState + rangeBit +
-      (anchor.median_regular !== anchor.median_effective
-        ? (" · regular " + fmtMoney(anchor.median_regular))
-        : "")
+      "Median across Curaleaf-owned pricing observations in " + pcCurrentState +
+      (cur.n != null ? (" · n=" + cur.n) : "")
     );
   } else {
     setHTML("hero-anchor", "n/a");
     setHTML("hero-anchor-sub",
-      "<strong>No Curaleaf-owned store</strong> carries " + sku.label + " in " + pcCurrentState +
-      ". This cell shows market spread only until Curaleaf provides MSRP."
+      "<strong>No Curaleaf-owned pricing observed</strong> for " + sku.label + " in " + pcCurrentState +
+      ". This cell shows market spread only until Curaleaf carries this cohort."
     );
   }
 
-  // Hero — market dual price
+  // Hero — market median
   if (market) {
-    setHTML("mkt-reg", fmtMoney(market.median_regular));
-    setHTML("mkt-eff", fmtMoney(market.median_effective));
-    const discounted = market.median_effective !== null && market.median_regular !== null && market.median_effective < market.median_regular;
-    const effEl = document.querySelector('[data-bind="mkt-eff"]');
-    if (effEl) effEl.classList.toggle('discounted', discounted);
+    setHTML("mkt-price", fmtMoney(market.median));
+    setHTML("mkt-meta", "Across non-Curaleaf market retailers" + (market.n != null ? (" · n=" + market.n + " priced observations") : ""));
 
-    const parts = [];
-    parts.push("Across <strong>" + market.n_retailers + "</strong> retailer" + (market.n_retailers===1?'':'s') + " · " + market.n_observations + " priced observations");
-    if (market.promo_participation_pct !== null && market.promo_participation_pct !== undefined) {
-      const p = market.promo_participation_pct;
-      const d = market.avg_promo_discount_pct;
-      parts.push('<span class="pc-promo-pct">' + p.toFixed(0) + '% on promo</span>' + (d ? (' · avg ' + d.toFixed(0) + '% off') : ''));
-    } else {
-      parts.push("no promo observations");
-    }
-    setHTML("mkt-promo", parts.join(" · "));
-
-    // Verdict (anchor effective vs market effective)
-    const delta = anchor ? pctDelta(anchor.median_effective, market.median_effective) : null;
-    const v = verdictForDelta(delta);
+    const v = positioningVerdict(cell.positioning, cell.delta_vs_market_pct);
     const pillEl = document.querySelector('[data-bind="hero-verdict-pill"]');
     pillEl.className = "diq-verdict pc-verdict-hero " + v.cls;
     pillEl.textContent = v.label;
   } else {
-    setHTML("mkt-reg", "—");
-    setHTML("mkt-eff", "—");
-    setHTML("mkt-promo", "No qualifying retailers in this state.");
+    setHTML("mkt-price", "—");
+    setHTML("mkt-meta", "No qualifying market retailers in this state.");
     const pillEl = document.querySelector('[data-bind="hero-verdict-pill"]');
     pillEl.className = "diq-verdict pc-verdict-hero verdict-mod";
     pillEl.textContent = "Empty cell — no data";
   }
 
-  // Brand-vs-brand competitive chart (page 1, replaces the prior price-ladder)
-  renderBrands(sku);
-
   // Table
-  renderTable(sku, anchor, market, retailers);
+  renderTable(sku);
 }
 
-function composeBluf(sku, anchor, market) {
+function composeBluf(sku, cell) {
+  const cur = cell ? cell.curaleaf : null;
+  const market = cell ? cell.market : null;
+  if (!cur && !market) {
+    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no qualifying pricing data in this state this week. Try a different state from the toggle below.";
+  }
   if (!market) {
-    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no qualifying retailers in this state. Try a different state from the toggle below.";
+    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no market baseline available this week" +
+      (cur ? (" — Curaleaf-owned median <strong>" + fmtMoney(cur.median) + "</strong>" + (cur.n != null ? (" (n=" + cur.n + ")") : "") + ".") : ".");
   }
-  if (!anchor) {
-    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no Curaleaf-owned store carries this SKU in " +
-      pcCurrentState + " yet — market spread shown for context. Market median <strong>" +
-      fmtMoney(market.median_effective) + "</strong> effective vs <strong>" + fmtMoney(market.median_regular) +
-      "</strong> regular across " + market.n_retailers + " retailers" +
-      (market.promo_participation_pct ? (" · " + market.promo_participation_pct.toFixed(0) + "% on promo") : "") + ".";
+  if (!cur) {
+    return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> no Curaleaf-owned pricing observed this week — market median <strong>" +
+      fmtMoney(market.median) + "</strong>" + (market.n != null ? (" across n=" + market.n + " observations") : "") + " shown for context.";
   }
-  const delta = pctDelta(anchor.median_effective, market.median_effective);
-  const v = verdictForDelta(delta);
+  const v = positioningVerdict(cell.positioning, cell.delta_vs_market_pct);
   let stance;
-  if (v.cls === "verdict-tight") stance = "Curaleaf is undercutting the market";
-  else if (v.cls === "verdict-mod") stance = "Curaleaf is priced in line with the market";
-  else stance = "Curaleaf is priced above the market";
+  if (cell.positioning === "below_market") stance = "Curaleaf is priced below the market";
+  else if (cell.positioning === "above_market") stance = "Curaleaf is priced above the market";
+  else stance = "Curaleaf is priced in line with the market";
   return "<strong>" + sku.label + " · " + pcCurrentState + ":</strong> " + stance +
-    ". Curaleaf-owned anchor <strong>" + fmtMoney(anchor.median_effective) +
-    "</strong> vs market median-effective <strong>" + fmtMoney(market.median_effective) +
-    "</strong> (regular " + fmtMoney(market.median_regular) + ") &mdash; <strong>" + v.label + "</strong>. " +
-    (market.promo_participation_pct ?
-      (market.promo_participation_pct.toFixed(0) + "% of market observations were discounted") : "Few promo observations in this cell") + ".";
+    ". Curaleaf-owned median <strong>" + fmtMoney(cur.median) +
+    "</strong> vs market median <strong>" + fmtMoney(market.median) +
+    "</strong> — <strong>" + v.label + "</strong>.";
 }
 
-function renderBrands(sku) {
-  const brandsEl = document.getElementById("pc-brands");
-  const catKey = sku.category_key || null;
-  const byState = (PC_DATA.competitor_brands || {})[pcCurrentState] || {};
-  const brands = (catKey && Array.isArray(byState[catKey])) ? byState[catKey] : [];
-
-  // Empty cell: either the SKU doesn't bucket into any of the brand-chart
-  // categories (e.g. 14g flower, concentrate) or no brand in this category
-  // met the n_retailers ≥ 3 threshold. Show a fallback panel rather than a
-  // misleading sparse chart.
-  if (!catKey || !brands.length) {
-    setHTML("brands-title", "Competitive brands");
-    setHTML("brands-meta", catKey
-      ? "No competing brands met the &ge;3-retailer threshold in " + pcCurrentState + " for this category"
-      : "No brand comparison available for this format &mdash; see retailer detail below");
-    brandsEl.innerHTML = "";
-    return;
-  }
-
-  const catLabel = CATEGORY_LABELS[catKey] || catKey.replace(/_/g, " ");
-  setHTML("brands-title", "Competitive " + catLabel + " brands · " + pcCurrentState);
-
-  const anyCuraleaf = brands.some(b => b.is_curaleaf_brand);
-  setHTML("brands-meta",
-    brands.length + " brand" + (brands.length === 1 ? "" : "s") + " tracked"
-    + (anyCuraleaf ? " · Curaleaf brand highlighted" : " · no Curaleaf brand in this category")
-  );
-
-  // Server already capped to top 12 by n_retailers DESC. For display, re-sort
-  // by median_regular DESC so the highest-priced brand sits at the top.
-  const displayed = brands.slice().sort((a, b) => (b.median_regular || 0) - (a.median_regular || 0));
-  const maxPrice = Math.max.apply(null, displayed.map(b =>
-    Math.max(b.median_regular || 0, b.median_effective || 0)
-  )) || 1;
-
-  // Target brand = the brand of the currently-selected SKU. The coral dot
-  // marks it within the chart, distinguishing "your brand right now" from
-  // "any Curaleaf brand" (which gets the teal bar).
-  const targetBrand = sku.brand;
-
-  brandsEl.innerHTML = displayed.map(b => {
-    const isOwn    = !!b.is_curaleaf_brand;
-    const isTarget = (b.brand_canonical === targetBrand);
-    const regPct = ((b.median_regular   || b.median_effective) / maxPrice) * 100;
-    const effPct = ((b.median_effective || b.median_regular)   / maxPrice) * 100;
-
-    const priceCell =
-      '<span>' + fmtMoney(b.median_regular) + '</span>' +
-      ((b.median_effective !== null && b.median_effective !== b.median_regular)
-        ? '<span class="pc-brands-price-sub">eff ' + fmtMoney(b.median_effective) + '</span>'
-        : '');
-
-    return '<div class="pc-brands-row ' + (isOwn ? 'own ' : '') + (isTarget ? 'target' : '') + '">' +
-      '<div class="pc-brands-name">' +
-        (isTarget ? '<span class="pc-brands-target-dot"></span>' : '') +
-        b.brand_display +
-        ' <span style="color:var(--ink-faint);font-size:10px">· ' + b.n_retailers + ' retailer' + (b.n_retailers === 1 ? '' : 's') + '</span>' +
-      '</div>' +
-      '<div class="pc-brands-bar-wrap">' +
-        '<div class="pc-brands-bar-reg" style="width:' + regPct + '%"></div>' +
-        '<div class="pc-brands-bar-eff ' + (isOwn ? 'own' : '') + '" style="width:' + effPct + '%"></div>' +
-      '</div>' +
-      '<div class="pc-brands-price">' + priceCell + '</div>' +
-      '</div>';
-  }).join("");
-}
-
-// Extract the comparable value for a retailer row + sort column. Returns
-// a number for sortable rows, or null when the column is undefined/missing
-// for this retailer (which the comparator then forces to the bottom).
-function sortValue(r, key) {
-  if (key === 'reg') {
-    return (typeof r.median_regular === 'number') ? r.median_regular : null;
-  }
-  if (key === 'eff') {
-    return (typeof r.median_effective === 'number') ? r.median_effective : null;
-  }
-  if (key === 'pctoff') {
-    if (r.is_on_promo
-        && typeof r.median_regular === 'number'
-        && typeof r.median_effective === 'number'
-        && r.median_regular > 0
-        && r.median_regular > r.median_effective) {
-      return (r.median_regular - r.median_effective) / r.median_regular;
-    }
-    return null;
-  }
-  if (key === 'anchor') {
-    return (typeof r.vs_anchor_pct_effective === 'number') ? r.vs_anchor_pct_effective : null;
-  }
+// Extract the comparable value for a state cell + sort column. Returns a
+// number for sortable rows, or null when the field is missing for this
+// cell (which the comparator then forces to the bottom).
+function sortValue(cell, key) {
+  if (!cell) return null;
+  if (key === 'cur')   return (cell.curaleaf && typeof cell.curaleaf.median === 'number') ? cell.curaleaf.median : null;
+  if (key === 'mkt')   return (cell.market && typeof cell.market.median === 'number') ? cell.market.median : null;
+  if (key === 'delta') return (typeof cell.delta_vs_market_pct === 'number') ? cell.delta_vs_market_pct : null;
   return null;
 }
 
@@ -949,58 +870,49 @@ function onTableHeaderClick(e) {
     pcTableSort.dir = 'desc';
   }
   // Re-render the table only — preserves the new sort. Calling render()
-  // instead would reset sort back to default (Effective DESC).
+  // instead would reset sort back to default (Curaleaf median DESC).
   const sku = getSku(pcCurrentKey);
-  const cell = getCell(pcCurrentKey, pcCurrentState);
-  if (sku && cell) {
-    renderTable(sku, cell.curaleaf_anchor, cell.market, cell.retailers || []);
-  }
+  if (sku) renderTable(sku);
 }
 
-function renderTable(sku, anchor, market, retailers) {
-  setHTML("table-title", "Retailer detail · " + sku.label + " · " + pcCurrentState);
-  setHTML("table-meta",
-    (retailers.length) + " market retailer" + (retailers.length===1?'':'s') +
-    (anchor ? (" · Curaleaf-owned anchor " + fmtMoney(anchor.median_effective)) : "")
-  );
+// The live feed has no per-retailer breakdown (only brand · category ·
+// state cohort medians), so the old "retailer detail" table is repurposed
+// into a per-state comparison of the currently-selected cohort — the
+// finest grain the feed actually offers.
+function renderTable(sku) {
+  setHTML("table-title", "State comparison · " + sku.label);
+
+  const stateRows = ["IL","NJ","NY"].map(s => ({ state: s, cell: sku.states[s] || null }));
+  const withData = stateRows.filter(r => r.cell && (r.cell.curaleaf || r.cell.market));
+  setHTML("table-meta", withData.length + " of 3 pilot states have pricing data for this cohort this week");
 
   const tbody = document.getElementById("pc-table-body");
-  if (!retailers.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying market retailers in this cell.</td></tr>';
+  if (!withData.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);padding:24px">No qualifying pricing data for this cohort in any pilot state.</td></tr>';
     setHTML("table-note", "");
     setText("print-table-footnote", "");
-    document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
+    const footEl = document.querySelector('[data-bind="print-table-footnote"]');
+    if (footEl) footEl.style.display = 'none';
     updateSortIndicators();
     return;
   }
 
-  // Sort by the currently-active column + direction. Nulls always last.
-  const sorted = retailers.slice().sort((a, b) => compareRows(a, b, pcTableSort.col, pcTableSort.dir));
-  const PRINT_CAP = 25;
-  tbody.innerHTML = sorted.map((r, i) => {
-    let deltaCell = "<span style='color:var(--ink-faint)'>—</span>";
-    if (r.vs_anchor_pct_effective !== null && r.vs_anchor_pct_effective !== undefined) {
-      const d = r.vs_anchor_pct_effective;
-      const cls = d > 5 ? "pc-delta-pos" : (d < -5 ? "pc-delta-neg" : "pc-delta-flat");
-      deltaCell = '<span class="'+cls+'">'+(d>0?'+':'')+d.toFixed(1)+'%</span>';
+  const sorted = stateRows.slice().sort((a, b) => compareRows(a.cell, b.cell, pcTableSort.col, pcTableSort.dir));
+  tbody.innerHTML = sorted.map(r => {
+    const c = r.cell;
+    if (!c || (!c.curaleaf && !c.market)) {
+      return '<tr><td>' + STATE_NAMES[r.state] + '</td>' +
+        '<td class="r" colspan="6" style="color:var(--ink-faint)">no data</td></tr>';
     }
-    let pctOff = "—";
-    if (r.is_on_promo && r.median_regular && r.median_effective && r.median_regular > r.median_effective) {
-      const off = 100 * (r.median_regular - r.median_effective) / r.median_regular;
-      pctOff = '<span class="pc-delta-pos">' + off.toFixed(0) + '%</span>';
-    }
-    const regCell = (r.median_regular !== null && r.median_regular !== r.median_effective)
-      ? '<strong>' + fmtMoney(r.median_regular) + '</strong>'
-      : '<span style="color:var(--ink-faint)">' + fmtMoney(r.median_regular) + '</span>';
-    const rowCls = (i >= PRINT_CAP) ? ' class="print-hidden"' : '';
-    const safeName = escapeHtml(r.dispensary_name);
-    return '<tr'+rowCls+'>' +
-      '<td>' + safeName + '</td>' +
-      '<td class="r">' + r.n_observations + '</td>' +
-      '<td class="r">' + regCell + '</td>' +
-      '<td class="r"><strong>' + fmtMoney(r.median_effective) + '</strong></td>' +
-      '<td class="r">' + pctOff + '</td>' +
-      '<td class="r">' + deltaCell + '</td>' +
+    const v = positioningVerdict(c.positioning, c.delta_vs_market_pct);
+    return '<tr>' +
+      '<td>' + STATE_NAMES[r.state] + '</td>' +
+      '<td class="r"><strong>' + fmtMoney(c.curaleaf ? c.curaleaf.median : null) + '</strong></td>' +
+      '<td class="r">' + (c.curaleaf && c.curaleaf.n != null ? c.curaleaf.n : '—') + '</td>' +
+      '<td class="r">' + fmtMoney(c.market ? c.market.median : null) + '</td>' +
+      '<td class="r">' + (c.market && c.market.n != null ? c.market.n : '—') + '</td>' +
+      '<td class="r">' + fmtPct(c.delta_vs_market_pct, true) + '</td>' +
+      '<td><span class="diq-verdict ' + v.cls + '" style="font-size:11px;padding:2px 6px">' + v.label + '</span></td>' +
       '</tr>';
   }).join("");
 
@@ -1008,21 +920,14 @@ function renderTable(sku, anchor, market, retailers) {
   const dirLabel = (pcTableSort.dir === 'desc') ? 'descending' : 'ascending';
   setHTML("table-note",
     "Click any sortable column header to re-sort &mdash; currently sorted by <strong>" + sortLabel + "</strong>, " + dirLabel +
-    ". Empty values always sort to the bottom. % off = (regular &minus; effective) / regular when the retailer is on promo; blank otherwise. vs Curaleaf anchor compares the retailer's median effective to the Curaleaf-owned anchor's median effective &mdash; negative = retailer is cheaper than Curaleaf retail."
+    ". Empty values always sort to the bottom. Curaleaf median = median price across Curaleaf-owned pricing observations for this cohort; market median = median price across qualifying non-Curaleaf observations. Delta vs market and positioning are passed through unchanged from the live pricing feed."
   );
 
-  // Print-only footnote — visible only when the table is truncated for PDF.
-  // Top-25 in print reflects whatever the current sort is.
-  if (sorted.length > PRINT_CAP) {
-    setText("print-table-footnote",
-      "Showing top " + PRINT_CAP + " of " + sorted.length +
-      " retailers, sorted by " + sortLabel + " " + dirLabel + ". Full list available in the on-screen view."
-    );
-    document.querySelector('[data-bind="print-table-footnote"]').style.display = '';
-  } else {
-    setText("print-table-footnote", "");
-    document.querySelector('[data-bind="print-table-footnote"]').style.display = 'none';
-  }
+  // No live equivalent to the old per-retailer print cap — only 3 rows max
+  // (one per pilot state) — so the print footnote is always empty/hidden.
+  setText("print-table-footnote", "");
+  const footEl = document.querySelector('[data-bind="print-table-footnote"]');
+  if (footEl) footEl.style.display = 'none';
 
   updateSortIndicators();
 }
@@ -1030,70 +935,83 @@ function renderTable(sku, anchor, market, retailers) {
 // ─────────────────────────────────────────────────────────────
 // Init
 // ─────────────────────────────────────────────────────────────
-async function init() {
-  const _payloadUrl = (window.DIQ && DIQ.weekPayloadUrl) ? DIQ.weekPayloadUrl('data/price_comparison_payload.json') : 'data/price_comparison_payload.json';
-  try {
-    const resp = await fetch(_payloadUrl, { cache: 'no-store' });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    PC_DATA = await resp.json();
-  } catch (e) {
-    if (window.DIQ && !DIQ.isDefaultWeek()) { DIQ.renderWeekEmptyState(); return; }
-    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load price_comparison_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
-    return;
-  }
-  PC_SKU_MAP = {};
-  PC_DATA.skus.forEach(s => { PC_SKU_MAP[s.key] = s; });
+function init() {
+  fetch(API_BASE + '/pitch/api/price-comparison', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => {
+      PC_DATA = data || {};
+      PC_SKUS = buildSkusFromRows(PC_DATA.rows);
+      if (!PC_SKUS.length) return Promise.reject('empty rows');
 
-  // Wire retailer-table sort once. Delegated on the thead so we never have
-  // to re-attach when renderTable rebuilds the tbody.
-  const tableThead = document.querySelector('.diq-cat-table thead');
-  if (tableThead) tableThead.addEventListener('click', onTableHeaderClick);
+      PC_SKU_MAP = {};
+      PC_SKUS.forEach(s => { PC_SKU_MAP[s.key] = s; });
+      PC_DEFAULT_TABS = pickDefaultTabs(PC_SKUS);
+      PC_DROPDOWN_GROUPED = buildDropdownGrouped(PC_SKUS, PC_DEFAULT_TABS);
+      pcGroupOrder = orderedGroupKeys(PC_DROPDOWN_GROUPED);
+      pcDropdownCount = PC_SKUS.length - PC_DEFAULT_TABS.length;
 
-  // Manifest footer date
-  if (PC_DATA.manifest.generated_at) {
-    setText('gen-date', PC_DATA.manifest.generated_at.slice(0, 10));
-  }
-  if (PC_DATA.manifest.week_iso) {
-    setText('gen-week', PC_DATA.manifest.week_iso);
-  }
+      // Wire table sort once. Delegated on the thead so we never have to
+      // re-attach when renderTable rebuilds the tbody.
+      const tableThead = document.querySelector('.diq-cat-table thead');
+      if (tableThead) tableThead.addEventListener('click', onTableHeaderClick);
 
-  buildDropdown();
+      // Manifest footer / print stamps
+      const manifest = PC_DATA.manifest || {};
+      if (manifest.generated_at) {
+        setText('gen-date', manifest.generated_at.slice(0, 10));
+      }
+      if (manifest.week_iso) {
+        setText('gen-week', manifest.week_iso);
+        setText('pillar-week', manifest.week_iso);
+      }
+      setHTML('tabs-meta', PC_DEFAULT_TABS.length + ' default SKU' + (PC_DEFAULT_TABS.length === 1 ? '' : 's') +
+        ' &middot; ' + pcDropdownCount + ' more in dropdown');
 
-  // Wire tab + state click handlers
-  document.querySelectorAll('.pc-product-tab').forEach(b => {
-    if (b.classList.contains('pc-dropdown-trigger')) {
-      b.addEventListener('click', () => {
+      buildTabs();
+      buildDropdown();
+
+      // Wire tab + state click handlers
+      document.querySelectorAll('.pc-product-tab').forEach(b => {
+        if (b.classList.contains('pc-dropdown-trigger')) {
+          b.addEventListener('click', () => {
+            const panel = document.getElementById('pc-dropdown-panel');
+            setDropdownOpen(panel.hasAttribute('hidden'));
+          });
+        } else {
+          b.addEventListener('click', () => {
+            setDropdownOpen(false);
+            selectSku(b.getAttribute('data-key'));
+          });
+        }
+      });
+      document.querySelectorAll('.diq-toggle').forEach(b => {
+        b.addEventListener('click', () => {
+          pcCurrentState = b.getAttribute('data-state');
+          render();
+        });
+      });
+      document.addEventListener('click', (e) => {
         const panel = document.getElementById('pc-dropdown-panel');
-        setDropdownOpen(panel.hasAttribute('hidden'));
-      });
-    } else {
-      b.addEventListener('click', () => {
+        const trigger = document.getElementById('pc-dropdown-trigger');
+        if (panel.hasAttribute('hidden')) return;
+        if (panel.contains(e.target) || trigger.contains(e.target)) return;
         setDropdownOpen(false);
-        selectSku(b.getAttribute('data-key'));
       });
-    }
-  });
-  document.querySelectorAll('.diq-toggle').forEach(b => {
-    b.addEventListener('click', () => {
-      pcCurrentState = b.getAttribute('data-state');
-      render();
-    });
-  });
-  document.addEventListener('click', (e) => {
-    const panel = document.getElementById('pc-dropdown-panel');
-    const trigger = document.getElementById('pc-dropdown-trigger');
-    if (panel.hasAttribute('hidden')) return;
-    if (panel.contains(e.target) || trigger.contains(e.target)) return;
-    setDropdownOpen(false);
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') setDropdownOpen(false);
-  });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setDropdownOpen(false);
+      });
 
-  // Default selection — first default tab
-  pcCurrentKey = PC_DATA.manifest.default_tabs[0];
-  pcCurrentState = firstStateWithData(pcCurrentKey);
-  render();
+      // Default selection — first default tab (?week= is ignored; the live
+      // feed only ever serves the current certified week).
+      pcCurrentKey = PC_DEFAULT_TABS[0] || PC_SKUS[0].key;
+      pcCurrentState = firstStateWithData(pcCurrentKey);
+      render();
+    })
+    .catch(err => {
+      console.warn('price-comparison fetch failed:', err);
+      document.querySelector('main').innerHTML =
+        '<p style="color:var(--coral);padding:24px">Failed to load live price comparison data from the pricing API — try a hard refresh. Error: ' + err + '</p>';
+    });
 }
 
 init();
