@@ -21,7 +21,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span id="diq-v-week">—</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -54,42 +54,49 @@
     <p class="diq-page-subtitle">Brooke flagged FIND as under attack from Leal and Rolling Green in NY on May 11. This page is the operational drill-down. The same four-quadrant framework applies to every NY priority brand (Select, Briq 2, Grassroots, Knack, Mini Mart, plus the defunct 1937).</p>
   </header>
 
-  <section class="diq-section">
+  <section class="diq-section" id="diq-pending-section" style="display:none">
+    <div id="diq-pending-banner" class="diq-phase2-banner">
+      <div class="icon">&#9888;</div>
+      <div class="text"><span id="diq-pending-msg">Watchlist pending this week's certification.</span></div>
+    </div>
+  </section>
+
+  <section class="diq-section" id="diq-callout-section">
     <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
       <p class="diq-callout-label" style="color: var(--coral)">&#9656; The headline</p>
-      <p style="margin:0">Leal (69 dispensaries) and Rolling Green (100 dispensaries) combined cover <strong>169 of 558 tracked NY dispensaries</strong>. Find is in 89. The two competitor brands jointly outdistribute Find by <strong>1.9x</strong> in the NY adult-use market. The 92 Q1 at-risk prospect dispensaries (Leal/RG carried, no Find) are the immediate trade-marketing follow-up cohort.</p>
+      <p style="margin:0" id="diq-callout-body">Loading this week's certified read&hellip;</p>
     </div>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
       <h2 class="diq-section-title">FIND quadrant &middot; NY adult-use universe</h2>
-      <span class="diq-section-meta">558 tracked dispensaries &middot; matched by Find / Leal+RG presence</span>
+      <span class="diq-section-meta" id="diq-quadrant-meta">&mdash; tracked dispensaries &middot; matched by Find / Leal+RG presence</span>
     </div>
 
     <div class="diq-quadrant">
       <div class="diq-quadrant-grid">
         <div class="diq-quadrant-cell diq-q-at-risk">
           <p class="diq-quadrant-label">Q1 &middot; AT-RISK PROSPECTS</p>
-          <p class="diq-quadrant-value">92</p>
+          <p class="diq-quadrant-value" id="diq-q1-value">&mdash;</p>
           <p class="diq-quadrant-desc">Leal/RG carried &middot; no Find</p>
           <p class="diq-quadrant-action">Trade-marketing follow-up &rarr;</p>
         </div>
         <div class="diq-quadrant-cell diq-q-contest">
           <p class="diq-quadrant-label">Q2 &middot; CONTEST ZONE</p>
-          <p class="diq-quadrant-value">45</p>
+          <p class="diq-quadrant-value" id="diq-q2-value">&mdash;</p>
           <p class="diq-quadrant-desc">Find + Leal/RG both on shelf</p>
           <p class="diq-quadrant-action">Pricing &amp; shelf-position drill-down &rarr;</p>
         </div>
         <div class="diq-quadrant-cell diq-q-open">
           <p class="diq-quadrant-label">Q3 &middot; OPEN MARKET</p>
-          <p class="diq-quadrant-value">280</p>
+          <p class="diq-quadrant-value" id="diq-q3-value">&mdash;</p>
           <p class="diq-quadrant-desc">Neither brand &middot; whitespace</p>
           <p class="diq-quadrant-action">Distribution priority &rarr;</p>
         </div>
         <div class="diq-quadrant-cell diq-q-strong">
           <p class="diq-quadrant-label">Q4 &middot; FIND STRONGHOLD</p>
-          <p class="diq-quadrant-value">44</p>
+          <p class="diq-quadrant-value" id="diq-q4-value">&mdash;</p>
           <p class="diq-quadrant-desc">Find carried &middot; no Leal/RG</p>
           <p class="diq-quadrant-action">Defensive watch &middot; alerts armed &rarr;</p>
         </div>
@@ -99,86 +106,20 @@
         <span class="diq-axis-x">Find carried? &nbsp;&rarr;</span>
       </div>
     </div>
+    <p style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-family:'Consolas',monospace" id="diq-competitors-matched">Competitors matched: &mdash;</p>
   </section>
 
-  <section class="diq-section">
+  <section class="diq-section" id="diq-flagged-doors-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">Door-count summary</h2>
-      <span class="diq-section-meta">NY adult-use universe &middot; pilot Week 20</span>
+      <h2 class="diq-section-title">NY flagged-doors watchlist</h2>
+      <span class="diq-section-meta">This week's certified defend/contest actions &middot; live capture data</span>
     </div>
     <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th>Dispensaries</th><th>SKUs tracked</th><th>Avg SKUs / dispensary</th></tr></thead>
-      <tbody>
-        <tr class="diq-row-curaleaf">
-          <td><strong>Find</strong> <span class="diq-curaleaf-tag">Curaleaf</span></td>
-          <td><strong>89</strong></td>
-          <td>1,847</td>
-          <td>20.8</td>
-        </tr>
-        <tr><td>Leal</td><td>69</td><td>1,719</td><td>24.9</td></tr>
-        <tr><td>Rolling Green</td><td>100</td><td>2,170</td><td>21.7</td></tr>
-        <tr style="border-top: 2px solid var(--coral); background: rgba(219, 84, 97, 0.04)">
-          <td><strong>Leal + Rolling Green combined</strong></td>
-          <td><strong>169</strong></td>
-          <td><strong>3,889</strong></td>
-          <td><strong>23.0</strong></td>
-        </tr>
+      <thead><tr><th>Dispensary</th><th>City</th><th>Action</th><th>Brand</th><th>Delta</th></tr></thead>
+      <tbody id="diq-flagged-doors-body">
+        <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:24px">Loading&hellip;</td></tr>
       </tbody>
     </table>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">Contest-zone pricing &middot; Find 3.5g flower</h2>
-      <span class="diq-section-meta">Head-to-head matched-SKU pricing across the 45 Q2 dispensaries</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th>Synthetic MSRP / median</th><th>Observations</th><th>P25</th><th>P75</th><th>Anchor</th></tr></thead>
-      <tbody>
-        <tr class="diq-row-curaleaf">
-          <td><strong>Find</strong> <span class="diq-curaleaf-tag">Curaleaf</span></td>
-          <td><strong>$19.50</strong> (Curaleaf-owned anchor)</td>
-          <td>21</td><td>$25.00</td><td>$35.00</td>
-          <td><span class="diq-verdict verdict-tight">HIGH</span></td>
-        </tr>
-        <tr>
-          <td>Market modal (Find at non-Curaleaf retailers)</td>
-          <td>$30.00</td><td>21</td><td>$25.00</td><td>$35.00</td>
-          <td><span class="diq-verdict verdict-mod">MEDIUM</span></td>
-        </tr>
-        <tr>
-          <td>Leal &middot; matched 3.5g</td>
-          <td>—</td><td><em>upcoming</em></td><td>—</td><td>—</td>
-          <td><span style="color:var(--ink-faint)">Phase 2</span></td>
-        </tr>
-        <tr>
-          <td>Rolling Green &middot; matched 3.5g</td>
-          <td>—</td><td><em>upcoming</em></td><td>—</td><td>—</td>
-          <td><span style="color:var(--ink-faint)">Phase 2</span></td>
-        </tr>
-      </tbody>
-    </table>
-    <p style="font-size:12px;color:var(--ink-faint);margin-top:8px"><strong>NEXT.</strong> Leal and Rolling Green matched-cohort pricing extraction is in the next capture run. The methodology is identical: match by product type &times; pack size &times; THC band, compute matched-SKU median. Goal: head-to-head Find vs Leal vs RG pricing in the 45 Q2 contest dispensaries.</p>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">NY priority-brand watchlist</h2>
-      <span class="diq-section-meta">Brooke's May 11 flagged set &middot; verified door counts from live capture data</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead><tr><th>Brand</th><th>NY dispensaries</th><th>Status</th><th>Top threat</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td>Select (incl. Briq sub-line)</td><td>69</td><td><span class="diq-verdict verdict-chaotic">⚠ P0</span></td><td>Stiiizy</td><td>7 of 8 NY retailers pricing 1g vape extreme above $35 anchor</td></tr>
-        <tr><td>Grassroots</td><td>77</td><td><span class="diq-verdict verdict-mod">●</span></td><td>Rythm (GTI)</td><td>16 NY retailers tracked, 4 extreme above-band on 3.5g flower</td></tr>
-        <tr class="diq-row-curaleaf"><td><strong>FIND</strong></td><td><strong>89</strong></td><td><span class="diq-verdict verdict-chaotic">⚠ P0</span></td><td><strong>Leal + Rolling Green</strong></td><td>Under attack &middot; this drill-down &uarr;</td></tr>
-        <tr><td>Knack</td><td>36</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>No active competitive threat detected</td></tr>
-        <tr><td>Mini Mart / Grocery</td><td>84</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>Highest carriage among newer Curaleaf NY SKUs</td></tr>
-        <tr><td>Anthem</td><td>57</td><td><span class="diq-verdict verdict-tight">●</span></td><td>—</td><td>Pre-roll specialist, mid carriage</td></tr>
-        <tr style="opacity:0.4"><td>1937 (Pharmacann)</td><td>—</td><td>—</td><td>defunct</td><td>Per Brooke May 11: acquired by Pharmacann, defunct in NY. Retained in watchlist for institutional memory.</td></tr>
-      </tbody>
-    </table>
-    <p style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-family:'Consolas',monospace">Note: NY tracked universe is 558 dispensaries with extraction data, out of 732 addressable. The remaining 174 are in pipeline for next capture cycle.</p>
   </section>
 
 </main>
@@ -188,12 +129,154 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span id="diq-footer-date">&mdash;</span> &middot; <span id="diq-footer-week">&mdash;</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
 <script src="assets/export.js?v=20"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function setText(id, val) {
+    var e = document.getElementById(id);
+    if (e) e.textContent = val;
+  }
+  function fmt(n) { return (n == null || isNaN(n)) ? '—' : Number(n).toLocaleString(); }
+
+  function actionLabel(action) {
+    if (action === 'defend_drop') return 'Defend (drop)';
+    if (action === 'contest_gain') return 'Contest (gain)';
+    return action || '—';
+  }
+  function actionClass(action) {
+    if (action === 'defend_drop') return 'verdict-chaotic';
+    if (action === 'contest_gain') return 'verdict-mod';
+    return 'verdict-tight';
+  }
+
+  function renderQuadrant(q) {
+    q = q || {};
+    setText('diq-quadrant-meta', fmt(q.assessed_doors) + ' tracked dispensaries ' + String.fromCharCode(183) + ' matched by Find / Leal+RG presence');
+    setText('diq-q1-value', fmt(q.q1_at_risk_prospects));
+    setText('diq-q2-value', fmt(q.q2_contest_zone));
+    setText('diq-q3-value', fmt(q.q3_open_market));
+    setText('diq-q4-value', fmt(q.q4_find_stronghold));
+    setText('diq-competitors-matched', 'Competitors matched: ' + fmt(q.competitors_matched));
+  }
+
+  function renderFlaggedDoors(doors) {
+    var tbody = document.getElementById('diq-flagged-doors-body');
+    if (!tbody) return;
+    doors = doors || [];
+    if (!doors.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:24px">No flagged doors this week</td></tr>';
+      return;
+    }
+    var rows = '';
+    doors.forEach(function (d) {
+      var deltaText = d.delta != null ? esc(d.delta) : '—';
+      if (d.brand_net_change_doors != null) {
+        deltaText += ' <span style="color:var(--ink-faint)">(' + esc(d.brand_net_change_doors) + ' net)</span>';
+      }
+      rows += '<tr>' +
+        '<td><strong>' + esc(d.dispensary_name || '—') + '</strong></td>' +
+        '<td>' + esc(d.city || '—') + '</td>' +
+        '<td><span class="diq-verdict ' + actionClass(d.action) + '">' + esc(actionLabel(d.action)) + '</span></td>' +
+        '<td>' + esc(d.brand || '—') + '</td>' +
+        '<td>' + deltaText + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = rows;
+  }
+
+  function renderCallout(flagged) {
+    var calloutBody = document.getElementById('diq-callout-body');
+    if (!calloutBody) return;
+    var defendCount = 0, contestCount = 0;
+    (flagged || []).forEach(function (d) {
+      if (d.action === 'defend_drop') defendCount++;
+      else if (d.action === 'contest_gain') contestCount++;
+    });
+    calloutBody.textContent = 'This week’s certified read: ' + defendCount +
+      ' door' + (defendCount === 1 ? '' : 's') + ' flagged to defend and ' + contestCount +
+      ' door' + (contestCount === 1 ? '' : 's') + ' flagged to contest across the NY Find vs Leal & Rolling Green matchup.';
+  }
+
+  function showPending(reason) {
+    var msgEl = document.getElementById('diq-pending-msg');
+    if (msgEl) msgEl.textContent = reason || 'Watchlist pending this week’s certification.';
+    var pendingSection = document.getElementById('diq-pending-section');
+    if (pendingSection) pendingSection.style.display = '';
+    var calloutSection = document.getElementById('diq-callout-section');
+    if (calloutSection) calloutSection.style.display = 'none';
+    var doorsSection = document.getElementById('diq-flagged-doors-section');
+    if (doorsSection) doorsSection.style.display = 'none';
+  }
+
+  function hidePending() {
+    var pendingSection = document.getElementById('diq-pending-section');
+    if (pendingSection) pendingSection.style.display = 'none';
+    var calloutSection = document.getElementById('diq-callout-section');
+    if (calloutSection) calloutSection.style.display = '';
+    var doorsSection = document.getElementById('diq-flagged-doors-section');
+    if (doorsSection) doorsSection.style.display = '';
+  }
+
+  function showUnavailable() {
+    setText('diq-v-week', '—');
+    setText('diq-footer-week', '—');
+    setText('diq-footer-date', '—');
+    setText('diq-quadrant-meta', '— tracked dispensaries · data unavailable');
+    setText('diq-q1-value', '—');
+    setText('diq-q2-value', '—');
+    setText('diq-q3-value', '—');
+    setText('diq-q4-value', '—');
+    setText('diq-competitors-matched', 'Competitors matched: —');
+    var calloutBody = document.getElementById('diq-callout-body');
+    if (calloutBody) calloutBody.textContent = 'Watchlist data unavailable — unable to reach the live feed.';
+    var tbody = document.getElementById('diq-flagged-doors-body');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:24px">Data unavailable</td></tr>';
+    var pendingSection = document.getElementById('diq-pending-section');
+    if (pendingSection) pendingSection.style.display = 'none';
+  }
+
+  function hydrate(data) {
+    data = data || {};
+    var manifest = data.manifest || {};
+
+    setText('diq-v-week', manifest.week_iso || '—');
+    setText('diq-footer-week', manifest.week_iso || '—');
+    setText('diq-footer-date', manifest.generated_at ? String(manifest.generated_at).slice(0, 10) : '—');
+
+    renderQuadrant(data.find_quadrant);
+
+    if (data.served) {
+      hidePending();
+      renderCallout(data.flagged_doors);
+      renderFlaggedDoors(data.flagged_doors);
+    } else {
+      showPending(data.reason);
+    }
+  }
+
+  fetch(API_BASE + '/pitch/api/ny-watchlist')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (data) { hydrate(data); })
+    .catch(function (e) {
+      console.warn('ny-watchlist fetch failed', e);
+      showUnavailable();
+    });
+})();
+</script>
 
 </body>
 </html>

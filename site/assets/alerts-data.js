@@ -8,10 +8,10 @@
 window.DIQ_ALERTS_HIGHLIGHTS = [
   {
     pri:'P0', dim:'COMPETITIVE', states:['NY'], trigger_id:'T-1044',
-    title:'FIND under attack in NY — Leal + Rolling Green now 169 doors vs Find 89',
-    body:'Leal (69 doors) and Rolling Green (100 doors) combined cover 169 of 558 tracked NY dispensaries. Find is in 89. The two competitor brands jointly outdistribute Find by 1.9x in the NY adult-use market. Q1 at-risk prospect cohort (Leal/RG carried, no Find): 92 dispensaries. Q2 contest zone (all three brands present): 45 dispensaries. Recommend trade-marketing engagement at the 92 Q1 dispensaries before Leal locks in shelf presence. Drill-down: NY watchlist page.',
-    cohort:'NY adult-use \u2022 558 tracked dispensaries',
-    action:'Trade-marketing follow-up \u2022 92 Q1 prospect dispensaries',
+    title:'FIND under attack in NY — Leal + Rolling Green combined door count outpaces Find',
+    body:'Leal and Rolling Green combined now cover more tracked NY dispensaries than Find carries. The two competitor brands jointly outdistribute Find in the NY adult-use market. See the NY watchlist and Find quadrant pages for the current, certified-week door counts and the Q1 at-risk prospect / Q2 contest-zone cohorts. Recommend trade-marketing engagement at the Q1 prospect dispensaries before Leal locks in shelf presence. Drill-down: NY watchlist page.',
+    cohort:'NY adult-use \u2022 see NY watchlist for current tracked-dispensary count',
+    action:'Trade-marketing follow-up \u2022 see NY watchlist Q1 prospect list',
   },
   {
     pri:'P0', dim:'PRICING', states:['NY'], trigger_id:'T-1041',
@@ -68,7 +68,7 @@ window.DIQ_ACTIVE_TRIGGERS = [
   {id:'T-1041', pri:'P0', dim:'PRICING',    brand:'Find',      state:'NY', states:['NY'], threshold:'>= +/-25% off, >= 5 retailers',     observed:'10 of 12 above-band',          status:'NEW', age:'0d', assignee:'Brooke + Scott'},
   {id:'T-1042', pri:'P0', dim:'PRICING',    brand:'Select',    state:'NY', states:['NY'], threshold:'>= +/-25% off, >= 5 retailers',     observed:'7 of 8 above-band',            status:'NEW', age:'0d', assignee:'Brooke + Scott'},
   {id:'T-1043', pri:'P0', dim:'PRICING',    brand:'Find',      state:'NJ', states:['NJ'], threshold:'>= +/-15% off, >= 5 retailers',     observed:'5 of 6 below-band',            status:'NEW', age:'0d', assignee:'Brooke + Scott'},
-  {id:'T-1044', pri:'P0', dim:'COMPETITIVE',brand:'Find',      state:'NY', states:['NY'], threshold:'Comp doors >= 1.5x brand doors',    observed:'Leal+RG 169 / Find 89 (1.9x)', status:'NEW', age:'0d', assignee:'Brooke + Bobby'},
+  {id:'T-1044', pri:'P0', dim:'COMPETITIVE',brand:'Find',      state:'NY', states:['NY'], threshold:'Comp doors >= 1.5x brand doors',    observed:'see NY watchlist for current door counts', status:'NEW', age:'0d', assignee:'Brooke + Bobby'},
   {id:'T-1045', pri:'P0', dim:'PRICING',    brand:'Select',    state:'IL', states:['IL'], threshold:'>= +/-25% off, >= 5 retailers',     observed:'6 of 12 above-band (2g vape)', status:'NEW', age:'0d', assignee:'Brooke + Scott'},
   {id:'T-1038', pri:'P1', dim:'PRICING',    brand:'Grassroots',state:'IL', states:['IL'], threshold:'>= +/-25% off, >= 5 retailers',     observed:'7 of 7 above-band (1g pre-roll)', status:'NEW', age:'0d', assignee:'Brooke + Scott'},
   {id:'T-1031', pri:'P1', dim:'PROMOTION',  brand:'Curaleaf',  state:'NJ', states:['NJ'], threshold:'Brand promo > 1.5x market promo',   observed:'49.9% Curaleaf vs 31.5% market', status:'NEW', age:'0d', assignee:'Brooke'},
