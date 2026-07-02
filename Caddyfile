@@ -31,4 +31,7 @@
 
 	# Ops dashboard: /ops → ops.html (Gate Verdicts panel, brief #354)
 	rewrite /ops /ops.html
+
+	# Always-current CEO status page: /status → status.html (brief #367)
+	rewrite /status /status.html
 }
