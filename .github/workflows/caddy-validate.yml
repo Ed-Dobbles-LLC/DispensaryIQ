@@ -1,0 +1,26 @@
+name: Caddyfile validate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Caddyfile'
+  pull_request:
+    paths:
+      - 'Caddyfile'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Caddyfile (caddy:2.8-alpine, matches Dockerfile)
+        run: |
+          docker run --rm \
+            -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.8-alpine \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile

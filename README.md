@@ -8,7 +8,7 @@ Static HTML, served by Caddy in a 12 MB Alpine container. Deploys to Railway in 
 dispensaryiq-pitch/
 ├── Dockerfile              Caddy 2.8 alpine, copies /site to /srv
 ├── Caddyfile               Static server config (port from $PORT env)
-├── railway.json            Tells Railway to use the Dockerfile
+├── railway.json             Tells Railway to use the Dockerfile
 ├── .dockerignore           Skip docs/git in image
 ├── .gitignore              Skip OS/IDE files
 └── site/
@@ -68,7 +68,7 @@ The first build takes ~90 seconds. Subsequent pushes auto-deploy on every `git p
 
 Open the Railway URL. You should see:
 - Landing page loads instantly with the navy nav and six report cards
-- Click **Data coverage** — map renders with 913 dots, hover works, no network errors in DevTools
+- Click **Data coverage** — map renders the current certified dispensary cohort (active 1,136 / full 1,139), hover works, no network errors in DevTools
 - View source: no external HTTP refs (all assets served from `/assets/*`)
 
 ---
