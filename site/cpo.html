@@ -67,6 +67,29 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .tcard-link{font-size:11px;font-weight:600;color:var(--indigo2);text-decoration:none}
 .tcard-link:hover{text-decoration:underline}
 
+/* ── CEO card spec (brief #390): ask / context / good-bad / recommendation ── */
+.tcard-ask{font-size:14.5px;font-weight:700;line-height:1.4;margin-bottom:8px;color:var(--ink)}
+.tcard-context{font-size:12.5px;line-height:1.5;color:var(--ink-dim);margin-bottom:10px}
+.tcard-evidence{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:4px}
+.tcard-evidence li{font-size:11.5px;line-height:1.4;padding-left:16px;position:relative}
+.tcard-evidence li::before{position:absolute;left:0;font-weight:700}
+.tcard-evidence.good li{color:var(--teal)}
+.tcard-evidence.good li::before{content:"+"}
+.tcard-evidence.bad li{color:var(--coral)}
+.tcard-evidence.bad li::before{content:"–"}
+.tcard-recommendation{font-size:12px;line-height:1.5;color:var(--ink);background:rgba(69,111,221,.08);border:1px solid rgba(69,111,221,.2);border-radius:8px;padding:8px 10px;margin-bottom:10px}
+.tcard-recommendation b{color:var(--indigo2);font-weight:700}
+.tcard-evidence-link{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fired-badge{font-family:Consolas,'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase;background:rgba(69,111,221,.14);color:var(--indigo2);border:1px solid rgba(69,111,221,.3)}
+
+/* ── CPO Activity Feed (brief #390) ─────────────────────────────────────── */
+.activity-feed{display:flex;flex-direction:column;gap:2px;max-height:420px;overflow-y:auto}
+.activity-line{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.5}
+.activity-line:hover{background:rgba(255,255,255,.03)}
+.activity-ts{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted-d);white-space:nowrap;flex:none}
+.activity-text{color:var(--ink-dim)}
+.activity-line.decision .activity-text{color:var(--ink);font-weight:600}
+
 .section-needs-ed .tcard{border-left-color:var(--coral)}
 .section-needs-ed .tcard-verdict{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
 .section-running .tcard{border-left-color:var(--teal)}
@@ -172,6 +195,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   <div class="section-loading" id="section-loading">Loading…</div>
   <div class="section-err" id="section-err" style="display:none"></div>
 
+  <!-- 6. CPO ACTIVITY FEED — the narrative spine (brief #390) -->
+  <div class="section-block section-activity">
+    <div class="section-head">
+      <h2>CPO Activity</h2>
+      <span class="section-count neutral" id="activity-count">—</span>
+      <span class="section-sub">last 48h · what the CPO is doing and why</span>
+    </div>
+    <div class="activity-feed" id="activity-feed"></div>
+    <div class="section-empty" id="activity-empty" style="display:none">
+      <span class="check">✓</span> No CPO activity in the last 48h.
+    </div>
+  </div>
+
   <div class="footer-note">
     Live data via <span class="mono">dip-service /ops/api/briefs</span> · refreshes every 60 s · running timers tick every second, client-side.<br>
     Pipeline quality &amp; latest-run status moved to <a href="quality.html">Quality Board - Dispensary →</a><br>
@@ -183,6 +219,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <script>
 const BASE = 'https://dip-service-production-0db3.up.railway.app';
 const BRIEFS_API = `${BASE}/ops/api/briefs`;
+const ACTIVITY_API = `${BASE}/ops/api/activity`;
 const KEY_STORE = 'dip_ops_key';
 const REQUEUE_ALLOWED = new Set(['failed', 'needs-ed-review', 'cancelled']);
 
@@ -215,15 +252,71 @@ function fmt_elapsed(ms) {
 }
 
 // ── Card rendering ──────────────────────────────────────────────────
+// Needs-attention cards follow the CEO card spec (brief #390, Ed feedback
+// 2026-07-02): THE ASK / CONTEXT / GOOD-BAD / CPO RECOMMENDATION / ACTIONS,
+// in that order, with the session/CI link as supporting evidence BELOW the
+// summary — never the primary content, never a bare link to a raw CI page.
+function needsEdCardHtml(it) {
+  const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
+  const card = it.card || {};
+  const ask = esc_html(card.ask || it.title || 'Review needed');
+  const context = esc_html(card.context || it.intent_blurb || '');
+  const good = (card.good || []).map(g => `<li>${esc_html(g)}</li>`).join('');
+  const bad = (card.bad || []).map(b => `<li>${esc_html(b)}</li>`).join('');
+  const evidence = (good || bad) ? `
+    ${good ? `<ul class="tcard-evidence good">${good}</ul>` : ''}
+    ${bad ? `<ul class="tcard-evidence bad">${bad}</ul>` : ''}
+  ` : '';
+  const recommendation = card.recommendation
+    ? `<div class="tcard-recommendation"><b>CPO recommends:</b> ${esc_html(card.recommendation)}</div>`
+    : '';
+
+  const actions = [`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Acknowledge</button>`];
+  if (REQUEUE_ALLOWED.has(it.status)) {
+    actions.push(`<button class="btn-action" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
+  }
+  const actionsHtml = `<div class="tcard-actions">${actions.join('')}</div>`;
+
+  const approvalsHtml = (it.approval_requests || []).filter(a => !a.is_expired).map(a => `
+    <div class="tcard-approval-block" data-approval-id="${esc_html(a.approval_id)}">
+      <div class="tcard-approval">
+        <input type="password" class="approval-pass-input" placeholder="Passphrase for approval #${esc_html(a.approval_id)}" autocomplete="off">
+        <button class="btn-action" data-action="verify" data-approval-id="${esc_html(a.approval_id)}" data-brief-id="${esc_html(it.brief_id)}">Approve</button>
+      </div>
+      <div class="tcard-verify-msg"></div>
+    </div>
+  `).join('');
+
+  // Session/CI link: supporting evidence at the bottom, never the primary content.
+  const link = it.session_url
+    ? `<a class="tcard-link" href="${esc_html(it.session_url)}" target="_blank" rel="noopener noreferrer">session ↗</a>`
+    : '<span></span>';
+
+  return `<div class="tcard">`+
+    `<div class="tcard-ask">${ask}</div>`+
+    `<div class="tcard-title">${title}</div>`+
+    (context ? `<div class="tcard-context">${context}</div>` : '')+
+    evidence+recommendation+
+    actionsHtml+approvalsHtml+
+    `<div class="tcard-evidence-link">${link}</div>`+
+  `</div>`;
+}
+
 function tcardHtml(it, kind) {
+  if (kind === 'needs_ed') return needsEdCardHtml(it);
+
   const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
   const blurb = esc_html(it.intent_blurb || it.title || 'no blurb on file');
   let verdictLabel;
   if (kind === 'running') {
-    const claimedAt = it.claimed_at ? esc_html(it.claimed_at) : '';
-    verdictLabel = claimedAt
-      ? `<span class="tcard-pulse"></span><span class="tcard-timer mono" data-claimed-at="${claimedAt}">--:--</span>`
-      : `<span class="tcard-pulse"></span><span>running</span>`;
+    if (it.fired_awaiting_claim) {
+      verdictLabel = `<span class="fired-badge">fired, awaiting claim</span>`;
+    } else {
+      const claimedAt = it.claimed_at ? esc_html(it.claimed_at) : '';
+      verdictLabel = claimedAt
+        ? `<span class="tcard-pulse"></span><span class="tcard-timer mono" data-claimed-at="${claimedAt}">--:--</span>`
+        : `<span class="tcard-pulse"></span><span>running</span>`;
+    }
   } else if (kind === 'queued') {
     verdictLabel = `priority ${esc_html(it.priority)}`;
   } else {
@@ -232,38 +325,22 @@ function tcardHtml(it, kind) {
   const link = it.session_url
     ? `<a class="tcard-link" href="${esc_html(it.session_url)}" target="_blank" rel="noopener noreferrer">session ↗</a>`
     : '';
-  const hint = kind === 'needs_ed'
-    ? `<div class="tcard-hint">cleared by recording a disposition</div>`
-    : '';
   const disposition = it.disposition
     ? `<div class="tcard-hint">${esc_html(it.disposition)}</div>`
     : '';
 
   const actions = [];
-  if (kind === 'needs_ed') {
-    actions.push(`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Resolve</button>`);
-  }
   if (REQUEUE_ALLOWED.has(it.status)) {
     actions.push(`<button class="btn-action" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
   }
   const actionsHtml = actions.length ? `<div class="tcard-actions">${actions.join('')}</div>` : '';
 
-  const approvalsHtml = (it.approval_requests || []).map(a => `
-    <div class="tcard-approval-block" data-approval-id="${esc_html(a.approval_id)}">
-      <div class="tcard-approval">
-        <input type="password" class="approval-pass-input" placeholder="Passphrase for approval #${esc_html(a.approval_id)}" autocomplete="off">
-        <button class="btn-action" data-action="verify" data-approval-id="${esc_html(a.approval_id)}" data-brief-id="${esc_html(it.brief_id)}">Verify</button>
-      </div>
-      <div class="tcard-verify-msg"></div>
-    </div>
-  `).join('');
-
   return `<div class="tcard">`+
     `<div class="tcard-blurb">${blurb}</div>`+
     `<div class="tcard-title">${title}</div>`+
-    hint+disposition+
+    disposition+
     `<div class="tcard-meta"><span class="tcard-verdict">${verdictLabel}</span>${link}</div>`+
-    actionsHtml+approvalsHtml+
+    actionsHtml+
   `</div>`;
 }
 
@@ -327,6 +404,35 @@ async function fetchTriage() {
     const err = document.getElementById('section-err');
     err.textContent = `Refresh failed: ${e.message}`;
     err.style.display = 'block';
+  }
+}
+
+// ── CPO Activity Feed (brief #390) — the page's narrative spine: a CEO
+// reading only this feed should understand the day. ───────────────────
+function activityLineHtml(ev) {
+  const cls = ev.severity === 'high' || (ev.event_type === 'cpo_note' && ev.severity === 'decision') ? 'decision' : '';
+  const ts = ev.created_at ? new Date(ev.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  return `<div class="activity-line ${cls}">`+
+    `<span class="activity-ts mono">${esc_html(ts)}</span>`+
+    `<span class="activity-text">${esc_html(ev.line)}</span>`+
+  `</div>`;
+}
+
+async function fetchActivity() {
+  try {
+    const r = await fetch(ACTIVITY_API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    const events = json.events || [];
+    document.getElementById('activity-count').textContent = events.length;
+    const feed = document.getElementById('activity-feed');
+    feed.innerHTML = events.map(activityLineHtml).join('');
+    feed.style.display = events.length ? '' : 'none';
+    document.getElementById('activity-empty').style.display = events.length ? 'none' : 'flex';
+  } catch (e) {
+    // Best-effort: the activity feed is supplementary narrative, not core
+    // triage — a failure here should never block the main /ops/api/briefs render.
+    document.getElementById('activity-count').textContent = '—';
   }
 }
 
@@ -489,7 +595,9 @@ document.querySelector('.wrap').addEventListener('keydown', (e) => {
 
 // ── Init + 60s refresh ───────────────────────────────────────────────
 fetchTriage();
+fetchActivity();
 setInterval(fetchTriage, 60000);
+setInterval(fetchActivity, 60000);
 </script>
 </body>
 </html>
