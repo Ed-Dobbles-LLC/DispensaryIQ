@@ -21,7 +21,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W20 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span id="diq-v-week">—</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -51,66 +51,40 @@
     </div>
 
     <h1 class="diq-page-title">Which retailers are off-band this week?</h1>
-    <p class="diq-page-subtitle">Until Curaleaf provides MSRP, we model Synthetic MSRP from two anchors: (1) median price at <strong>Curaleaf-owned stores</strong> (ground truth) when N&ge;3 stores carry the matched SKU, otherwise (2) cross-retailer modal price. Products are matched on <strong>brand &times; product type &times; pack size &times; THC band</strong>. Retailers are flagged at four severity bands (&plusmn;5/10/15/25%) against the Synthetic MSRP.</p>
+    <p class="diq-page-subtitle">Until Curaleaf provides MSRP, we compare the <strong>Curaleaf-owned median price</strong> against the <strong>market median price</strong> for each brand &times; product type &times; state cohort. Each cohort is positioned as above-market, below-market, at-market, or (when there isn&rsquo;t enough market data) no market baseline.</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.06)">
-      <p class="diq-callout-label" style="color: var(--coral)">&#9656; Three brand-wide signals this week</p>
-      <p style="margin:0">
-        <strong>Find NY:</strong> Curaleaf-owned anchor $19.50 for 3.5g flower. 10 of 12 NY retailers pricing 25%+ above &mdash; market median $30, a 54% premium over Curaleaf-retail. Same pattern Select 1g vape NY ($35 anchor vs $59.65 market, 7 of 8 extreme).<br>
-        <strong>Find NJ:</strong> Curaleaf-owned anchor $12.00 for 1g pre-roll. 5 of 6 NJ retailers pricing 15-25% BELOW &mdash; opposite-direction excursion from NY. Brand-wide pricing discipline issue.<br>
-        <strong>Grassroots IL:</strong> Tightest discipline in the pilot. 11 of 14 retailers in-band for 3.5g flower at $32.50. Reference case for what good looks like.
-      </p>
+      <p class="diq-callout-label" style="color: var(--coral)">&#9656; Brand-wide signals this week</p>
+      <p style="margin:0" id="diq-price-signals">Loading live pricing signals&hellip;</p>
     </div>
   </section>
   <section class="diq-section" style="background: transparent; border: none; padding: 0; box-shadow: none">
     <div class="diq-section-head" style="margin-bottom: 10px">
       <h2 class="diq-section-title">This week&rsquo;s worst offenders</h2>
-      <span class="diq-section-meta">Top 3 brand &middot; type &middot; pack cells by severity &times; retailers affected</span>
+      <span class="diq-section-meta">Top cells by absolute delta vs. market median</span>
     </div>
-    <div class="diq-bluf-strip">
-      <div class="diq-bluf-card">
-        <div class="rank">RANK 1 &middot; NY &middot; FIND</div>
-        <div class="title">Find 3.5g flower &middot; New York</div>
-        <div class="stat">10 / 12</div>
-        <div class="stat-sub">Retailers extreme above-band. Curaleaf-owned anchor <strong>$19.50</strong> vs market median <strong>$30.00</strong> &mdash; a 54% premium. Worst offender: RISE Dispensary NY at $35 (n=4 obs).</div>
-      </div>
-      <div class="diq-bluf-card">
-        <div class="rank">RANK 2 &middot; NY &middot; SELECT</div>
-        <div class="title">Select 1g vape &middot; New York</div>
-        <div class="stat">7 / 8</div>
-        <div class="stat-sub">Retailers extreme above-band. Curaleaf-owned anchor <strong>$35.00</strong> vs market median <strong>$59.65</strong> &mdash; a 70% premium. Worst offender: RISE Dispensary NY at $60 (n=26 obs &mdash; highest-confidence pricing call in the pilot).</div>
-      </div>
-      <div class="diq-bluf-card">
-        <div class="rank">RANK 3 &middot; NJ &middot; FIND</div>
-        <div class="title">Find 1g pre-roll &middot; New Jersey</div>
-        <div class="stat">5 / 6</div>
-        <div class="stat-sub">Retailers severe <strong>below-band</strong> (opposite direction from NY). Curaleaf-owned anchor <strong>$12.00</strong>, 5 of 6 retailers pricing 15&ndash;25% below. Signal: brand-wide pricing discipline issue, not market-specific.</div>
-      </div>
-    </div>
+    <div class="diq-bluf-strip" id="diq-bluf-strip"></div>
   </section>
 
 
   <section class="diq-section">
     <div class="diq-section-head">
       <h2 class="diq-section-title">Off-band cohorts &middot; pilot</h2>
-      <span class="diq-section-meta">Curaleaf brand &times; type &times; pack size &times; state &middot; ranked by severity</span>
+      <span class="diq-section-meta" id="diq-table-meta">Curaleaf brand &times; type &times; state &middot; ranked by |delta| vs market</span>
     </div>
     <table class="diq-cat-table">
       <thead>
         <tr>
-          <th>Brand &middot; type &middot; pack</th>
+          <th>Brand &middot; type</th>
           <th>State</th>
-          <th>Synthetic MSRP</th>
-          <th>Anchor</th>
-          <th>Retailers</th>
-          <th>In-band (&plusmn;5%)</th>
-          <th>Soft (5-10%)</th>
-          <th>Hard (10-15%)</th>
-          <th>Severe (15-25%)</th>
-          <th>Extreme (&gt;25%)</th>
-          <th>Direction</th>
+          <th>Curaleaf median</th>
+          <th>Curaleaf N</th>
+          <th>Market median</th>
+          <th>Market N</th>
+          <th>Delta vs market</th>
+          <th>Positioning</th>
         </tr>
       </thead>
       <tbody id="diq-price-tbody"></tbody>
@@ -136,14 +110,14 @@
       <strong>Matching rules.</strong> brand_canonical (Curaleaf graph: Select, Grassroots, Find, Anthem, JAMS, Reef, B Noble); product_type (vape / flower / pre-roll / edible / concentrate); pack_size (weight_g or size_mg, parsed at extraction); THC band (quintile bins per category, e.g. flower 18-22% / 22-26% / 26-30% / 30%+). Unmatched cohorts are excluded from MSRP modeling.
     </p>
     <p style="font-size:12px;color:var(--ink-faint);margin-top:8px">
-      <strong>Severity bands.</strong> &plusmn;5% in-band (not flagged). &plusmn;5-10% soft. &plusmn;10-15% hard (fires P2 alert). &plusmn;15-25% severe (fires P1 alert). &gt;&plusmn;25% extreme (fires P0 alert). Both above-band and below-band excursions are reported.
+      <strong>Positioning.</strong> Each cohort is labeled above-market, below-market, at-market, or no market baseline (insufficient market observations to compare), based on the delta between the Curaleaf-owned median and the market median.
     </p>
   </section>
 
   <section class="diq-section">
     <div class="diq-callout">
       <p class="diq-callout-label">&#9656; Once Curaleaf provides MSRP</p>
-      <p style="margin:0">The Synthetic MSRP becomes the <strong>fallback</strong>, not the primary anchor. Real MSRP plugs into the same severity-band framework on the same page. The Curaleaf-owned modal becomes a secondary read &mdash; useful for detecting whether Curaleaf retail itself is on-MSRP. The architecture does not change; only the anchor source does.</p>
+      <p style="margin:0">The Synthetic MSRP becomes the <strong>fallback</strong>, not the primary anchor. Real MSRP plugs into the same positioning framework on the same page. The Curaleaf-owned modal becomes a secondary read &mdash; useful for detecting whether Curaleaf retail itself is on-MSRP. The architecture does not change; only the anchor source does.</p>
     </div>
   </section>
 
@@ -154,7 +128,7 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-05-17 &middot; Week 20</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span id="diq-footer-date">—</span> &middot; <span id="diq-footer-week">—</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
@@ -162,36 +136,92 @@
 <script src="assets/export.js?v=20"></script>
 
 <script>
-const DIQ_DATA = [{"brand": "Find", "type": "flower", "wt": 3.5, "state": "NY", "msrp": 19.5, "conf": "HIGH (Curaleaf-owned)", "cura_n": 3, "mkt_n": 12, "in": 1, "soft": 0, "hard": 1, "sev": 0, "ext": 10, "below": 0, "above": 10, "flag": "extreme"}, {"brand": "Select", "type": "vape", "wt": 1, "state": "NY", "msrp": 35.0, "conf": "HIGH (Curaleaf-owned)", "cura_n": 7, "mkt_n": 8, "in": 0, "soft": 1, "hard": 0, "sev": 0, "ext": 7, "below": 0, "above": 7, "flag": "extreme"}, {"brand": "Find", "type": "pre-roll", "wt": 1, "state": "NJ", "msrp": 12.0, "conf": "HIGH (Curaleaf-owned)", "cura_n": 4, "mkt_n": 6, "in": 0, "soft": 1, "hard": 0, "sev": 5, "ext": 0, "below": 4, "above": 1, "flag": "severe"}, {"brand": "Grassroots", "type": "pre-roll", "wt": 1, "state": "IL", "msrp": 10.35, "conf": "HIGH (Curaleaf-owned)", "cura_n": 4, "mkt_n": 7, "in": 0, "soft": 0, "hard": 0, "sev": 2, "ext": 5, "below": 0, "above": 7, "flag": "extreme"}, {"brand": "Find", "type": "flower", "wt": 28, "state": "NY", "msrp": 150.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 11, "in": 3, "soft": 0, "hard": 2, "sev": 6, "ext": 0, "below": 2, "above": 4, "flag": "severe"}, {"brand": "Find", "type": "flower", "wt": 3.5, "state": "NJ", "msrp": 35.75, "conf": "MEDIUM (thin market)", "cura_n": 2, "mkt_n": 6, "in": 1, "soft": 0, "hard": 2, "sev": 1, "ext": 2, "below": 2, "above": 1, "flag": "extreme"}, {"brand": "Grassroots", "type": "flower", "wt": 3.5, "state": "NY", "msrp": 40.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 16, "in": 6, "soft": 0, "hard": 3, "sev": 4, "ext": 3, "below": 3, "above": 4, "flag": "mixed"}, {"brand": "Select", "type": "vape", "wt": 2, "state": "IL", "msrp": 60.45, "conf": "HIGH (Curaleaf-owned)", "cura_n": 12, "mkt_n": 12, "in": 5, "soft": 1, "hard": 0, "sev": 0, "ext": 6, "below": 0, "above": 6, "flag": "extreme"}, {"brand": "Find", "type": "pre-roll", "wt": 6.25, "state": "IL", "msrp": 60.0, "conf": "MEDIUM (thin market)", "cura_n": 0, "mkt_n": 9, "in": 6, "soft": 0, "hard": 0, "sev": 0, "ext": 3, "below": 0, "above": 3, "flag": "extreme"}, {"brand": "Anthem", "type": "pre-roll", "wt": 2.5, "state": "IL", "msrp": 39.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 17, "in": 11, "soft": 0, "hard": 2, "sev": 3, "ext": 1, "below": 3, "above": 1, "flag": "severe"}, {"brand": "Grassroots", "type": "flower", "wt": 14, "state": "IL", "msrp": 75.0, "conf": "MEDIUM (thin market)", "cura_n": 2, "mkt_n": 8, "in": 3, "soft": 0, "hard": 0, "sev": 4, "ext": 1, "below": 2, "above": 3, "flag": "severe"}, {"brand": "Anthem", "type": "pre-roll", "wt": 3.5, "state": "IL", "msrp": 35.0, "conf": "HIGH (market modal)", "cura_n": 0, "mkt_n": 14, "in": 10, "soft": 0, "hard": 2, "sev": 0, "ext": 2, "below": 2, "above": 0, "flag": "mixed"}, {"brand": "Anthem", "type": "pre-roll", "wt": 1, "state": "IL", "msrp": 19.0, "conf": "HIGH (market modal)", "cura_n": 1, "mkt_n": 13, "in": 9, "soft": 2, "hard": 1, "sev": 0, "ext": 1, "below": 1, "above": 0, "flag": "in-band"}, {"brand": "Grassroots", "type": "flower", "wt": 3.5, "state": "IL", "msrp": 32.5, "conf": "HIGH (Curaleaf-owned)", "cura_n": 24, "mkt_n": 14, "in": 11, "soft": 1, "hard": 1, "sev": 1, "ext": 0, "below": 0, "above": 1, "flag": "in-band"}, {"brand": "JAMS", "type": "edible", "wt": 0.1, "state": "IL", "msrp": 12.0, "conf": "MEDIUM (thin market)", "cura_n": 0, "mkt_n": 6, "in": 6, "soft": 0, "hard": 0, "sev": 0, "ext": 0, "below": 0, "above": 0, "flag": "in-band"}];
-const FLAG_CLASS = {'in-band':'verdict-tight','mixed':'verdict-mod','severe':'verdict-wide','extreme':'verdict-chaotic'};
-const FLAG_LABEL = {'in-band':'In-band overall','mixed':'Mixed direction','severe':'Severe — below or above','extreme':'Extreme — flag for action'};
-function fmtMoney(n) { return '$' + n.toFixed(2); }
+var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
+var DIQ_ROWS = [];
+
+const POS_CLASS = {'above_market':'verdict-chaotic','below_market':'verdict-wide','at_market':'verdict-tight','no_market_baseline':'verdict-mod'};
+const POS_LABEL = {'above_market':'Above market','below_market':'Below market','at_market':'At market','no_market_baseline':'No market baseline'};
+function fmtMoney(n) { return n == null ? '—' : '$' + Number(n).toFixed(2); }
+function fmtPct(n) { return n == null ? '—' : (n > 0 ? '+' : '') + Number(n).toFixed(1) + '%'; }
+function setText(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; }
+
+function sortedByAbsDelta(rows) {
+  return [...rows].sort((a, b) => {
+    var ad = a.delta_vs_market_pct == null ? -1 : Math.abs(a.delta_vs_market_pct);
+    var bd = b.delta_vs_market_pct == null ? -1 : Math.abs(b.delta_vs_market_pct);
+    return bd - ad;
+  });
+}
+
 function render() {
   const tbody = document.getElementById('diq-price-tbody');
-  const sorted = [...DIQ_DATA].sort((a, b) => {
-    const sevOrder = {'extreme':0,'severe':1,'mixed':2,'in-band':3};
-    if (sevOrder[a.flag] !== sevOrder[b.flag]) return sevOrder[a.flag] - sevOrder[b.flag];
-    return (b.ext + b.sev) - (a.ext + a.sev);
-  });
-  tbody.innerHTML = sorted.map(r => {
-    const direction = r.below + r.above === 0 ? '—' : `${r.below} below / ${r.above} above`;
-    return `
+  const sorted = sortedByAbsDelta(DIQ_ROWS);
+  tbody.innerHTML = sorted.map(r => `
       <tr>
-        <td><strong>${r.brand}</strong> · ${r.type} · ${r.wt}g</td>
+        <td><strong>${r.brand}</strong> · ${r.product_type}</td>
         <td>${r.state}</td>
-        <td><strong>${fmtMoney(r.msrp)}</strong></td>
-        <td><span class="diq-conf-${r.conf.includes('HIGH') ? 'high' : 'med'}">${r.conf}</span></td>
-        <td>${r.mkt_n}</td>
-        <td class="${r['in'] > 0 ? 'diq-cell-good' : ''}">${r['in']}</td>
-        <td>${r.soft}</td>
-        <td>${r.hard || ''}</td>
-        <td class="${r.sev > 0 ? 'diq-cell-warn' : ''}">${r.sev || ''}</td>
-        <td class="${r.ext > 0 ? 'diq-cell-bad' : ''}">${r.ext || ''}</td>
-        <td>${direction} <span class="diq-verdict ${FLAG_CLASS[r.flag]}">${FLAG_LABEL[r.flag]}</span></td>
-      </tr>`;
-  }).join('');
+        <td><strong>${fmtMoney(r.curaleaf_median_price)}</strong></td>
+        <td>${r.curaleaf_n != null ? r.curaleaf_n : '—'}</td>
+        <td>${fmtMoney(r.market_median_price)}</td>
+        <td>${r.market_n != null ? r.market_n : '—'}</td>
+        <td class="${r.positioning === 'above_market' ? 'diq-cell-bad' : (r.positioning === 'below_market' ? 'diq-cell-warn' : '')}">${fmtPct(r.delta_vs_market_pct)}</td>
+        <td><span class="diq-verdict ${POS_CLASS[r.positioning] || 'verdict-mod'}">${POS_LABEL[r.positioning] || r.positioning || '—'}</span></td>
+      </tr>`).join('');
+
+  /* Worst-offenders BLUF strip: top 3 by |delta| among rows with a market baseline */
+  const withBaseline = sorted.filter(r => r.positioning !== 'no_market_baseline' && r.delta_vs_market_pct != null);
+  const top3 = withBaseline.slice(0, 3);
+  const strip = document.getElementById('diq-bluf-strip');
+  if (strip) {
+    strip.innerHTML = top3.map((r, i) => `
+      <div class="diq-bluf-card">
+        <div class="rank">RANK ${i + 1} &middot; ${r.state} &middot; ${r.brand.toUpperCase()}</div>
+        <div class="title">${r.brand} ${r.product_type} &middot; ${r.state}</div>
+        <div class="stat">${fmtPct(r.delta_vs_market_pct)}</div>
+        <div class="stat-sub">Curaleaf median <strong>${fmtMoney(r.curaleaf_median_price)}</strong> (n=${r.curaleaf_n != null ? r.curaleaf_n : '—'}) vs market median <strong>${fmtMoney(r.market_median_price)}</strong> (n=${r.market_n != null ? r.market_n : '—'}) &mdash; <span class="diq-verdict ${POS_CLASS[r.positioning] || 'verdict-mod'}">${POS_LABEL[r.positioning] || r.positioning}</span>.</div>
+      </div>`).join('');
+  }
+
+  /* Signals callout: summarize the top offenders in prose, no hardcoded figures */
+  const signals = document.getElementById('diq-price-signals');
+  if (signals) {
+    if (!top3.length) {
+      signals.textContent = 'No off-market pricing signals this week.';
+    } else {
+      signals.innerHTML = top3.map(r =>
+        `<strong>${r.brand} ${r.state}:</strong> ${r.product_type} priced ${fmtPct(r.delta_vs_market_pct)} vs market median (Curaleaf ${fmtMoney(r.curaleaf_median_price)} vs market ${fmtMoney(r.market_median_price)}).`
+      ).join('<br>');
+    }
+  }
+
+  setText('diq-table-meta', `Curaleaf brand × type × state · ${sorted.length} cohorts · ranked by |delta| vs market`);
 }
-render();
+
+function showUnavailable() {
+  setText('diq-price-signals', 'Pricing data temporarily unavailable.');
+  var strip = document.getElementById('diq-bluf-strip');
+  if (strip) strip.innerHTML = '';
+  var tbody = document.getElementById('diq-price-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--ink-faint)">Pricing data temporarily unavailable.</td></tr>';
+  setText('diq-v-week', '—');
+  setText('diq-footer-date', '—');
+  setText('diq-footer-week', '—');
+}
+
+fetch(API_BASE + '/pitch/api/price-comparison')
+  .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+  .then(function (data) {
+    var manifest = data.manifest || {};
+    DIQ_ROWS = data.rows || [];
+    setText('diq-v-week', manifest.week_iso || '—');
+    setText('diq-footer-date', manifest.generated_at ? manifest.generated_at.slice(0, 10) : '—');
+    setText('diq-footer-week', manifest.week_iso || '—');
+    render();
+  })
+  .catch(function (err) {
+    console.warn('price-comparison fetch failed:', err);
+    showUnavailable();
+  });
 </script>
 
 </body>

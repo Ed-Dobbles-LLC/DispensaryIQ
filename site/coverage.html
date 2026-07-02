@@ -203,6 +203,24 @@
     }
     var pill = document.getElementById('diq-freshness-pill');
     if (pill) pill.style.display = 'none';
+
+    /* Blank stale fallback literals instead of leaving last-known-good
+       hardcoded numbers on screen next to the "unavailable" banner. */
+    setText('diq-v-week', '—');
+    setText('diq-good-doors-subtitle', '—');
+    setText('diq-hero-good-doors', '—');
+    setText('diq-distinct-products', '—');
+    setText('diq-pct-priced', '--');
+    setText('diq-section-meta', 'Coverage data unavailable');
+    setText('diq-legend-IL', '—');
+    setText('diq-legend-NJ', '—');
+    setText('diq-legend-NY', '—');
+    setText('diq-footer-date', '—');
+    setText('diq-footer-week', '—');
+    var svg = document.getElementById('diq-map-svg');
+    if (svg) svg.setAttribute('aria-label', 'Coverage data unavailable');
+    var g = document.getElementById('diq-dots');
+    if (g) g.innerHTML = '';
   }
 
   function renderDots(dots) {

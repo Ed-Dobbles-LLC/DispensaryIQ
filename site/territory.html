@@ -50,7 +50,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W3 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span data-bind="gen-week">W3</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -123,10 +123,14 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-// Territory view — reads the SAME data/named_accounts_payload.json.
+// Territory view — reads live from the production backend (the SAME
+// GET /pitch/api/named-accounts route as the account map).
 // Geographic lens: summary.by_state for displacement/greenfield/competitor,
 // doors[] for assessed/curaleaf/rate (by_state does not carry those).
+// Always shows the current certified week; historical ?week= browsing is
+// not supported for this live route.
 // ─────────────────────────────────────────────────────────────
+var API_BASE = 'https://dip-service-production-0db3.up.railway.app';
 let NA = null;
 const STATE_NAME = { NY: 'New York', NJ: 'New Jersey', IL: 'Illinois' };
 const COMP_LABEL = { rythm: 'RYTHM', cresco: 'Cresco', verano: 'Verano', trulieve: 'Trulieve', ascend: 'Ascend' };
@@ -187,18 +191,13 @@ function renderCards() {
   }).join('');
 }
 
-async function init() {
-  const _payloadUrl = (window.DIQ && DIQ.weekPayloadUrl) ? DIQ.weekPayloadUrl('data/named_accounts_payload.json') : 'data/named_accounts_payload.json';
-  try {
-    const resp = await fetch(_payloadUrl, { cache: 'no-store' });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    NA = await resp.json();
-  } catch (e) {
-    if (window.DIQ && !DIQ.isDefaultWeek()) { DIQ.renderWeekEmptyState(); return; }
-    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load named_accounts_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
-    return;
-  }
+function renderUnavailable(err) {
+  document.querySelector('main').innerHTML =
+    '<p style="color:var(--coral);padding:24px">Live territory data is unavailable right now &mdash; try refreshing in a moment.' +
+    (err !== undefined && err !== null ? ' (' + err + ')' : '') + '</p>';
+}
 
+function renderAll() {
   const m = NA.manifest || {}, s = NA.summary;
   const ny = stateStats('NY'), nj = stateStats('NJ'), il = stateStats('IL');
   setText('nj-rate', nj.rate.toFixed(1));
@@ -210,6 +209,13 @@ async function init() {
   if (m.week_iso) setText('gen-week', m.week_iso);
 
   renderCards();
+}
+
+function init() {
+  fetch(API_BASE + '/pitch/api/named-accounts')
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => { NA = data; renderAll(); })
+    .catch(e => renderUnavailable(e));
 }
 init();
 </script>

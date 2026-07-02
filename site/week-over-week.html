@@ -21,7 +21,7 @@
     <div class="diq-nav-aside">
       <div class="diq-pillar-stamp">
         <div class="diq-pillar-line">COHORT &middot; LICENSE &middot; FAIR-SHARE &middot; CPG</div>
-        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; W3 &middot; 2026-06-01 &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
+        <div class="diq-pillar-meta">DispensaryIQ v1.0 &middot; <span id="diq-v-week">&mdash;</span> &middot; <span id="diq-v-date">&mdash;</span> &middot; <a href="shelf-quality-explainer.html">methodology</a></div>
       </div>
       <button class="diq-theme-toggle" onclick="diqToggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <svg class="diq-theme-icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>
@@ -43,26 +43,31 @@
 
 <main class="diq-main">
 
+  <div id="diq-pending-banner" class="diq-phase2-banner" style="display:none;margin-top:14px">
+    <div class="icon">&#9888;</div>
+    <div class="text"><span id="diq-pending-msg">Week-over-week pending this week&rsquo;s certification.</span></div>
+  </div>
+
   <header class="diq-page-header">
-    <p class="diq-page-eyebrow">Week-over-week &middot; W2 (2026-05-25) &rarr; W3 (2026-06-01) &middot; 523-store same-store panel (IL / NJ / NY)</p>
+    <p class="diq-page-eyebrow">Week-over-week &middot; <span id="diq-period-label">Loading&hellip;</span> &middot; same-store panel (IL / NJ / NY)</p>
 
     <div class="diq-prepared-for">
       <p class="diq-prepared-label">Prepared for</p>
       <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-prepared-logo">
     </div>
 
-    <h1 class="diq-page-title">Week-over-week: what moved W2 &rarr; W3</h1>
-    <p class="diq-page-subtitle">One-week movement on the cleaned tier model, measured on a fixed same-store panel of 523 dispensaries across IL, NJ and NY. Door counts and price position are <strong>HARD</strong> reads; shelf-share is <strong>DIRECTIONAL</strong> on a single week. Treat this as a signal to watch, not a trend.</p>
+    <h1 class="diq-page-title">Week-over-week: what moved</h1>
+    <p class="diq-page-subtitle">One-period movement on the cleaned tier model, measured on a fixed same-store panel across IL, NJ and NY. Door counts are <strong>HARD</strong> reads. Treat this as a signal to watch, not a trend.</p>
   </header>
 
   <section class="diq-section">
     <div class="diq-hero-metric">
       <div>
-        <p class="diq-hero-label">Composite headline &middot; W2 &rarr; W3</p>
-        <p class="diq-hero-number">Hold price.<br><span class="accent">Soften share.</span></p>
+        <p class="diq-hero-label">Composite headline</p>
+        <p class="diq-hero-number" id="diq-hero-headline">&mdash;</p>
       </div>
       <div>
-        <p class="diq-hero-body" style="font-size:19px">Curaleaf <strong>held price</strong> (premium in flower, widening) while <strong>shelf share and Grassroots distribution softened</strong> W2&rarr;W3 &mdash; a one-week margin-vs-volume signal.</p>
+        <p class="diq-hero-body" id="diq-hero-body" style="font-size:19px">Loading live week-over-week data&hellip;</p>
       </div>
     </div>
   </section>
@@ -70,107 +75,35 @@
   <section class="diq-section">
     <div class="diq-section-head">
       <h2 class="diq-section-title">1 &middot; Door movement</h2>
-      <span class="diq-section-meta">Curaleaf brands &middot; same-store panel &middot; W2 &rarr; W3 doors &middot; <span class="diq-conf-high">CONFIDENCE: HARD</span></span>
+      <span class="diq-section-meta">Brand doors &middot; <span id="diq-period-compare">&mdash;</span> &middot; <span class="diq-conf-high">CONFIDENCE: HARD</span></span>
     </div>
     <table class="diq-cat-table">
       <thead>
-        <tr><th>Brand</th><th class="r">W2 doors</th><th class="r">W3 doors</th><th class="r">&Delta;</th></tr>
+        <tr><th>State</th><th>Brand</th><th class="r">Period A doors</th><th class="r">Period B doors</th><th class="r">&Delta;</th><th>Direction</th></tr>
       </thead>
-      <tbody>
-        <tr><td>Find</td><td class="r">107</td><td class="r">111</td><td class="r diq-delta-up">+4</td></tr>
-        <tr class="diq-row-curaleaf"><td><strong>Grassroots</strong></td><td class="r">126</td><td class="r">107</td><td class="r diq-delta-down"><strong>&minus;19</strong></td></tr>
-        <tr><td>Anthem</td><td class="r">86</td><td class="r">84</td><td class="r diq-delta-down">&minus;2</td></tr>
-        <tr><td>Select</td><td class="r">81</td><td class="r">79</td><td class="r diq-delta-down">&minus;2</td></tr>
-        <tr><td>JAMS</td><td class="r">36</td><td class="r">35</td><td class="r diq-delta-down">&minus;1</td></tr>
-        <tr><td>B-Noble</td><td class="r">19</td><td class="r">19</td><td class="r">0</td></tr>
-        <tr><td>Curaleaf</td><td class="r">6</td><td class="r">5</td><td class="r diq-delta-down">&minus;1</td></tr>
-        <tr><td>Reef</td><td class="r">2</td><td class="r">2</td><td class="r">0</td></tr>
+      <tbody id="diq-brand-delta-body">
+        <tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">Loading&hellip;</td></tr>
       </tbody>
     </table>
-    <div class="diq-callout" style="border-color: var(--coral); background: rgba(219, 84, 97, 0.05)">
-      <p class="diq-callout-label" style="color: var(--coral)">&#9656; Headline mover</p>
-      <p style="margin:0">Grassroots &minus;19 doors is the week&rsquo;s one material mover and is depth-validated as real churn &mdash; the 29 stores that dropped Grassroots kept ~92% of total menu depth, so it is not a capture artifact. All other Curaleaf brands held flat (&plusmn;2).</p>
+    <div class="diq-callout" id="diq-mover-callout" style="display:none">
+      <p class="diq-callout-label">&#9656; Headline mover</p>
+      <p style="margin:0" id="diq-mover-text"></p>
     </div>
   </section>
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title">2 &middot; Price position vs category</h2>
-      <span class="diq-section-meta">Curaleaf price ratio vs category median &middot; W2 &rarr; W3 &middot; <span class="diq-conf-high">CONFIDENCE: HARD</span></span>
+      <h2 class="diq-section-title">2 &middot; Named menu drops</h2>
+      <span class="diq-section-meta">Dispensaries that dropped a brand&rsquo;s SKUs this period &middot; <span class="diq-conf-high">CONFIDENCE: HARD</span></span>
     </div>
     <table class="diq-cat-table">
       <thead>
-        <tr><th>Category</th><th class="r">W2 ratio</th><th class="r">W3 ratio</th><th>Read</th></tr>
+        <tr><th>State</th><th>Dispensary</th><th>City</th><th>Brand</th><th class="r">SKUs (period A)</th></tr>
       </thead>
-      <tbody>
-        <tr><td>Vape</td><td class="r">1.20</td><td class="r">1.19</td><td>Premium</td></tr>
-        <tr class="diq-row-curaleaf"><td><strong>Flower</strong></td><td class="r">1.11</td><td class="r"><strong>1.17</strong></td><td><strong>Premium widening</strong></td></tr>
-        <tr><td>Edible</td><td class="r">1.16</td><td class="r">1.15</td><td>Premium, stable</td></tr>
-        <tr><td>Pre-Roll</td><td class="r">1.01</td><td class="r">1.02</td><td>Parity</td></tr>
-        <tr><td>Concentrate</td><td class="r">0.82</td><td class="r diq-delta-down">0.73</td><td>Below market, dropping</td></tr>
+      <tbody id="diq-named-drops-body">
+        <tr><td colspan="5" style="text-align:center;color:var(--ink-soft)">Loading&hellip;</td></tr>
       </tbody>
     </table>
-    <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; How to read</p>
-      <p style="margin:0">Ratio &gt; 1.00 = Curaleaf priced above the category median; &lt; 1.00 = below it. Flower premium is <strong>widening</strong> (1.11 &rarr; 1.17) while concentrate is priced <strong>below market and falling</strong> (0.82 &rarr; 0.73). Tincture and capsule are not shown &mdash; too thin to cite (&le;1 observation).</p>
-    </div>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">3 &middot; Same-shelf head-to-head &middot; W3</h2>
-      <span class="diq-section-meta">Average price among co-stocking doors &middot; <span class="diq-conf-high">HARD</span> for Curaleaf vs RYTHM / Independents &middot; <span class="diq-conf-low">DIRECTIONAL</span> for thin door counts</span>
-    </div>
-
-    <h3 class="diq-hero-label" style="color: var(--ink-soft); margin: 0 0 12px">Flower &middot; average price</h3>
-    <table class="diq-cat-table">
-      <thead>
-        <tr><th>Brand / set</th><th class="r">Avg price</th><th>Note</th></tr>
-      </thead>
-      <tbody>
-        <tr class="diq-row-curaleaf"><td><strong>Curaleaf</strong></td><td class="r"><strong>$72.82</strong></td><td>125 doors &middot; price leader</td></tr>
-        <tr><td>RYTHM</td><td class="r">$60.43</td><td></td></tr>
-        <tr><td>Independents</td><td class="r">$53.95</td><td></td></tr>
-        <tr><td>Ascend</td><td class="r">$53.08</td><td></td></tr>
-        <tr><td>Verano</td><td class="r">$50.48</td><td><span class="diq-conf-low">thin door count &middot; directional</span></td></tr>
-        <tr><td>Cresco</td><td class="r">$35.72</td><td><span class="diq-conf-low">thin door count &middot; directional</span></td></tr>
-      </tbody>
-    </table>
-
-    <h3 class="diq-hero-label" style="color: var(--ink-soft); margin: 28px 0 12px">Vape &middot; average price</h3>
-    <table class="diq-cat-table">
-      <thead>
-        <tr><th>Brand / set</th><th class="r">Avg price</th><th>Note</th></tr>
-      </thead>
-      <tbody>
-        <tr class="diq-row-curaleaf"><td><strong>Curaleaf</strong></td><td class="r"><strong>$62.48</strong></td><td>77 doors &middot; tied with Independents</td></tr>
-        <tr><td>Independents</td><td class="r">$62.11</td><td>131 doors &middot; tied with Curaleaf</td></tr>
-        <tr><td>RYTHM</td><td class="r">$55.36</td><td></td></tr>
-        <tr><td>Cresco</td><td class="r">$47.07</td><td><span class="diq-conf-low">thin door count &middot; directional</span></td></tr>
-        <tr><td>Ascend</td><td class="r">$43.82</td><td></td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section class="diq-section">
-    <div class="diq-section-head">
-      <h2 class="diq-section-title">4 &middot; Share of shelf</h2>
-      <span class="diq-section-meta">Total-shelf basis &middot; W2 &rarr; W3 &middot; <span class="diq-conf-low">CONFIDENCE: DIRECTIONAL</span> (single week, denominator-sensitive)</span>
-    </div>
-    <table class="diq-cat-table">
-      <thead>
-        <tr><th>Set</th><th class="r">W2 share</th><th class="r">W3 share</th><th>Read</th></tr>
-      </thead>
-      <tbody>
-        <tr class="diq-row-curaleaf"><td><strong>Curaleaf</strong></td><td class="r">4.44%</td><td class="r diq-delta-down">3.67%</td><td>Only MSO with a notable drop</td></tr>
-        <tr><td>RYTHM</td><td class="r">~5.4%</td><td class="r">~5.4%</td><td>Flat</td></tr>
-        <tr><td>Unclassified tail</td><td class="r">78.8%</td><td class="r">79.6%</td><td>Growing</td></tr>
-      </tbody>
-    </table>
-    <div class="diq-callout">
-      <p class="diq-callout-label">&#9656; How to read this signal</p>
-      <p style="margin:0">One-week directional signal, not a trend. Curaleaf is defending a price premium (esp. flower) while shelf share softened W2&rarr;W3 &mdash; a margin-vs-volume signal to watch over 4+ weeks, not a conclusion. Share is denominator-sensitive: part of the percentage move reflects the growing unclassified tail.</p>
-    </div>
   </section>
 
 </main>
@@ -180,12 +113,220 @@
     <div>
       <span class="diq-footer-pillars">Cohort-stratified &middot; License-reconciled &middot; Fair-share-anchored &middot; CPG-language-native</span>
       <br/>
-      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of 2026-06-01 &middot; W3</span>
+      <span class="diq-footer-meta">DispensaryIQ &middot; Dobbles-Ed LLC &middot; Data as of <span id="diq-footer-date">&mdash;</span> &middot; <span id="diq-footer-week">&mdash;</span></span>
     </div>
     <img src="assets/curaleaf-wordmark.svg" alt="Curaleaf" class="diq-footer-logo">
   </div>
 </footer>
 <script src="assets/export.js?v=20"></script>
+
+<script>
+/* DispensaryIQ Week-over-week -- live certified-week data.
+   Fetches /pitch/api/week-over-week on load. If available === false
+   (gate not passed this week), renders an honest pending-certification
+   state -- never a stale panel. On network/HTTP failure, blanks all
+   numbers instead of leaving last-known-good or static figures.
+*/
+(function () {
+  'use strict';
+  var API = 'https://dip-service-production-0db3.up.railway.app/pitch/api/week-over-week';
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function setText(id, val) {
+    var e = document.getElementById(id);
+    if (e) e.textContent = val;
+  }
+  function fmtNum(n) { return n == null ? '—' : Number(n).toLocaleString(); }
+  function fmtDelta(n) {
+    if (n == null || isNaN(Number(n))) return '—';
+    var v = Number(n);
+    return (v > 0 ? '+' : '') + v;
+  }
+  function deltaClass(n) {
+    if (n == null || isNaN(Number(n))) return '';
+    var v = Number(n);
+    if (v > 0) return 'diq-delta-up';
+    if (v < 0) return 'diq-delta-down';
+    return '';
+  }
+  function dirLabel(d) {
+    var t = String(d || '').toUpperCase();
+    if (t === 'GAINED') return 'Gained';
+    if (t === 'LOST') return 'Lost';
+    if (t) return 'Flat';
+    return '—';
+  }
+
+  function renderBrandDelta(rows) {
+    var tbody = document.getElementById('diq-brand-delta-body');
+    var callout = document.getElementById('diq-mover-callout');
+    var text = document.getElementById('diq-mover-text');
+    if (!tbody) return;
+
+    if (!rows || !rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">No brand movement reported this period.</td></tr>';
+      if (callout) callout.style.display = 'none';
+      return;
+    }
+
+    var sorted = rows.slice().sort(function (a, b) {
+      var sa = a.state || '', sb = b.state || '';
+      if (sa !== sb) return sa < sb ? -1 : 1;
+      return Math.abs(Number(b.net_change) || 0) - Math.abs(Number(a.net_change) || 0);
+    });
+
+    var html = '';
+    sorted.forEach(function (r) {
+      html += '<tr' + (r.direction && String(r.direction).toUpperCase() === 'LOST' ? ' class="diq-row-curaleaf"' : '') + '>' +
+        '<td>' + esc(r.state) + '</td>' +
+        '<td><strong>' + esc(r.brand) + '</strong></td>' +
+        '<td class="r">' + fmtNum(r.doors_period_a) + '</td>' +
+        '<td class="r">' + fmtNum(r.doors_period_b) + '</td>' +
+        '<td class="r ' + deltaClass(r.net_change) + '">' + fmtDelta(r.net_change) + '</td>' +
+        '<td>' + esc(dirLabel(r.direction)) + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+
+    if (callout && text) {
+      var top = sorted.slice().sort(function (a, b) {
+        return Math.abs(Number(b.net_change) || 0) - Math.abs(Number(a.net_change) || 0);
+      })[0];
+      if (top && Number(top.net_change)) {
+        text.textContent = top.brand + ' ' + fmtDelta(top.net_change) + ' doors (' + top.state +
+          ') is the period’s largest mover.';
+        callout.style.display = '';
+      } else {
+        callout.style.display = 'none';
+      }
+    }
+  }
+
+  function renderNamedDrops(rows) {
+    var tbody = document.getElementById('diq-named-drops-body');
+    if (!tbody) return;
+    if (!rows || !rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-soft)">No named drops reported this period.</td></tr>';
+      return;
+    }
+    var html = '';
+    rows.forEach(function (r) {
+      html += '<tr>' +
+        '<td>' + esc(r.state) + '</td>' +
+        '<td><strong>' + esc(r.dispensary_name) + '</strong></td>' +
+        '<td>' + esc(r.city) + '</td>' +
+        '<td>' + esc(r.brand) + '</td>' +
+        '<td class="r">' + fmtNum(r.skus_in_period_a) + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function clearTables(msg) {
+    var tb1 = document.getElementById('diq-brand-delta-body');
+    if (tb1) tb1.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">' + esc(msg) + '</td></tr>';
+    var tb2 = document.getElementById('diq-named-drops-body');
+    if (tb2) tb2.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-soft)">' + esc(msg) + '</td></tr>';
+    var callout = document.getElementById('diq-mover-callout');
+    if (callout) callout.style.display = 'none';
+  }
+
+  function showPendingBanner(msg) {
+    var banner = document.getElementById('diq-pending-banner');
+    if (banner) {
+      var m = document.getElementById('diq-pending-msg');
+      if (m) m.textContent = msg;
+      banner.style.display = '';
+    }
+  }
+  function hideBanner() {
+    var banner = document.getElementById('diq-pending-banner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  function hydrate(data) {
+    data = data || {};
+    var manifest = data.manifest || {};
+    var week = manifest.week_iso || '';
+    var asOf = manifest.generated_at ? String(manifest.generated_at).slice(0, 10) : '';
+
+    setText('diq-v-week', week || '—');
+    setText('diq-v-date', asOf || '—');
+    setText('diq-footer-week', week || '—');
+    setText('diq-footer-date', asOf || '—');
+
+    if (!data.available) {
+      showPendingBanner(
+        data.reason
+          ? 'Week-over-week pending this week’s certification — ' + data.reason
+          : 'Week-over-week pending this week’s certification.'
+      );
+      setText('diq-period-label', 'Pending certification' + (week ? ' (' + week + ')' : ''));
+      setText('diq-period-compare', 'pending certification');
+      setText('diq-hero-headline', 'Pending certification');
+      setText('diq-hero-body', data.reason ||
+        'This period has not cleared the certification gate yet, so no door-movement or drop data is shown.');
+      clearTables('Pending certification.');
+      return;
+    }
+
+    hideBanner();
+
+    var a = data.period_a || {}, b = data.period_b || {};
+    if (a.start && b.end) {
+      setText('diq-period-label', a.start + ' → ' + b.end);
+      setText('diq-period-compare', a.start + ' → ' + b.end);
+    } else {
+      setText('diq-period-label', week || '—');
+      setText('diq-period-compare', '—');
+    }
+
+    var deltas = Array.isArray(data.brand_delta) ? data.brand_delta : [];
+    var gained = deltas.filter(function (d) { return String(d.direction).toUpperCase() === 'GAINED'; })
+      .sort(function (x, y) { return (Number(y.net_change) || 0) - (Number(x.net_change) || 0); })[0];
+    var lost = deltas.filter(function (d) { return String(d.direction).toUpperCase() === 'LOST'; })
+      .sort(function (x, y) { return (Number(x.net_change) || 0) - (Number(y.net_change) || 0); })[0];
+
+    if (gained || lost) {
+      var parts = [];
+      if (gained) parts.push(gained.brand + ' gained ' + fmtDelta(gained.net_change) + ' doors (' + gained.state + ')');
+      if (lost) parts.push(lost.brand + ' lost ' + Math.abs(Number(lost.net_change) || 0) + ' doors (' + lost.state + ')');
+      setText('diq-hero-headline', gained && lost ? 'Gains vs. losses' : (gained ? 'Net gains' : 'Net losses'));
+      setText('diq-hero-body', parts.join(' — ') + ' this period.');
+    } else {
+      setText('diq-hero-headline', 'No net movement');
+      setText('diq-hero-body', 'No brands showed net door movement this period.');
+    }
+
+    renderBrandDelta(deltas);
+    renderNamedDrops(Array.isArray(data.named_drops) ? data.named_drops : []);
+  }
+
+  function showUnavailable() {
+    showPendingBanner('Week-over-week data temporarily unavailable.');
+    setText('diq-v-week', '—');
+    setText('diq-v-date', '—');
+    setText('diq-footer-week', '—');
+    setText('diq-footer-date', '—');
+    setText('diq-period-label', 'Data unavailable');
+    setText('diq-period-compare', '—');
+    setText('diq-hero-headline', '—');
+    setText('diq-hero-body', 'Unable to reach the live week-over-week feed. No numbers are shown to avoid displaying stale data.');
+    clearTables('Data unavailable.');
+  }
+
+  fetch(API)
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (data) { hydrate(data); })
+    .catch(function (err) {
+      console.warn('week-over-week fetch failed:', err);
+      showUnavailable();
+    });
+}());
+</script>
 
 </body>
 </html>

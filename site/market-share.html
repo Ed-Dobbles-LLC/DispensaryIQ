@@ -103,7 +103,7 @@
 
   <section class="diq-section">
     <div class="diq-section-head">
-      <h2 class="diq-section-title" data-bind="overall-title">Overall top 5 &middot; Pilot</h2>
+      <h2 class="diq-section-title" data-bind="overall-title">Overall top 10 &middot; Pilot</h2>
       <span class="diq-section-meta">By total product count, all categories combined</span>
     </div>
     <table class="diq-cat-table" id="diq-overall-table">
@@ -149,9 +149,12 @@
 
 <script>
 const DIQ_CAT_META = {"flower": {"label": "Flower", "pill": "#85E4FD"}, "vape": {"label": "Vape", "pill": "#00B98E"}, "pre-roll": {"label": "Pre-roll", "pill": "#DB8C5E"}, "edible": {"label": "Edible", "pill": "#DB5461"}, "concentrate": {"label": "Concentrate", "pill": "#1A2074"}, "tincture": {"label": "Tincture", "pill": "#1FD4A8"}, "topical": {"label": "Topical", "pill": "#7A8099"}, "beverage": {"label": "Beverage", "pill": "#4A4F58"}};
-let DIQ_DATA = null;  // loaded from data/market_share_payload.json
+const STATE_LABELS = { PILOT: 'Pilot (IL+NJ+NY)', IL: 'Illinois', NJ: 'New Jersey', NY: 'New York' };
+const API_BASE = 'https://dip-service-production-0db3.up.railway.app';
+let DIQ_DATA = null;      // live views map: { PILOT|IL|NJ|NY: { curaleaf_overall_*, overall_top10, by_category } }
+let DIQ_MANIFEST = null;  // { week_iso, generated_at, cohort_run_id, certified }
 let DIQ_STATE = 'PILOT';
-let DIQ_CHAIN = 'all';
+let DIQ_CHAIN = 'all';    // UI-only: the live API has no independents-only split, so this no longer changes rendered data
 
 function fmt(n) { return n == null ? '—' : n.toLocaleString(); }
 function fmtBrand(b) {
@@ -160,51 +163,82 @@ function fmtBrand(b) {
   if (b.startsWith('Curaleaf:')) return b;
   return b.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '—' : d.toISOString().slice(0, 10);
+}
+
+function renderMeta() {
+  const pillarMeta = document.querySelector('.diq-pillar-meta');
+  const footerSpan = document.querySelector('.diq-footer-inner span');
+  const week = escapeHtml((DIQ_MANIFEST && DIQ_MANIFEST.week_iso) || '—');
+  const asOf = DIQ_MANIFEST ? fmtDate(DIQ_MANIFEST.generated_at) : '—';
+  if (pillarMeta) pillarMeta.innerHTML = 'DispensaryIQ v1.0 &middot; ' + week + ' &middot; <a href="shelf-quality-explainer.html">methodology</a>';
+  if (footerSpan) footerSpan.textContent = 'DispensaryIQ · Dobbles-Ed LLC · Data as of ' + asOf + ' · ' + ((DIQ_MANIFEST && DIQ_MANIFEST.week_iso) || '—');
+}
+
+function renderEmpty() {
+  document.querySelector('[data-bind="hero-label"]').textContent = 'Curaleaf portfolio rank — data unavailable';
+  document.querySelector('[data-bind="curaleaf-rank"]').textContent = '—';
+  document.querySelector('[data-bind="curaleaf-share"]').textContent = '—';
+  document.querySelector('[data-bind="curaleaf-n"]').textContent = '—';
+  document.querySelector('[data-bind="overall-title"]').textContent = 'Overall top 10';
+  document.querySelector('[data-bind="cat-title"]').textContent = 'Category totals';
+  document.getElementById('diq-overall-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">Data unavailable — try a hard refresh</td></tr>';
+  document.getElementById('diq-cat-share-tbody').innerHTML = '';
+  renderMeta();
+}
 
 function render() {
-  if (!DIQ_DATA) return;
-  const d = DIQ_DATA[DIQ_STATE][DIQ_CHAIN];
-  if (!d) return;
-  document.querySelector('[data-bind="hero-label"]').textContent = `Curaleaf portfolio rank · ${d.label}`;
-  document.querySelector('[data-bind="curaleaf-rank"]').textContent = d.curaleaf_overall_rank;
-  document.querySelector('[data-bind="curaleaf-share"]').textContent = d.curaleaf_overall_share.toFixed(2);
-  document.querySelector('[data-bind="curaleaf-n"]').textContent = d.curaleaf_overall_n.toLocaleString();
-  document.querySelector('[data-bind="overall-title"]').textContent = `Overall top 5 · ${d.label}`;
-  document.querySelector('[data-bind="cat-title"]').textContent = `Category totals · ${d.label}`;
+  if (!DIQ_DATA) { renderEmpty(); return; }
+  const d = DIQ_DATA[DIQ_STATE];
+  if (!d) { renderEmpty(); return; }
+  const label = STATE_LABELS[DIQ_STATE] || DIQ_STATE;
+  document.querySelector('[data-bind="hero-label"]').textContent = `Curaleaf portfolio rank · ${label}`;
+  document.querySelector('[data-bind="curaleaf-rank"]').textContent = fmt(d.curaleaf_overall_rank);
+  document.querySelector('[data-bind="curaleaf-share"]').textContent = d.curaleaf_overall_share_pct != null ? d.curaleaf_overall_share_pct.toFixed(2) : '—';
+  document.querySelector('[data-bind="curaleaf-n"]').textContent = fmt(d.curaleaf_overall_n);
+  document.querySelector('[data-bind="overall-title"]').textContent = `Overall top 10 · ${label}`;
+  document.querySelector('[data-bind="cat-title"]').textContent = `Category totals · ${label}`;
 
-  // Overall top 5
+  // Overall top 10
   const overallTbody = document.getElementById('diq-overall-tbody');
-  overallTbody.innerHTML = d.overall_top5.map(row => `
-    <tr class="${row.curaleaf ? 'diq-row-curaleaf' : ''}">
-      <td><strong>#${row.rk}</strong></td>
-      <td>${fmtBrand(row.brand)}${row.curaleaf ? ' <span class="diq-curaleaf-tag">Curaleaf</span>' : ''}</td>
+  const top10 = d.overall_top10 || [];
+  overallTbody.innerHTML = top10.map(row => `
+    <tr class="${row.is_curaleaf ? 'diq-row-curaleaf' : ''}">
+      <td><strong>#${row.rank}</strong></td>
+      <td>${fmtBrand(row.entity)}${row.is_curaleaf ? ' <span class="diq-curaleaf-tag">Curaleaf</span>' : ''}</td>
       <td class="r">${fmt(row.n)}</td>
-      <td class="r"><strong>${row.share.toFixed(2)}%</strong></td>
+      <td class="r"><strong>${row.share_pct != null ? row.share_pct.toFixed(2) : '—'}%</strong></td>
     </tr>
   `).join('');
 
   // Per-category: top 3 + Curaleaf 4th column
   const catTbody = document.getElementById('diq-cat-share-tbody');
   const catOrder = ['flower', 'vape', 'pre-roll', 'edible', 'concentrate', 'tincture', 'topical', 'beverage'];
+  const byCat = d.by_category || {};
   catTbody.innerHTML = catOrder.map(cat => {
-    const c = d.by_category[cat];
+    const c = byCat[cat];
     if (!c) return '';
     const meta = DIQ_CAT_META[cat];
     const top3Cells = [0, 1, 2].map(i => {
-      const t = c.top3[i];
+      const t = (c.top3 || [])[i];
       if (!t) return '<td>—</td>';
-      const [brand, share, isCura] = t;
-      const tagClass = isCura ? 'diq-cell-curaleaf' : '';
-      return `<td class="${tagClass}">${fmtBrand(brand)} <span class="diq-share-paren">${share.toFixed(2)}%</span></td>`;
+      const tagClass = t.is_curaleaf ? 'diq-cell-curaleaf' : '';
+      return `<td class="${tagClass}">${fmtBrand(t.entity)} <span class="diq-share-paren">${t.share_pct.toFixed(2)}%</span></td>`;
     }).join('');
     // Curaleaf 4th column: if Curaleaf in top 3, show "— in top 3 above". Otherwise show their actual rank/share
     let curaCell;
     if (c.curaleaf_rank == null) {
       curaCell = '<td class="diq-curaleaf-col"><span class="diq-na">no presence</span></td>';
     } else if (c.curaleaf_rank <= 3) {
-      curaCell = `<td class="diq-curaleaf-col diq-cell-curaleaf"><strong>#${c.curaleaf_rank}</strong> <span class="diq-share-paren">${c.curaleaf_share.toFixed(2)}%</span> <span class="diq-cura-flag">in top 3</span></td>`;
+      curaCell = `<td class="diq-curaleaf-col diq-cell-curaleaf"><strong>#${c.curaleaf_rank}</strong> <span class="diq-share-paren">${c.curaleaf_share_pct.toFixed(2)}%</span> <span class="diq-cura-flag">in top 3</span></td>`;
     } else {
-      curaCell = `<td class="diq-curaleaf-col">#${c.curaleaf_rank} <span class="diq-share-paren">${c.curaleaf_share.toFixed(2)}%</span></td>`;
+      curaCell = `<td class="diq-curaleaf-col">#${c.curaleaf_rank} <span class="diq-share-paren">${c.curaleaf_share_pct.toFixed(2)}%</span></td>`;
     }
     return `<tr><td><span class="cat-pill" style="background:${meta.pill}"></span>${meta.label}</td>${top3Cells}${curaCell}</tr>`;
   }).join('');
@@ -217,21 +251,26 @@ function render() {
     const a = b.getAttribute('data-chain') === DIQ_CHAIN;
     b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true':'false');
   });
+
+  renderMeta();
 }
 document.querySelectorAll('.diq-toggle').forEach(b => b.addEventListener('click', () => { DIQ_STATE = b.getAttribute('data-view'); render(); }));
 document.querySelectorAll('.diq-toggle-sm').forEach(b => b.addEventListener('click', () => { DIQ_CHAIN = b.getAttribute('data-chain'); render(); }));
-async function init() {
-  const _payloadUrl = (window.DIQ && DIQ.weekPayloadUrl) ? DIQ.weekPayloadUrl('data/market_share_payload.json') : 'data/market_share_payload.json';
-  try {
-    const resp = await fetch(_payloadUrl, { cache: 'no-store' });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    DIQ_DATA = await resp.json();
-  } catch (e) {
-    if (window.DIQ && !DIQ.isDefaultWeek()) { DIQ.renderWeekEmptyState(); return; }
-    document.querySelector('main').innerHTML = '<p style="color:var(--coral);padding:24px">Failed to load market_share_payload.json — try a hard refresh. Error: ' + e.message + '</p>';
-    return;
-  }
-  render();
+
+function init() {
+  fetch(API_BASE + '/pitch/api/market-share', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => {
+      DIQ_MANIFEST = data.manifest || null;
+      DIQ_DATA = data.views || null;
+      render();
+    })
+    .catch(e => {
+      console.warn('market-share fetch failed', e);
+      DIQ_MANIFEST = null;
+      DIQ_DATA = null;
+      renderEmpty();
+    });
 }
 init();
 </script>

@@ -16,9 +16,9 @@
    • Pages resolve which payload to load purely from the URL param (no manifest
      dependency, no load-order coupling): absent param → the page's canonical
      default-week payload; present param → a week-suffixed payload, and an honest
-     empty-state when that file does not exist yet. (W26 data is live in the
-     canonical files; older/other certified weeks empty-state until their
-     per-week payloads are published.)
+     empty-state when that file does not exist yet. (Pages fetch their data live
+     from the production /pitch/api/* routes; older/other certified weeks
+     empty-state until the backend serves data for that week.)
 
    This file changes navigation + week wiring only. It never authors numbers.
 */
