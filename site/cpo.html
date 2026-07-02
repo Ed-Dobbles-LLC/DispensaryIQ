@@ -126,6 +126,31 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .footer-note a:hover{text-decoration:underline}
 
 @media(max-width:900px){.tcards{grid-template-columns:1fr}}
+
+/* ── Ask-the-CPO chat panel (brief #398) — read-only, bottom-right drawer ── */
+.cpo-chat-toggle{position:fixed;bottom:24px;right:24px;z-index:250;display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:100px;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));border:none;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(51,44,179,.4)}
+.cpo-chat-toggle:hover{filter:brightness(1.08)}
+.cpo-chat-drawer{position:fixed;bottom:0;right:0;z-index:260;width:min(420px,100vw);height:min(600px,72vh);display:none;flex-direction:column;background:linear-gradient(180deg,rgba(51,44,179,.16),var(--navy-mid));border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
+.cpo-chat-drawer.open{display:flex}
+.cpo-chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cpo-chat-head-title{display:flex;align-items:center;gap:8px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px}
+.cpo-chat-head-title .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--indigo1),var(--indigo2))}
+.cpo-chat-readonly-badge{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:rgba(232,230,220,.08);border:1px solid var(--line);border-radius:100px;padding:2px 8px}
+.cpo-chat-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:4px}
+.cpo-chat-close:hover{color:var(--ink)}
+.cpo-chat-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.cpo-chat-msg{max-width:88%;font-size:13px;line-height:1.5;padding:9px 12px;border-radius:12px;white-space:pre-wrap}
+.cpo-chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));color:#fff;border-bottom-right-radius:3px}
+.cpo-chat-msg.assistant{align-self:flex-start;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:3px}
+.cpo-chat-msg.error{align-self:flex-start;background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.3);color:var(--coral)}
+.cpo-chat-msg.pending{align-self:flex-start;color:var(--muted);font-style:italic}
+.cpo-chat-empty{color:var(--muted);font-size:12.5px;line-height:1.6;padding:8px 2px}
+.cpo-chat-foot{padding:12px 14px;border-top:1px solid var(--line);display:flex;gap:8px}
+.cpo-chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;resize:none;min-height:38px;max-height:100px}
+.cpo-chat-input:focus{border-color:rgba(69,111,221,.5)}
+.cpo-chat-send{background:linear-gradient(135deg,var(--indigo1),var(--indigo2));border:none;color:#fff;border-radius:10px;padding:0 16px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.cpo-chat-send:disabled{opacity:.5;cursor:default}
+@media(max-width:520px){.cpo-chat-drawer{width:100vw;height:78vh;border-radius:14px 14px 0 0}}
 </style>
 </head>
 <body>
@@ -215,6 +240,26 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   </div>
 
 </div><!-- /wrap -->
+
+<!-- Ask-the-CPO chat panel (brief #398) — read-only, live-state-grounded -->
+<button class="cpo-chat-toggle" id="cpo-chat-toggle" aria-label="Ask the CPO">💬 Ask the CPO</button>
+<div class="cpo-chat-drawer" id="cpo-chat-drawer">
+  <div class="cpo-chat-head">
+    <div class="cpo-chat-head-title"><span class="dot"></span> Ask the CPO <span class="cpo-chat-readonly-badge">read-only</span></div>
+    <button class="cpo-chat-close" id="cpo-chat-close" aria-label="Close">✕</button>
+  </div>
+  <div class="cpo-chat-body" id="cpo-chat-body">
+    <div class="cpo-chat-empty" id="cpo-chat-empty">
+      Ask about what's running, what needs your attention, or what happened recently.
+      This reads live bus state — it can't fire, approve, or change anything; use the
+      buttons above for that.
+    </div>
+  </div>
+  <div class="cpo-chat-foot">
+    <textarea class="cpo-chat-input" id="cpo-chat-input" placeholder="Ask the CPO…" rows="1"></textarea>
+    <button class="cpo-chat-send" id="cpo-chat-send">Send</button>
+  </div>
+</div>
 
 <script>
 const BASE = 'https://dip-service-production-0db3.up.railway.app';
@@ -591,6 +636,110 @@ document.querySelector('.wrap').addEventListener('keydown', (e) => {
     const btn = block.querySelector('button[data-action="verify"]');
     if (btn) btn.click();
   }
+});
+
+// ── Ask-the-CPO chat panel (brief #398) — read-only, live-state-grounded.
+// Conversation history is kept client-side only (sessionStorage) and resent
+// in full on every turn — the server is stateless. No admin key: same
+// same-origin/CORS + rate-limit posture as /ops/api/briefs and friends.
+const CHAT_API = `${BASE}/ops/api/cpo-chat`;
+const CHAT_HISTORY_KEY = 'dip_cpo_chat_history';
+let chatHistory = [];
+try {
+  chatHistory = JSON.parse(sessionStorage.getItem(CHAT_HISTORY_KEY) || '[]');
+} catch (e) {
+  chatHistory = [];
+}
+
+function saveChatHistory() {
+  try {
+    sessionStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+  } catch (e) { /* best-effort */ }
+}
+
+function renderChatMessage(role, text, cls) {
+  const body = document.getElementById('cpo-chat-body');
+  const empty = document.getElementById('cpo-chat-empty');
+  if (empty) empty.style.display = 'none';
+  const el = document.createElement('div');
+  el.className = `cpo-chat-msg ${cls || role}`;
+  el.textContent = text;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+  return el;
+}
+
+function renderChatHistory() {
+  const body = document.getElementById('cpo-chat-body');
+  body.innerHTML = '';
+  if (!chatHistory.length) {
+    body.innerHTML = `<div class="cpo-chat-empty" id="cpo-chat-empty">
+      Ask about what's running, what needs your attention, or what happened recently.
+      This reads live bus state — it can't fire, approve, or change anything; use the
+      buttons above for that.
+    </div>`;
+    return;
+  }
+  chatHistory.forEach(m => renderChatMessage(m.role, m.content));
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('cpo-chat-input');
+  const sendBtn = document.getElementById('cpo-chat-send');
+  const text = input.value.trim();
+  if (!text) return;
+
+  chatHistory.push({ role: 'user', content: text });
+  renderChatMessage('user', text);
+  saveChatHistory();
+  input.value = '';
+  input.style.height = 'auto';
+
+  sendBtn.disabled = true;
+  const pending = renderChatMessage('assistant', 'Thinking…', 'pending');
+
+  try {
+    const r = await fetch(CHAT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory }),
+    });
+    const json = await r.json().catch(() => ({}));
+    pending.remove();
+    if (!r.ok) {
+      const detail = json.detail || `HTTP ${r.status}`;
+      renderChatMessage('assistant', `Sorry — ${detail}`, 'error');
+      return;
+    }
+    chatHistory.push({ role: 'assistant', content: json.reply });
+    saveChatHistory();
+    renderChatMessage('assistant', json.reply);
+  } catch (e) {
+    pending.remove();
+    renderChatMessage('assistant', `Sorry — request failed: ${e.message}`, 'error');
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+document.getElementById('cpo-chat-toggle').addEventListener('click', () => {
+  document.getElementById('cpo-chat-drawer').classList.add('open');
+  renderChatHistory();
+  document.getElementById('cpo-chat-input').focus();
+});
+document.getElementById('cpo-chat-close').addEventListener('click', () => {
+  document.getElementById('cpo-chat-drawer').classList.remove('open');
+});
+document.getElementById('cpo-chat-send').addEventListener('click', sendChatMessage);
+document.getElementById('cpo-chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+document.getElementById('cpo-chat-input').addEventListener('input', function () {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
 });
 
 // ── Init + 60s refresh ───────────────────────────────────────────────
