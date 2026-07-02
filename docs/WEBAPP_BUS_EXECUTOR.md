@@ -94,8 +94,8 @@ durably bind a polling loop to this repo the way the `cc-dispatcher` Railway
 service does for dip-service (see `command-center/AUTONOMY_LOOP.md`).
 
 Standing up a durable, cross-session webapp-bus-executor — one that
-自动ally claims `[WEB]` briefs without a human/Routine firing a session each
-time — requires either:
+automatically claims `[WEB]` briefs without a human/Routine firing a session
+each time — requires either:
 1. Extending `cc-dispatcher`'s `fire_execution` to accept a target-repo
    parameter and route `[WEB]`-claimed briefs to `Ed-Dobbles-LLC/DispensaryIQ`
    instead of `dip-service`, or
