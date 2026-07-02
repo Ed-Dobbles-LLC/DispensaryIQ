@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIP Status · DispensaryIntelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
+  --ink:#E8E6DC; --ink-dim:rgba(232,230,220,.6); --ink-faint:rgba(232,230,220,.32);
+  --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
+  --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(6,10,87,.55) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0,185,142,.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(12,18,112,.55),transparent);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(0,185,142,.18)}
+.brand h1{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+.refreshed{font-size:10.5px;color:var(--muted);font-weight:500}
+
+.wrap{max-width:1100px;margin:0 auto;padding:26px 28px 60px}
+
+/* Big glanceable counts */
+.counts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+.ccard{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.ccard .num{font-family:'Montserrat',sans-serif;font-size:44px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.ccard .lbl{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
+.ccard.needs-ed{border-color:rgba(219,84,97,.35)}
+.ccard.needs-ed .num{color:var(--coral)}
+.ccard.failed{border-color:rgba(219,84,97,.35)}
+.ccard.failed .num{color:var(--coral)}
+.ccard.running .num{color:var(--teal)}
+.ccard.landed .num{color:var(--ink)}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:30px 0 14px}
+.sec-h h2{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.sec-h .note{font-size:11px;color:var(--muted);font-weight:500}
+
+.list{display:flex;flex-direction:column;gap:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid transparent}
+.row:hover{background:rgba(255,255,255,.05)}
+.row .rid{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);flex:none}
+.row .rtitle{font-size:13px;font-weight:600;flex:1}
+.row .rmeta{font-size:11px;color:var(--muted);font-weight:500;font-family:'JetBrains Mono',monospace;flex:none}
+.row.needs-ed{border-left:3px solid var(--coral)}
+.row.failed{border-left:3px solid var(--coral)}
+.row.running{border-left:3px solid var(--teal)}
+.row.landed{border-left:3px solid var(--muted-d)}
+.row.integrity{border-left:3px solid var(--coral);align-items:flex-start;flex-direction:column;gap:4px}
+.row.integrity .rtitle{font-size:12.5px}
+
+.empty{display:flex;align-items:center;gap:10px;padding:18px 20px;border-radius:14px;background:rgba(0,185,142,.06);border:1px solid rgba(0,185,142,.22);color:var(--teal);font-size:13px;font-weight:600}
+.empty .check{width:20px;height:20px;border-radius:50%;background:rgba(0,185,142,.18);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+
+.spend-note{font-size:12px;color:var(--muted);font-weight:500;margin-top:6px}
+.footer-note{margin-top:30px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
+
+.err-banner{background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.3);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--coral);margin-bottom:16px;display:none}
+
+/* Auth overlay — whole page is gated (internal ops surface, brief #367) */
+.auth-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(3,5,31,.94);backdrop-filter:blur(8px)}
+.auth-box{background:rgba(6,10,45,.95);border:1px solid rgba(0,185,142,.25);border-radius:20px;padding:36px 40px;width:360px;text-align:center}
+.auth-box h2{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px}
+.auth-box p{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.55}
+.auth-box input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+.auth-box input:focus{border-color:rgba(0,185,142,.4)}
+.auth-box button{width:100%;background:var(--teal);color:#03051F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.auth-box button:hover{background:var(--teal-bright)}
+.auth-err{font-size:11px;color:var(--coral);margin-top:8px;display:none}
+
+@media(max-width:800px){.counts{grid-template-columns:1fr 1fr}.row{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<!-- Auth overlay — gates the whole page behind the same admin key as /ops (brief #367) -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <h2>DIP Status</h2>
+    <p>Enter the ops admin key to view the always-current status page.<br>Internal use only.</p>
+    <input type="password" id="key-input" placeholder="Admin key" autocomplete="off">
+    <button id="key-submit">Unlock</button>
+    <div class="auth-err" id="auth-err">Incorrect key — try again</div>
+  </div>
+</div>
+
+<header>
+  <div style="display:flex;align-items:center;gap:20px">
+    <a href="ops.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Full ops cockpit">← Ops</a>
+    <div class="brand"><span class="dot"></span><div><h1>DIP Status</h1><small>always current · glance and go</small></div></div>
+  </div>
+  <span class="refreshed" id="last-refreshed">loading…</span>
+</header>
+
+<div class="wrap">
+  <div class="err-banner" id="err-banner"></div>
+
+  <div class="counts">
+    <div class="ccard needs-ed"><div class="num" id="c-needs-ed">—</div><div class="lbl">Need you</div></div>
+    <div class="ccard running"><div class="num" id="c-running">—</div><div class="lbl">Running</div></div>
+    <div class="ccard failed"><div class="num" id="c-failed">—</div><div class="lbl">Failed</div></div>
+    <div class="ccard landed"><div class="num" id="c-landed">—</div><div class="lbl">Landed</div></div>
+  </div>
+
+  <div class="sec-h"><h2>Needs your attention</h2><span class="note" id="needs-ed-note"></span></div>
+  <div class="list" id="needs-ed-list"></div>
+  <div class="empty" id="needs-ed-empty" style="display:none"><span class="check">✓</span> All clear — nothing needs Ed right now.</div>
+
+  <div class="sec-h"><h2>Integrity alerts</h2><span class="note" id="integrity-note"></span></div>
+  <div class="list" id="integrity-list"></div>
+  <div class="empty" id="integrity-empty" style="display:none"><span class="check">✓</span> No open pitch-integrity or governance alerts.</div>
+
+  <div class="sec-h"><h2>Running</h2><span class="note" id="running-note"></span></div>
+  <div class="list" id="running-list"></div>
+
+  <div class="sec-h"><h2>Recently landed</h2><span class="note">since last window</span></div>
+  <div class="list" id="landed-list"></div>
+
+  <div class="spend-note mono" id="spend-note"></div>
+
+  <div class="footer-note">
+    Live data via <span class="mono">dip-service /ops/api/digest</span> (ceo_digest_sweep) · refreshes every 60 s.<br>
+    Internal ops cockpit · behind auth · not the public DispensaryIntelligence.com marketing site.
+  </div>
+</div>
+
+<script>
+const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const API = `${BASE}/ops/api/digest`;
+const KEY_STORE = 'dip_ops_key';
+
+function esc_html(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function fmt_relative(iso) {
+  if (!iso) return '—';
+  const diffS = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diffS < 0) return 'just now';
+  if (diffS < 60) return `${diffS}s ago`;
+  const diffM = Math.floor(diffS / 60);
+  if (diffM < 60) return `${diffM}m ago`;
+  const diffH = Math.floor(diffM / 60);
+  if (diffH < 24) return `${diffH}h ago`;
+  return `${Math.floor(diffH / 24)}d ago`;
+}
+
+// ── Auth gate (same admin key as ops.html, sessionStorage-shared) ──────────
+const overlay = document.getElementById('auth-overlay');
+const keyInput = document.getElementById('key-input');
+const keySubmit = document.getElementById('key-submit');
+const authErr = document.getElementById('auth-err');
+
+function getKey() { return sessionStorage.getItem(KEY_STORE) || ''; }
+function setKey(k) { sessionStorage.setItem(KEY_STORE, k); }
+
+if (getKey()) overlay.style.display = 'none';
+
+keySubmit.addEventListener('click', async () => {
+  const k = keyInput.value.trim();
+  if (!k) return;
+  try {
+    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
+    if (r.ok) {
+      setKey(k);
+      overlay.style.display = 'none';
+      hydrate(await r.json());
+    } else {
+      authErr.style.display = 'block';
+    }
+  } catch {
+    authErr.textContent = 'Network error — check your connection';
+    authErr.style.display = 'block';
+  }
+});
+keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') keySubmit.click(); });
+
+// ── Data fetch ───────────────────────────────────────────────────────
+const errBanner = document.getElementById('err-banner');
+
+async function fetchDigest() {
+  const k = getKey();
+  if (!k) return;
+  try {
+    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
+    if (r.status === 403) { sessionStorage.removeItem(KEY_STORE); location.reload(); return; }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    errBanner.style.display = 'none';
+    hydrate(await r.json());
+  } catch (e) {
+    errBanner.textContent = `Refresh failed: ${e.message}`;
+    errBanner.style.display = 'block';
+  }
+}
+
+function rowHtml(it, kind, metaFn) {
+  const title = esc_html(it.title || `brief #${it.brief_id}`);
+  const meta = metaFn ? metaFn(it) : '';
+  return `<div class="row ${kind}"><span class="rid">#${esc_html(it.brief_id)}</span><span class="rtitle">${title}</span><span class="rmeta">${meta}</span></div>`;
+}
+
+function renderList(items, listId, emptyId, kind, metaFn) {
+  const listEl = document.getElementById(listId);
+  const emptyEl = document.getElementById(emptyId);
+  if (!items || !items.length) {
+    if (listEl) listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'flex';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (listEl) listEl.innerHTML = items.map(it => rowHtml(it, kind, metaFn)).join('');
+}
+
+function hydrate(d) {
+  document.getElementById('last-refreshed').textContent =
+    `live · refreshed ${new Date().toLocaleTimeString()}`;
+
+  const counts = d.counts || {};
+  document.getElementById('c-needs-ed').textContent = counts.needs_ed ?? 0;
+  document.getElementById('c-running').textContent = counts.running ?? 0;
+  document.getElementById('c-failed').textContent = counts.failed ?? 0;
+  document.getElementById('c-landed').textContent = counts.landed ?? 0;
+
+  const needsEd = d.needs_ed || [];
+  document.getElementById('needs-ed-note').textContent = needsEd.length ? `${needsEd.length} waiting on Ed` : '';
+  renderList(needsEd, 'needs-ed-list', 'needs-ed-empty', 'needs-ed');
+
+  const integrity = d.integrity || [];
+  document.getElementById('integrity-note').textContent = integrity.length ? `${integrity.length} open` : '';
+  const integrityListEl = document.getElementById('integrity-list');
+  const integrityEmptyEl = document.getElementById('integrity-empty');
+  if (!integrity.length) {
+    integrityListEl.innerHTML = '';
+    integrityEmptyEl.style.display = 'flex';
+  } else {
+    integrityEmptyEl.style.display = 'none';
+    integrityListEl.innerHTML = integrity.map(a =>
+      `<div class="row integrity"><span class="rtitle">${esc_html(a.condition)}</span></div>`
+    ).join('');
+  }
+
+  const running = d.running || [];
+  document.getElementById('running-note').textContent = running.length ? `${running.length} in flight` : 'none';
+  renderList(running, 'running-list', null, 'running', it => it.claimed_at ? fmt_relative(it.claimed_at) : '');
+  if (!running.length) document.getElementById('running-list').innerHTML = '';
+
+  const landed = d.landed || [];
+  renderList(landed, 'landed-list', null, 'landed', it => it.merged_sha ? String(it.merged_sha).slice(0, 8) : '');
+  if (!landed.length) document.getElementById('landed-list').innerHTML = '<div class="row landed"><span class="rtitle" style="color:var(--muted)">nothing landed in this window</span></div>';
+
+  document.getElementById('spend-note').textContent = `spend since last digest: ${d.spend_note || 'n/a'}`;
+}
+
+// ── Init + 60s refresh ───────────────────────────────────────────────
+if (getKey()) fetchDigest();
+setInterval(() => { if (getKey()) fetchDigest(); }, 60000);
+</script>
+</body>
+</html>
