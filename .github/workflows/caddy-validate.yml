@@ -1,10 +1,26 @@
-bmFtZTogQ2FkZHlmaWxlIHZhbGlkYXRlCgpvbjoKICBwdXNoOgogICAgYnJhbmNoZXM6IFttYWlu
-XQogICAgcGF0aHM6CiAgICAgIC0gJ0NhZGR5ZmlsZScKICBwdWxsX3JlcXVlc3Q6CiAgICBwYXRo
-czoKICAgICAgLSAnQ2FkZHlmaWxlJwoKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKCmpv
-YnM6CiAgdmFsaWRhdGU6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICBzdGVwczoKICAg
-ICAgLSB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY0CgogICAgICAtIG5hbWU6IFZhbGlkYXRlIENh
-ZGR5ZmlsZSAoY2FkZHk6Mi44LWFscGluZSwgbWF0Y2hlcyBEb2NrZXJmaWxlKQogICAgICAgIHJ1
-bjogfAogICAgICAgICAgZG9ja2VyIHJ1biAtLXJtIFwKICAgICAgICAgICAgLXYgIiRQV0QvQ2Fk
-ZHlmaWxlOi9ldGMvY2FkZHkvQ2FkZHlmaWxlOnJvIiBcCiAgICAgICAgICAgIGNhZGR5OjIuOC1h
-bHBpbmUgXAogICAgICAgICAgICBjYWRkeSB2YWxpZGF0ZSAtLWNvbmZpZyAvZXRjL2NhZGR5L0Nh
-ZGR5ZmlsZSAtLWFkYXB0ZXIgY2FkZHlmaWxlCg==
+name: Caddyfile validate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Caddyfile'
+  pull_request:
+    paths:
+      - 'Caddyfile'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Caddyfile (caddy:2.8-alpine, matches Dockerfile)
+        run: |
+          docker run --rm \
+            -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.8-alpine \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
