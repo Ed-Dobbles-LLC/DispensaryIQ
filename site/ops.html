@@ -176,6 +176,27 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .triage-hr{border:none;border-top:1px solid var(--line);margin:34px 0}
 .detail-note{font-size:11px;color:var(--muted-d);text-align:center;margin-bottom:10px}
 
+/* ── Action layer (brief #377): dispose / verify-approval / requeue / directives ── */
+.directive-box{display:flex;gap:10px;align-items:center;margin-bottom:20px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.directive-box input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none}
+.directive-box input:focus{border-color:rgba(0,185,142,.4)}
+
+.btn-action{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.12);color:var(--teal);white-space:nowrap}
+.btn-action:hover{background:rgba(0,185,142,.22)}
+.btn-action:disabled{opacity:.5;cursor:default}
+
+.tcard-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-approval-block{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tcard-approval{display:flex;gap:8px;align-items:center}
+.tcard-approval input{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:7px;padding:7px 10px;color:var(--ink);font-family:inherit;font-size:11.5px;outline:none}
+.tcard-approval input:focus{border-color:rgba(0,185,142,.4)}
+.tcard-verify-msg{font-size:10.5px;font-weight:600;margin-top:6px}
+.tcard-verify-msg.ok{color:var(--teal)} .tcard-verify-msg.bad{color:var(--coral)}
+
+.action-toast{position:fixed;top:18px;right:28px;z-index:300;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);display:none}
+.action-toast.ok{display:block;background:rgba(0,185,142,.16);color:var(--teal);border:1px solid rgba(0,185,142,.35)}
+.action-toast.bad{display:block;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
+
 /* Auth overlay — scoped to .detail-section, not the whole viewport, so the
    public attention-triage panels above stay visible without a key */
 .detail-section{position:relative;min-height:640px}
@@ -208,9 +229,17 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   </div>
 </header>
 
+<div class="action-toast" id="action-toast"></div>
+
 <div class="wrap">
 
   <div class="err-banner" id="err-banner"></div>
+
+  <!-- CEO DIRECTIVE BOX (brief #377) — pinned top, requires admin key to submit -->
+  <div class="directive-box">
+    <input type="text" id="directive-input" placeholder="New directive for the CPO to brief… (Enter to submit)" maxlength="4000">
+    <button class="btn-action" id="directive-submit">Submit directive</button>
+  </div>
 
   <!-- EXECUTIVE ATTENTION TRIAGE (brief #373) — public, no admin key -->
   <div class="triage" id="triage">
@@ -393,9 +422,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 </div><!-- /wrap -->
 
 <script>
-const API = 'https://dip-service-production-0db3.up.railway.app/ops/api/state';
-const BRIEFS_API = 'https://dip-service-production-0db3.up.railway.app/ops/api/briefs';
+const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const API = `${BASE}/ops/api/state`;
+const BRIEFS_API = `${BASE}/ops/api/briefs`;
 const KEY_STORE = 'dip_ops_key';
+const REQUEUE_ALLOWED = new Set(['failed', 'needs-ed-review', 'cancelled']);
 
 // ── Executive attention triage (brief #373) — public, no admin key ────
 // Independent of the auth-gated /ops/api/state panels below: this fetch
@@ -417,11 +448,33 @@ function tcardHtml(it, kind) {
   const disposition = it.disposition
     ? `<div class="tcard-hint">${esc_html(it.disposition)}</div>`
     : '';
+
+  // ── Action layer (brief #377) ──
+  const actions = [];
+  if (kind === 'needs_ed') {
+    actions.push(`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Resolve</button>`);
+  }
+  if (REQUEUE_ALLOWED.has(it.status)) {
+    actions.push(`<button class="btn-action" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
+  }
+  const actionsHtml = actions.length ? `<div class="tcard-actions">${actions.join('')}</div>` : '';
+
+  const approvalsHtml = (it.approval_requests || []).map(a => `
+    <div class="tcard-approval-block" data-approval-id="${esc_html(a.approval_id)}">
+      <div class="tcard-approval">
+        <input type="password" class="approval-pass-input" placeholder="Passphrase for approval #${esc_html(a.approval_id)}" autocomplete="off">
+        <button class="btn-action" data-action="verify" data-approval-id="${esc_html(a.approval_id)}" data-brief-id="${esc_html(it.brief_id)}">Verify</button>
+      </div>
+      <div class="tcard-verify-msg"></div>
+    </div>
+  `).join('');
+
   return `<div class="tcard">`+
     `<div class="tcard-blurb">${blurb}</div>`+
     `<div class="tcard-title">${title}</div>`+
     hint+disposition+
     `<div class="tcard-meta"><span class="tcard-verdict">${verdictLabel}</span>${link}</div>`+
+    actionsHtml+approvalsHtml+
   `</div>`;
 }
 
@@ -501,6 +554,155 @@ keySubmit.addEventListener('click', async () => {
   }
 });
 keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') keySubmit.click(); });
+
+// ── Action layer (brief #377): dispose / verify-approval / requeue / directives ──
+
+function toast(msg, ok) {
+  const t = document.getElementById('action-toast');
+  t.textContent = msg;
+  t.className = 'action-toast ' + (ok ? 'ok' : 'bad');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.className = 'action-toast'; }, 4000);
+}
+
+// Actions require the same admin key the detail-section is already unlocked
+// with; if Ed hasn't unlocked yet, send them to the overlay instead of
+// firing a request that the backend will 403 anyway.
+function requireKey() {
+  const k = getKey();
+  if (!k) {
+    document.getElementById('detail-section').scrollIntoView({ behavior: 'smooth' });
+    keyInput.focus();
+    toast('Unlock admin access below to perform this action', false);
+    return null;
+  }
+  return k;
+}
+
+async function resolveBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  const reason = prompt(`Reason for resolving brief #${briefId}?`);
+  if (reason == null || !reason.trim()) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/dispose`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ reason: reason.trim() }),
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    toast(`Brief #${briefId} resolved`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Resolve failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+async function requeueBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/requeue`, {
+      method: 'POST',
+      headers: { 'X-Admin-Key': k },
+    });
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.detail || `HTTP ${r.status}`);
+    const fireMsg = json.fired ? 're-fired' : 'requeue-only — dispatcher fire not configured';
+    toast(`Brief #${briefId} requeued (${fireMsg})`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Re-run failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+async function verifyApproval(approvalId, inputEl, msgEl, btn) {
+  const k = requireKey();
+  if (!k) return;
+  const passphrase = inputEl.value;
+  if (!passphrase) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/approvals/${approvalId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ passphrase }),
+    });
+    const json = await r.json();
+    inputEl.value = '';
+    if (json.ok) {
+      msgEl.textContent = 'Approved ✓';
+      msgEl.className = 'tcard-verify-msg ok';
+      toast(`Approval #${approvalId} confirmed`, true);
+      fetchTriage();
+    } else {
+      msgEl.textContent = json.reason || 'Passphrase did not match';
+      msgEl.className = 'tcard-verify-msg bad';
+    }
+  } catch (e) {
+    msgEl.textContent = `Verify failed: ${e.message}`;
+    msgEl.className = 'tcard-verify-msg bad';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function submitDirective() {
+  const k = requireKey();
+  if (!k) return;
+  const input = document.getElementById('directive-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = document.getElementById('directive-submit');
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/directives`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ text }),
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    input.value = '';
+    toast('Directive received', true);
+  } catch (e) {
+    toast(`Directive failed: ${e.message}`, false);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('directive-submit').addEventListener('click', submitDirective);
+document.getElementById('directive-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitDirective(); });
+
+// Delegated click handling — card actions are re-rendered wholesale on every
+// fetchTriage(), so listeners live on the stable #triage container instead.
+document.getElementById('triage').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  if (action === 'resolve') {
+    resolveBrief(btn.dataset.briefId, btn);
+  } else if (action === 'requeue') {
+    requeueBrief(btn.dataset.briefId, btn);
+  } else if (action === 'verify') {
+    const block = btn.closest('.tcard-approval-block');
+    const input = block.querySelector('.approval-pass-input');
+    const msg = block.querySelector('.tcard-verify-msg');
+    verifyApproval(btn.dataset.approvalId, input, msg, btn);
+  }
+});
+
+document.getElementById('triage').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.classList.contains('approval-pass-input')) {
+    const block = e.target.closest('.tcard-approval-block');
+    const btn = block.querySelector('button[data-action="verify"]');
+    if (btn) btn.click();
+  }
+});
 
 // ── Data fetch ───────────────────────────────────────────────────────
 const errBanner = document.getElementById('err-banner');
