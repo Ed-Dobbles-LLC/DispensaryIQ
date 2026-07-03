@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workforce Org Chart - Dispensary · DispensaryIntelligence</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#03051F">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" href="/assets/icons/icon-192.png">
+<script src="/assets/passkey-auth.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060A57; --navy-deep:#03051F; --navy-mid:#060A2D;
+  --ink:#E8E6DC; --ink-dim:rgba(232,230,220,.6); --ink-faint:rgba(232,230,220,.32);
+  --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
+  --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
+  --indigo1:#332CB3; --indigo2:#456FDD;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(51,44,179,.5) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0,185,142,.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(51,44,179,.35),transparent);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));box-shadow:0 0 0 4px rgba(69,111,221,.18)}
+.brand h1{font-size:15px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+.refreshed{font-size:10.5px;color:var(--muted);font-weight:500}
+.btn-action{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.12);color:var(--teal);white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center}
+.btn-action:hover{background:rgba(0,185,142,.22)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:26px 28px 60px}
+
+.page-intro{margin-bottom:22px}
+.page-intro h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px}
+.page-intro p{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:640px}
+
+.section-loading{font-size:12px;color:var(--muted);padding:16px 0}
+.section-err{font-size:12px;color:var(--coral);padding:10px 0}
+
+.roster{display:flex;flex-direction:column;gap:12px}
+.seat{border-radius:14px;padding:18px 20px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-left-width:3px}
+.seat[data-status="active"]{border-left-color:var(--teal)}
+.seat[data-status="active-phase-1"]{border-left-color:var(--teal-bright)}
+.seat[data-status="planned"]{border-left-color:var(--muted-d)}
+.seat[data-status="gated"]{border-left-color:var(--coral)}
+
+.seat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.seat-name-role{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.seat-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px}
+.seat-role{font-size:12.5px;color:var(--ink-dim);font-weight:500}
+.seat-badges{display:flex;align-items:center;gap:8px;flex:none}
+
+.badge{font-family:Consolas,'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase;white-space:nowrap}
+.badge.status-active{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.badge.status-active-phase-1{background:rgba(0,211,163,.14);color:var(--teal-bright);border:1px solid rgba(0,211,163,.32)}
+.badge.status-planned{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+.badge.status-gated{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
+.badge.tenant{background:rgba(69,111,221,.12);color:var(--indigo2);border:1px solid rgba(69,111,221,.28)}
+
+.seat-authority{font-size:13px;line-height:1.55;color:var(--ink);margin:10px 0}
+
+.seat-gate{font-size:12px;line-height:1.55;color:var(--ink-dim);margin-bottom:10px;padding:9px 12px;border-radius:8px;background:rgba(219,84,97,.06);border:1px solid rgba(219,84,97,.18)}
+.seat-gate b{color:var(--coral);font-weight:700}
+
+.seat-meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.seat-meta div b{color:var(--muted-d);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;display:block;margin-bottom:2px}
+.seat-meta div span{color:var(--ink-dim);font-family:Consolas,'JetBrains Mono',monospace;font-size:11px}
+
+.footer-note{margin-top:24px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
+.footer-note a{color:var(--indigo2);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:20px">
+    <a href="cpo.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Back to AI CPO">← CPO</a>
+    <div class="brand"><span class="dot"></span><div><h1>Workforce Org Chart</h1><small>DispensaryIntelligence · who Ed is talking to</small></div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="refreshed" id="last-refreshed">loading…</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="page-intro">
+    <h2>Every seat, human or agent</h2>
+    <p>One row per workforce seat — status, authority, permanent gates, and which credential it acts under. Data-driven: adding a row to <span class="mono">governance.org_roster</span> surfaces here without a deploy.</p>
+  </div>
+
+  <div class="section-loading" id="section-loading">Loading…</div>
+  <div class="section-err" id="section-err" style="display:none"></div>
+
+  <div class="roster" id="roster"></div>
+
+  <div class="footer-note">
+    Live data via <span class="mono">dip-service /ops/api/org-roster</span> · refreshes every 60 s.<br>
+    Internal ops cockpit · not the public DispensaryIntelligence.com marketing site.
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const ROSTER_API = `${BASE}/ops/api/org-roster`;
+
+function esc_html(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function statusLabel(status) {
+  if (status === 'active-phase-1') return 'active · phase 1';
+  return status;
+}
+
+function seatHtml(seat) {
+  const status = seat.status || 'planned';
+  const gateText = seat.permanent_gates || '';
+  return `<div class="seat" data-status="${esc_html(status)}">`+
+    `<div class="seat-head">`+
+      `<div class="seat-name-role">`+
+        `<span class="seat-name">${esc_html(seat.name)}</span>`+
+        `<span class="seat-role">${esc_html(seat.role)}</span>`+
+      `</div>`+
+      `<div class="seat-badges">`+
+        `<span class="badge tenant">${esc_html(seat.tenant)}</span>`+
+        `<span class="badge status-${esc_html(status)}">${esc_html(statusLabel(status))}</span>`+
+      `</div>`+
+    `</div>`+
+    `<div class="seat-authority">${esc_html(seat.authority_summary)}</div>`+
+    (gateText ? `<div class="seat-gate"><b>Permanent gate:</b> ${esc_html(gateText)}</div>` : '')+
+    `<div class="seat-meta">`+
+      `<div><b>Supervising authority</b><span>${esc_html(seat.supervising_authority)}</span></div>`+
+      `<div><b>Identity binding</b><span>${esc_html(seat.identity_binding)}</span></div>`+
+    `</div>`+
+  `</div>`;
+}
+
+function render(d) {
+  document.getElementById('last-refreshed').textContent =
+    `live · refreshed ${new Date().toLocaleTimeString()}`;
+  const roster = d.roster || [];
+  document.getElementById('roster').innerHTML = roster.map(seatHtml).join('');
+  document.getElementById('section-loading').style.display = 'none';
+}
+
+async function fetchRoster() {
+  try {
+    const r = await fetch(ROSTER_API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    document.getElementById('section-err').style.display = 'none';
+    render(json);
+  } catch (e) {
+    document.getElementById('section-loading').style.display = 'none';
+    const err = document.getElementById('section-err');
+    err.textContent = `Refresh failed: ${e.message}`;
+    err.style.display = 'block';
+  }
+}
+
+fetchRoster();
+setInterval(fetchRoster, 60000);
+</script>
+</body>
+</html>
