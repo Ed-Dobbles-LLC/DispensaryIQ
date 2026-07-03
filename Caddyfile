@@ -32,6 +32,9 @@
 	# AI CPO - Dispensary: /cpo → cpo.html (brief #386 page split)
 	rewrite /cpo /cpo.html
 
+	# Workforce org chart: /cpo/org → cpo-org.html (brief #429)
+	rewrite /cpo/org /cpo-org.html
+
 	# Quality Board - Dispensary: /quality → quality.html (brief #386)
 	rewrite /quality /quality.html
 
