@@ -96,6 +96,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .section-running .tcard-verdict{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
 .section-queued .tcard{border-left-color:var(--muted-d)}
 .section-queued .tcard-verdict{background:rgba(69,111,221,.12);color:var(--indigo2);border:1px solid rgba(69,111,221,.28)}
+.section-proposed .tcard{border-left-color:var(--indigo2)}
+.section-proposed .tcard-verdict{background:rgba(69,111,221,.12);color:var(--indigo2);border:1px solid rgba(69,111,221,.28)}
 .section-done .tcard{border-left-color:var(--muted-d);opacity:.82}
 .section-done .tcard-verdict{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
 
@@ -234,7 +236,20 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <div class="tcards" id="queued-cards"></div>
   </div>
 
-  <!-- 5. DONE (last 48h, with dispositions) -->
+  <!-- 5. PROPOSED — backlog groomer drafts (brief #417), awaiting promote/dismiss -->
+  <div class="section-block section-proposed">
+    <div class="section-head">
+      <h2>Proposed</h2>
+      <span class="section-count neutral" id="proposed-count">—</span>
+      <span class="section-sub">drafted by the backlog groomer — promote to queue, dismiss to drop</span>
+    </div>
+    <div class="tcards" id="proposed-cards"></div>
+    <div class="section-empty" id="proposed-empty" style="display:none">
+      <span class="check">✓</span> No proposed briefs right now.
+    </div>
+  </div>
+
+  <!-- 6. DONE (last 48h, with dispositions) -->
   <div class="section-block section-done">
     <div class="section-head">
       <h2>Done</h2>
@@ -247,7 +262,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   <div class="section-loading" id="section-loading">Loading…</div>
   <div class="section-err" id="section-err" style="display:none"></div>
 
-  <!-- 6. CPO ACTIVITY FEED — the narrative spine (brief #390) -->
+  <!-- 7. CPO ACTIVITY FEED — the narrative spine (brief #390) -->
   <div class="section-block section-activity">
     <div class="section-head">
       <h2>CPO Activity</h2>
@@ -374,8 +389,27 @@ function needsEdCardHtml(it) {
   `</div>`;
 }
 
+// Proposed cards (brief #417) — machine-drafted from a live operational
+// signal, never fired, never queued until a human promotes it. Renders the
+// draft's goal (from brief_md) plus Promote/Dismiss actions — no session
+// link, since a proposed brief has never run.
+function proposedCardHtml(it) {
+  const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
+  const blurb = esc_html(it.intent_blurb || it.title || 'no blurb on file');
+  return `<div class="tcard">`+
+    `<div class="tcard-blurb">${blurb}</div>`+
+    `<div class="tcard-title">${title}</div>`+
+    `<div class="tcard-meta"><span class="tcard-verdict">drafted by groomer</span></div>`+
+    `<div class="tcard-actions">`+
+      `<button class="btn-action" data-action="promote" data-brief-id="${esc_html(it.brief_id)}">Promote</button>`+
+      `<button class="btn-action" data-action="dismiss" data-brief-id="${esc_html(it.brief_id)}">Dismiss</button>`+
+    `</div>`+
+  `</div>`;
+}
+
 function tcardHtml(it, kind) {
   if (kind === 'needs_ed') return needsEdCardHtml(it);
+  if (kind === 'proposed') return proposedCardHtml(it);
 
   const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
   const blurb = esc_html(it.intent_blurb || it.title || 'no blurb on file');
@@ -485,6 +519,12 @@ function render(d) {
   const queued = d.queued || [];
   document.getElementById('queued-count').textContent = queued.length;
   renderBucket(queued, 'queued-cards', 'queued');
+
+  const proposed = d.proposed || [];
+  document.getElementById('proposed-count').textContent = proposed.length;
+  renderBucket(proposed, 'proposed-cards', 'proposed');
+  document.getElementById('proposed-cards').style.display = proposed.length ? '' : 'none';
+  document.getElementById('proposed-empty').style.display = proposed.length ? 'none' : 'flex';
 
   const done = d.recent_done || [];
   document.getElementById('done-count').textContent = done.length;
@@ -609,6 +649,49 @@ async function requeueBrief(briefId, btn) {
   }
 }
 
+async function promoteBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/promote`, {
+      method: 'POST',
+      headers: { 'X-Admin-Key': k },
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.detail || `HTTP ${r.status}`);
+    toast(`Brief #${briefId} promoted to pending`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Promote failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+async function dismissBrief(briefId, btn) {
+  const k = requireKey();
+  if (!k) return;
+  const reason = prompt(`Reason for dismissing proposed brief #${briefId}?`);
+  if (reason == null || !reason.trim()) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${BASE}/ops/api/briefs/${briefId}/dismiss`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
+      body: JSON.stringify({ reason: reason.trim() }),
+    });
+    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.detail || `HTTP ${r.status}`);
+    toast(`Brief #${briefId} dismissed`, true);
+    fetchTriage();
+  } catch (e) {
+    toast(`Dismiss failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
 async function verifyApproval(approvalId, inputEl, msgEl, btn) {
   const k = requireKey();
   if (!k) return;
@@ -679,6 +762,10 @@ document.querySelector('.wrap').addEventListener('click', (e) => {
     resolveBrief(btn.dataset.briefId, btn);
   } else if (action === 'requeue') {
     requeueBrief(btn.dataset.briefId, btn);
+  } else if (action === 'promote') {
+    promoteBrief(btn.dataset.briefId, btn);
+  } else if (action === 'dismiss') {
+    dismissBrief(btn.dataset.briefId, btn);
   } else if (action === 'verify') {
     const block = btn.closest('.tcard-approval-block');
     const input = block.querySelector('.approval-pass-input');
