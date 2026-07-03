@@ -120,6 +120,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .action-toast.ok{display:block;background:rgba(0,185,142,.16);color:var(--teal);border:1px solid rgba(0,185,142,.35)}
 .action-toast.bad{display:block;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
 
+/* ── Ops strip (brief #423): escalation-calibration precision/recall ──── */
+.ops-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.ops-tile{flex:1;min-width:160px;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.ops-tile-label{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ops-tile-value{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;font-size:20px;font-weight:700;color:var(--ink)}
+.ops-tile-value.warn{color:var(--coral)}
+.ops-tile-sub{font-size:10.5px;color:var(--muted-d);margin-top:2px}
+
 .footer-note{margin-top:24px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
 .footer-note b{color:var(--muted)}
 .footer-note a{color:var(--indigo2);text-decoration:none}
@@ -174,6 +182,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   <div class="directive-box">
     <input type="text" id="directive-input" placeholder="New directive for the CPO to brief… (Enter to submit)" maxlength="4000">
     <button class="btn-action" id="directive-submit">Submit directive</button>
+  </div>
+
+  <!-- 1.5 OPS STRIP (brief #423): escalation-calibration precision/recall -->
+  <div class="ops-strip" id="ops-strip" style="display:none">
+    <div class="ops-tile">
+      <div class="ops-tile-label">Escalation precision</div>
+      <div class="ops-tile-value" id="ops-escalation-precision">—</div>
+      <div class="ops-tile-sub" id="ops-escalation-precision-sub"></div>
+    </div>
+    <div class="ops-tile">
+      <div class="ops-tile-label">Escalation recall</div>
+      <div class="ops-tile-value" id="ops-escalation-recall">—</div>
+      <div class="ops-tile-sub" id="ops-escalation-recall-sub"></div>
+    </div>
+    <div class="ops-tile">
+      <div class="ops-tile-label">Labeled escalations</div>
+      <div class="ops-tile-value" id="ops-escalation-labeled">—</div>
+      <div class="ops-tile-sub">of decisions asked for</div>
+    </div>
   </div>
 
   <!-- 2. NEEDS ATTENTION -->
@@ -409,9 +436,39 @@ function tickTimers() {
 }
 setInterval(tickTimers, 1000);
 
+// Escalation-calibration ops strip (brief #423) — precision/recall over
+// ops.escalation_labels, recomputed weekly by org-worker's Saturday cron.
+// Hidden entirely until the migration + first labeling pass have landed
+// (escalation_calibration is null), rather than showing a permanent "—".
+function renderOpsStrip(calibration) {
+  const strip = document.getElementById('ops-strip');
+  if (!calibration || calibration.total_escalated == null || calibration.total_escalated === 0) {
+    strip.style.display = 'none';
+    return;
+  }
+  strip.style.display = '';
+
+  const pct = v => v == null ? '—' : `${Math.round(v * 100)}%`;
+  const precisionEl = document.getElementById('ops-escalation-precision');
+  const recallEl = document.getElementById('ops-escalation-recall');
+  precisionEl.textContent = pct(calibration.precision);
+  recallEl.textContent = pct(calibration.recall);
+  // Flag low precision/recall in coral — same visual language as needs-attention.
+  precisionEl.className = 'ops-tile-value' + (calibration.precision != null && calibration.precision < 0.7 ? ' warn' : '');
+  recallEl.className = 'ops-tile-value' + (calibration.recall != null && calibration.recall < 0.7 ? ' warn' : '');
+
+  document.getElementById('ops-escalation-precision-sub').textContent =
+    `${calibration.escalated_deserved ?? 0} of ${calibration.total_escalated} escalations deserved it`;
+  document.getElementById('ops-escalation-recall-sub').textContent =
+    `${calibration.missed_deserved ?? 0} known miss${calibration.missed_deserved === 1 ? '' : 'es'}`;
+  document.getElementById('ops-escalation-labeled').textContent = calibration.total_escalated;
+}
+
 function render(d) {
   document.getElementById('last-refreshed').textContent =
     `live · refreshed ${new Date().toLocaleTimeString()}`;
+
+  renderOpsStrip(d.escalation_calibration);
 
   const needsEd = d.needs_ed || [];
   const needsEdCount = document.getElementById('needs-ed-count');
