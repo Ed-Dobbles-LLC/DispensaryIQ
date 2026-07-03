@@ -41,11 +41,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 .wrap{max-width:1240px;margin:0 auto;padding:26px 28px 60px}
 
-/* ── Directive box (brief #377), pinned top ─────────────────────────── */
-.directive-box{display:flex;gap:10px;align-items:center;margin-bottom:24px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
-.directive-box input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none}
-.directive-box input:focus{border-color:rgba(69,111,221,.5)}
-
 .btn-action{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.12);color:var(--teal);white-space:nowrap}
 .btn-action:hover{background:rgba(0,185,142,.22)}
 .btn-action:disabled{opacity:.5;cursor:default}
@@ -142,21 +137,23 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 @media(max-width:900px){.tcards{grid-template-columns:1fr}}
 
-/* ── Ask-the-CPO chat panel (brief #398) — read-only, bottom-right drawer ── */
-.cpo-chat-toggle{position:fixed;bottom:24px;right:24px;z-index:250;display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:100px;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));border:none;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(51,44,179,.4)}
-.cpo-chat-toggle:hover{filter:brightness(1.08)}
-.cpo-chat-drawer{position:fixed;bottom:0;right:0;z-index:260;width:min(420px,100vw);height:min(600px,72vh);display:none;flex-direction:column;background:linear-gradient(180deg,rgba(51,44,179,.16),var(--navy-mid));border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
-.cpo-chat-drawer.open{display:flex}
-.cpo-chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+/* ── Ask-the-CPO chat + directive panel (brief #398, merged with the
+   directive box + minimize by brief #428) — bottom-right, always docked ── */
+.cpo-chat-drawer{position:fixed;bottom:0;right:0;z-index:260;width:min(420px,100vw);height:min(600px,72vh);display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(51,44,179,.16),var(--navy-mid));border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.5);backdrop-filter:blur(10px);transition:height .15s ease}
+.cpo-chat-drawer.minimized{height:auto}
+.cpo-chat-drawer.minimized .cpo-chat-body,.cpo-chat-drawer.minimized .cpo-chat-foot,.cpo-chat-drawer.minimized .cpo-chat-empty{display:none}
+.cpo-chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+.cpo-chat-drawer.minimized .cpo-chat-head{border-bottom:none;border-radius:16px 16px 0 0}
 .cpo-chat-head-title{display:flex;align-items:center;gap:8px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px}
 .cpo-chat-head-title .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--indigo1),var(--indigo2))}
 .cpo-chat-readonly-badge{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:rgba(232,230,220,.08);border:1px solid var(--line);border-radius:100px;padding:2px 8px}
-.cpo-chat-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:4px}
-.cpo-chat-close:hover{color:var(--ink)}
+.cpo-chat-minimize{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:4px}
+.cpo-chat-minimize:hover{color:var(--ink)}
 .cpo-chat-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .cpo-chat-msg{max-width:88%;font-size:13px;line-height:1.5;padding:9px 12px;border-radius:12px;white-space:pre-wrap}
 .cpo-chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--indigo1),var(--indigo2));color:#fff;border-bottom-right-radius:3px}
 .cpo-chat-msg.assistant{align-self:flex-start;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:3px}
+.cpo-chat-msg.directive{align-self:flex-start;background:rgba(0,185,142,.12);border:1px solid rgba(0,185,142,.3);color:var(--teal);font-weight:600}
 .cpo-chat-msg.error{align-self:flex-start;background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.3);color:var(--coral)}
 .cpo-chat-msg.pending{align-self:flex-start;color:var(--muted);font-style:italic}
 .cpo-chat-empty{color:var(--muted);font-size:12.5px;line-height:1.6;padding:8px 2px}
@@ -165,6 +162,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .cpo-chat-input:focus{border-color:rgba(69,111,221,.5)}
 .cpo-chat-send{background:linear-gradient(135deg,var(--indigo1),var(--indigo2));border:none;color:#fff;border-radius:10px;padding:0 16px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
 .cpo-chat-send:disabled{opacity:.5;cursor:default}
+.tcard-diagnosis{font-size:12px;line-height:1.5;color:var(--ink-dim);margin-bottom:10px;padding:8px 10px;border-radius:8px;background:rgba(219,84,97,.06);border:1px solid rgba(219,84,97,.18)}
+.tcard-diagnosis b{color:var(--coral);font-weight:700}
 @media(max-width:520px){.cpo-chat-drawer{width:100vw;height:78vh;border-radius:14px 14px 0 0}}
 </style>
 </head>
@@ -185,13 +184,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 <div class="wrap">
 
-  <!-- 1. DIRECTIVE — pinned top, requires admin key to submit -->
-  <div class="directive-box">
-    <input type="text" id="directive-input" placeholder="New directive for the CPO to brief… (Enter to submit)" maxlength="4000">
-    <button class="btn-action" id="directive-submit">Submit directive</button>
-  </div>
-
-  <!-- 1.5 OPS STRIP (brief #423): escalation-calibration precision/recall -->
+  <!-- OPS STRIP (brief #423): escalation-calibration precision/recall -->
   <div class="ops-strip" id="ops-strip" style="display:none">
     <div class="ops-tile">
       <div class="ops-tile-label">Escalation precision</div>
@@ -288,22 +281,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 </div><!-- /wrap -->
 
-<!-- Ask-the-CPO chat panel (brief #398) — read-only, live-state-grounded -->
-<button class="cpo-chat-toggle" id="cpo-chat-toggle" aria-label="Ask the CPO">💬 Ask the CPO</button>
+<!-- Ask-the-CPO — merged chat + directive panel (brief #398, merged by #428).
+     One input, two intents: a question gets a live-state-grounded answer; a
+     directive gets filed into the same pipeline the old directive box used.
+     Minimize/expand, preference persisted in localStorage. -->
 <div class="cpo-chat-drawer" id="cpo-chat-drawer">
-  <div class="cpo-chat-head">
-    <div class="cpo-chat-head-title"><span class="dot"></span> Ask the CPO <span class="cpo-chat-readonly-badge">read-only</span></div>
-    <button class="cpo-chat-close" id="cpo-chat-close" aria-label="Close">✕</button>
+  <div class="cpo-chat-head" id="cpo-chat-head">
+    <div class="cpo-chat-head-title"><span class="dot"></span> Ask/Direct the CPO</div>
+    <button class="cpo-chat-minimize" id="cpo-chat-minimize" aria-label="Minimize">–</button>
   </div>
   <div class="cpo-chat-body" id="cpo-chat-body">
     <div class="cpo-chat-empty" id="cpo-chat-empty">
-      Ask about what's running, what needs your attention, or what happened recently.
-      This reads live bus state — it can't fire, approve, or change anything; use the
-      buttons above for that.
+      Ask a question ("what needs my attention?") or type a directive ("stop retrying
+      failed live-verify briefs") — the CPO figures out which and either answers from
+      live bus state or files it, same as the old directive box. It never takes any
+      other action on its own.
     </div>
   </div>
   <div class="cpo-chat-foot">
-    <textarea class="cpo-chat-input" id="cpo-chat-input" placeholder="Ask the CPO…" rows="1"></textarea>
+    <textarea class="cpo-chat-input" id="cpo-chat-input" placeholder="Ask or direct the CPO…" rows="1"></textarea>
     <button class="cpo-chat-send" id="cpo-chat-send">Send</button>
   </div>
 </div>
@@ -362,6 +358,11 @@ function needsEdCardHtml(it) {
   const recommendation = card.recommendation
     ? `<div class="tcard-recommendation"><b>CPO recommends:</b> ${esc_html(card.recommendation)}</div>`
     : '';
+  // Diagnosed cause (brief #428 req 4) — a machine-read one-sentence cause,
+  // never a bare "read the linked session" punt.
+  const diagnosis = card.diagnosis && card.diagnosis.cause
+    ? `<div class="tcard-diagnosis"><b>Diagnosed cause:</b> ${esc_html(card.diagnosis.cause)}</div>`
+    : '';
 
   const actions = [`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Acknowledge</button>`];
   if (REQUEUE_ALLOWED.has(it.status)) {
@@ -388,7 +389,7 @@ function needsEdCardHtml(it) {
     `<div class="tcard-ask">${ask}</div>`+
     `<div class="tcard-title">${title}</div>`+
     (context ? `<div class="tcard-context">${context}</div>` : '')+
-    evidence+recommendation+
+    evidence+diagnosis+recommendation+
     actionsHtml+approvalsHtml+
     `<div class="tcard-evidence-link">${link}</div>`+
   `</div>`;
@@ -729,34 +730,6 @@ async function verifyApproval(approvalId, inputEl, msgEl, btn) {
   }
 }
 
-async function submitDirective() {
-  const k = requireKey();
-  if (!k) return;
-  const input = document.getElementById('directive-input');
-  const text = input.value.trim();
-  if (!text) return;
-  const btn = document.getElementById('directive-submit');
-  btn.disabled = true;
-  try {
-    const r = await fetch(`${BASE}/ops/api/directives`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
-      body: JSON.stringify({ text }),
-    });
-    if (r.status === 403) { clearKey(); throw new Error('admin key rejected'); }
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    input.value = '';
-    toast('Directive received', true);
-  } catch (e) {
-    toast(`Directive failed: ${e.message}`, false);
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-document.getElementById('directive-submit').addEventListener('click', submitDirective);
-document.getElementById('directive-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitDirective(); });
-
 // Delegated click handling — cards are re-rendered wholesale on every
 // fetchTriage(), so listeners live on the stable .wrap container instead.
 document.querySelector('.wrap').addEventListener('click', (e) => {
@@ -823,13 +796,14 @@ function renderChatHistory() {
   body.innerHTML = '';
   if (!chatHistory.length) {
     body.innerHTML = `<div class="cpo-chat-empty" id="cpo-chat-empty">
-      Ask about what's running, what needs your attention, or what happened recently.
-      This reads live bus state — it can't fire, approve, or change anything; use the
-      buttons above for that.
+      Ask a question ("what needs my attention?") or type a directive ("stop retrying
+      failed live-verify briefs") — the CPO figures out which and either answers from
+      live bus state or files it, same as the old directive box. It never takes any
+      other action on its own.
     </div>`;
     return;
   }
-  chatHistory.forEach(m => renderChatMessage(m.role, m.content));
+  chatHistory.forEach(m => renderChatMessage(m.role, m.content, m.cls));
 }
 
 async function sendChatMessage() {
@@ -861,9 +835,16 @@ async function sendChatMessage() {
       renderChatMessage('assistant', `Sorry — ${detail}`, 'error');
       return;
     }
-    chatHistory.push({ role: 'assistant', content: json.reply });
+    // Brief #428 req 2: merged bidirectional turn — a 'directive' intent
+    // renders distinctly (filed, not just answered) so Ed can tell at a
+    // glance that his message went into the directive pipeline.
+    const cls = json.intent === 'directive' ? 'directive' : 'assistant';
+    chatHistory.push({ role: 'assistant', content: json.reply, cls });
     saveChatHistory();
-    renderChatMessage('assistant', json.reply);
+    renderChatMessage('assistant', json.reply, cls);
+    if (json.intent === 'directive') {
+      toast('Directive filed', true);
+    }
   } catch (e) {
     pending.remove();
     renderChatMessage('assistant', `Sorry — request failed: ${e.message}`, 'error');
@@ -872,13 +853,32 @@ async function sendChatMessage() {
   }
 }
 
-document.getElementById('cpo-chat-toggle').addEventListener('click', () => {
-  document.getElementById('cpo-chat-drawer').classList.add('open');
-  renderChatHistory();
-  document.getElementById('cpo-chat-input').focus();
+// Minimize/expand (brief #428 req 3) — the panel is now always docked (no
+// more open/close toggle button); minimize state is the persisted user
+// preference so it doesn't dominate the page on repeat visits.
+const CHAT_MINIMIZED_KEY = 'dip_cpo_chat_minimized';
+function setMinimized(min) {
+  const drawer = document.getElementById('cpo-chat-drawer');
+  const btn = document.getElementById('cpo-chat-minimize');
+  drawer.classList.toggle('minimized', min);
+  btn.textContent = min ? '▢' : '–';
+  btn.setAttribute('aria-label', min ? 'Expand' : 'Minimize');
+  try { localStorage.setItem(CHAT_MINIMIZED_KEY, min ? '1' : '0'); } catch (e) { /* best-effort */ }
+}
+let storedMinimized = null;
+try { storedMinimized = localStorage.getItem(CHAT_MINIMIZED_KEY); } catch (e) { /* best-effort */ }
+setMinimized(storedMinimized === '1');
+renderChatHistory();
+
+document.getElementById('cpo-chat-head').addEventListener('click', (e) => {
+  if (e.target.closest('#cpo-chat-minimize')) return; // avoid double-toggle with the button's own click
+  const drawer = document.getElementById('cpo-chat-drawer');
+  setMinimized(!drawer.classList.contains('minimized'));
 });
-document.getElementById('cpo-chat-close').addEventListener('click', () => {
-  document.getElementById('cpo-chat-drawer').classList.remove('open');
+document.getElementById('cpo-chat-minimize').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const drawer = document.getElementById('cpo-chat-drawer');
+  setMinimized(!drawer.classList.contains('minimized'));
 });
 document.getElementById('cpo-chat-send').addEventListener('click', sendChatMessage);
 document.getElementById('cpo-chat-input').addEventListener('keydown', e => {
