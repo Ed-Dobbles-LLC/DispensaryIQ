@@ -1,0 +1,16 @@
+{
+  "name": "DispensaryIntelligence Ops",
+  "short_name": "DIP Ops",
+  "description": "AI CPO + Quality Board — operator control surface",
+  "start_url": "/cpo",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#03051F",
+  "theme_color": "#03051F",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
