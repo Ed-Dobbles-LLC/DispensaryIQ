@@ -188,9 +188,9 @@ pwSubmit.addEventListener('click', async () => {
       overlay.style.display = 'none';
       fetchDigest();
     } else {
-      authErr.textContent = r.status === 503
-        ? 'Password not configured yet — see Ed.'
-        : 'Incorrect password — try again';
+      authErr.textContent = r.status === 401
+        ? 'Incorrect password — try again'
+        : 'Password not configured yet, or the ops backend is unreachable — see Ed.';
       authErr.style.display = 'block';
     }
   } catch {
