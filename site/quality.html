@@ -100,9 +100,34 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .footer-note a:hover{text-decoration:underline}
 
 @media(max-width:900px){.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+
+/* Password gate overlay (brief #496) — replaces the Cloudflare Access wall
+   as the reachable app-level gate; posts to dip-service /ops/api/cpo-auth,
+   never a client-side literal. */
+.auth-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(3,5,31,.94);backdrop-filter:blur(8px)}
+.auth-box{background:rgba(6,10,45,.95);border:1px solid rgba(0,185,142,.25);border-radius:20px;padding:36px 40px;width:360px;text-align:center}
+.auth-box h2{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px}
+.auth-box p{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.55}
+.auth-box input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+.auth-box input:focus{border-color:rgba(0,185,142,.4)}
+.auth-box button{width:100%;background:var(--teal);color:#03051F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.auth-box button:hover{background:var(--teal-bright)}
+.auth-box button:disabled{opacity:.6;cursor:default}
+.auth-err{font-size:11px;color:var(--coral);margin-top:8px;display:none}
 </style>
 </head>
 <body>
+
+<!-- Password gate — brief #496. Hidden once /ops/api/cpo-auth/session is valid. -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <h2>Quality Board</h2>
+    <p>Enter the ops password to continue.<br>Internal use only.</p>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password">
+    <button id="pw-submit">Unlock</button>
+    <div class="auth-err" id="auth-err">Incorrect password — try again</div>
+  </div>
+</div>
 
 <header>
   <div style="display:flex;align-items:center;gap:20px">
@@ -212,6 +237,62 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <script>
 const BASE = 'https://dip-service-production-0db3.up.railway.app';
 const API = `${BASE}/ops/api/quality`;
+const CPO_AUTH_API = `${BASE}/ops/api/cpo-auth`;
+
+// ── Password gate (brief #496) — replaces the Cloudflare Access wall as
+// the reachable app-level gate. /ops/api/quality itself stays unauthenticated
+// (nothing in it is secret), so this only guards page render, not the fetch.
+(function () {
+  const overlay = document.getElementById('auth-overlay');
+  const pwInput = document.getElementById('pw-input');
+  const pwSubmit = document.getElementById('pw-submit');
+  const authErr = document.getElementById('auth-err');
+
+  function unlock() {
+    overlay.style.display = 'none';
+    fetchQuality();
+    setInterval(fetchQuality, 60000);
+  }
+
+  async function checkSession() {
+    try {
+      const r = await fetch(`${CPO_AUTH_API}/session`, { credentials: 'include' });
+      if (r.ok) unlock();
+    } catch (e) { /* stay gated */ }
+  }
+
+  pwSubmit.addEventListener('click', async () => {
+    const pw = pwInput.value;
+    if (!pw) return;
+    pwSubmit.disabled = true;
+    authErr.style.display = 'none';
+    try {
+      const r = await fetch(CPO_AUTH_API, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw }),
+      });
+      if (r.ok) {
+        pwInput.value = '';
+        unlock();
+      } else {
+        authErr.textContent = r.status === 503
+          ? 'Password not configured yet — see Ed.'
+          : 'Incorrect password — try again';
+        authErr.style.display = 'block';
+      }
+    } catch (e) {
+      authErr.textContent = 'Network error — check your connection';
+      authErr.style.display = 'block';
+    } finally {
+      pwSubmit.disabled = false;
+    }
+  });
+  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') pwSubmit.click(); });
+
+  checkSession();
+})();
 
 function esc_html(s) {
   return String(s == null ? '' : s)
@@ -416,8 +497,6 @@ async function fetchQuality() {
   }
 }
 
-fetchQuality();
-setInterval(fetchQuality, 60000);
 </script>
 </body>
 </html>
