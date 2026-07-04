@@ -1,0 +1,42 @@
+name: live-diagnose
+
+# brief #488: manual, read-only diagnostic for the app.dispensaryintelligence.com
+# 302-on-all-paths report. GitHub-hosted runners have real internet egress;
+# the CC executor sandbox does not (confirmed 403 at its network boundary,
+# same documented boundary as the pitch-live-verify workflow in dip-service).
+# This workflow makes no writes, needs no secrets, and touches no product
+# code or data — pure curl -D against a handful of paths, headers only.
+#
+# Reversible: delete this file to remove it. Nothing it does is persisted
+# anywhere except the GitHub Actions log for this run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Host to probe"
+        default: "https://app.dispensaryintelligence.com"
+      paths:
+        description: "Space-separated list of paths to probe"
+        default: "/ /cpo /cpo.html /quality /quality.html /status /status.html /assets/passkey-auth.js /api/auth/session /ops/api/auth/session"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Curl each path, dump status + headers (no body)
+        run: |
+          set -u
+          BASE="${{ github.event.inputs.base_url }}"
+          for p in ${{ github.event.inputs.paths }}; do
+            url="${BASE}${p}"
+            echo "::group::${url}"
+            curl -sS -m 15 -D - -o /dev/null \
+              -A "dip-live-diagnose/1.0 (brief-488)" \
+              "$url" || echo "CURL_FAILED rc=$?"
+            echo "::endgroup::"
+          done
