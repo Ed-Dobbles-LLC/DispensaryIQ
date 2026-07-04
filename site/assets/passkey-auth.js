@@ -1,4 +1,4 @@
-// PWA service worker registration for /cpo + /quality.
+// PWA service worker registration + password gate for /cpo + /quality.
 //
 // Brief #403 added a passkey (WebAuthn) login gate here that blocked the
 // page behind a full-viewport overlay until a dip_session cookie was
@@ -9,11 +9,22 @@
 // as dead code (matching the dip-service passkey routes, also left in
 // place unused) rather than deleted, so the ceremony can be resurrected
 // without re-deriving it if that's ever needed.
+//
+// Brief #496: Cloudflare Access's one-time-PIN kept locking Ed out ("you've
+// already used this code"), so Ed asked for a plain password he controls
+// instead of a second OTP/biometric wall. `init()` below now shows a
+// password-prompt overlay (same full-viewport-overlay UX as the old
+// passkey gate) until POST /ops/api/cpo-auth confirms it via a dip_session
+// cookie — the CF Access wall itself is a separate, Ed-only dashboard
+// change (see the brief). The password/hash never appear here or anywhere
+// client-side; this page only ever sends the operator-typed guess to the
+// backend and reads back authenticated:true/false.
 (function () {
   "use strict";
 
   var BASE = "https://dip-service-production-0db3.up.railway.app";
   var AUTH = BASE + "/ops/api/auth";
+  var CPO_AUTH = BASE + "/ops/api";
 
   function registerServiceWorker() {
     if ("serviceWorker" in navigator) {
@@ -123,6 +134,27 @@
     return verifyRes.ok;
   }
 
+  // ── password gate (brief #496) ──────────────────────────────────────────
+
+  async function checkPasswordSession() {
+    try {
+      var r = await fetch(CPO_AUTH + "/cpo-auth/session", { credentials: "include" });
+      return r.ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function submitPassword(password) {
+    var r = await fetch(CPO_AUTH + "/cpo-auth", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: password }),
+    });
+    return r.ok;
+  }
+
   // ── overlay UI (self-contained styling; no dependency on host page CSS) ──
 
   var overlay, statusEl, buttonEl;
@@ -142,7 +174,12 @@
       "padding:12px 22px;border-radius:10px;border:none;cursor:pointer;color:#fff;" +
       "background:linear-gradient(135deg,#332CB3,#456FDD)}" +
       "#dip-passkey-gate button:disabled{opacity:.5;cursor:default}" +
-      "#dip-passkey-gate .dip-err{color:#DB5461;font-size:12px}";
+      "#dip-passkey-gate .dip-err{color:#DB5461;font-size:12px}" +
+      "#dip-passkey-gate input[type=password]{font-family:inherit;font-size:14px;" +
+      "padding:11px 14px;border-radius:10px;border:1px solid rgba(232,230,220,.24);" +
+      "background:rgba(232,230,220,.06);color:#E8E6DC;width:220px;text-align:center}" +
+      "#dip-passkey-gate input[type=password]:focus{outline:2px solid #456FDD}" +
+      "#dip-passkey-gate form{display:flex;flex-direction:column;align-items:center;gap:14px}";
     document.head.appendChild(style);
   }
 
@@ -190,6 +227,52 @@
     );
   }
 
+  function buildPasswordOverlay(onSubmit) {
+    injectStyles();
+    overlay = document.createElement("div");
+    overlay.id = "dip-passkey-gate";
+    overlay.innerHTML =
+      '<div class="dip-mark"></div>' +
+      "<h1>DispensaryIntelligence Ops</h1>" +
+      "<p>Enter the ops password to continue.</p>" +
+      '<form>' +
+      '<input type="password" autocomplete="current-password" autofocus placeholder="Password">' +
+      '<button type="submit">Unlock</button>' +
+      "</form>" +
+      '<p class="dip-err" style="display:none"></p>';
+    document.documentElement.appendChild(overlay);
+    var form = overlay.querySelector("form");
+    var input = overlay.querySelector("input");
+    buttonEl = overlay.querySelector("button");
+    statusEl = overlay.querySelector(".dip-err");
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      onSubmit(input.value, input);
+    });
+  }
+
+  function showPasswordGate() {
+    buildPasswordOverlay(async function (password, input) {
+      if (!password) return;
+      buttonEl.disabled = true;
+      statusEl.style.display = "none";
+      try {
+        var ok = await submitPassword(password);
+        if (ok) {
+          removeOverlay();
+        } else {
+          showError("Incorrect password. Try again.");
+          input.value = "";
+          input.focus();
+        }
+      } catch (e) {
+        showError("Could not reach the ops backend. Try again.");
+      } finally {
+        buttonEl.disabled = false;
+      }
+    });
+  }
+
   function showEnrollGate(token) {
     buildOverlay(
       "Register This Device",
@@ -217,9 +300,13 @@
   }
 
   async function init() {
-    // brief #495: no passkey gate — Cloudflare Access is the sole auth
-    // wall now, so the page renders directly with no client-side check.
     registerServiceWorker();
+    // brief #496: password gate. checkPasswordSession() only ever needs a
+    // network round-trip when Ed doesn't already have a live dip_session
+    // cookie (it renews on every validated call), so repeat visits within
+    // the 90-day rolling window never see the prompt.
+    var authed = await checkPasswordSession();
+    if (!authed) showPasswordGate();
   }
 
   if (document.readyState === "loading") {
