@@ -813,6 +813,13 @@ async function sendChatMessage() {
   const text = input.value.trim();
   if (!text) return;
 
+  // brief #495: passkey session removed, so the dip_session cookie this call
+  // used to rely on (credentials: 'include') no longer exists — cpo-chat is
+  // gated by the same verify_admin_key as the brief action buttons, so it
+  // needs the same X-Admin-Key credential those already collect via requireKey().
+  const k = requireKey();
+  if (!k) return;
+
   chatHistory.push({ role: 'user', content: text });
   renderChatMessage('user', text);
   saveChatHistory();
@@ -825,10 +832,10 @@ async function sendChatMessage() {
   try {
     const r = await fetch(CHAT_API, {
       method: 'POST',
-      credentials: 'include', // brief #403: gate is now the passkey session cookie, not CF Access
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': k },
       body: JSON.stringify({ messages: chatHistory }),
     });
+    if (r.status === 403) clearKey();
     const json = await r.json().catch(() => ({}));
     pending.remove();
     if (!r.ok) {
