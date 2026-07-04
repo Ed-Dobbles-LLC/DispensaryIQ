@@ -84,14 +84,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 </head>
 <body>
 
-<!-- Auth overlay — gates the whole page behind the same admin key as /ops (brief #367) -->
+<!-- Auth overlay (brief #496: password gate, replacing the admin-key gate from #367) -->
 <div class="auth-overlay" id="auth-overlay">
   <div class="auth-box">
     <h2>DIP Status</h2>
-    <p>Enter the ops admin key to view the always-current status page.<br>Internal use only.</p>
-    <input type="password" id="key-input" placeholder="Admin key" autocomplete="off">
-    <button id="key-submit">Unlock</button>
-    <div class="auth-err" id="auth-err">Incorrect key — try again</div>
+    <p>Enter the ops password to view the always-current status page.<br>Internal use only.</p>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password">
+    <button id="pw-submit">Unlock</button>
+    <div class="auth-err" id="auth-err">Incorrect password — try again</div>
   </div>
 </div>
 
@@ -138,7 +138,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <script>
 const BASE = 'https://dip-service-production-0db3.up.railway.app';
 const API = `${BASE}/ops/api/digest`;
-const KEY_STORE = 'dip_ops_key';
+const CPO_AUTH_API = `${BASE}/ops/api/cpo-auth`;
 
 function esc_html(s) {
   return String(s == null ? '' : s)
@@ -158,45 +158,60 @@ function fmt_relative(iso) {
   return `${Math.floor(diffH / 24)}d ago`;
 }
 
-// ── Auth gate (same admin key as cpo.html, sessionStorage-shared) ──────────
+// ── Password gate (brief #496 — replaces the admin-key gate from #367) ──
 const overlay = document.getElementById('auth-overlay');
-const keyInput = document.getElementById('key-input');
-const keySubmit = document.getElementById('key-submit');
+const pwInput = document.getElementById('pw-input');
+const pwSubmit = document.getElementById('pw-submit');
 const authErr = document.getElementById('auth-err');
 
-function getKey() { return sessionStorage.getItem(KEY_STORE) || ''; }
-function setKey(k) { sessionStorage.setItem(KEY_STORE, k); }
-
-if (getKey()) overlay.style.display = 'none';
-
-keySubmit.addEventListener('click', async () => {
-  const k = keyInput.value.trim();
-  if (!k) return;
+async function checkSession() {
   try {
-    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
+    const r = await fetch(`${CPO_AUTH_API}/session`, { credentials: 'include' });
+    if (r.ok) { overlay.style.display = 'none'; fetchDigest(); }
+  } catch (e) { /* stay gated */ }
+}
+
+pwSubmit.addEventListener('click', async () => {
+  const pw = pwInput.value;
+  if (!pw) return;
+  pwSubmit.disabled = true;
+  authErr.style.display = 'none';
+  try {
+    const r = await fetch(CPO_AUTH_API, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    });
     if (r.ok) {
-      setKey(k);
+      pwInput.value = '';
       overlay.style.display = 'none';
-      hydrate(await r.json());
+      fetchDigest();
     } else {
+      authErr.textContent = r.status === 503
+        ? 'Password not configured yet — see Ed.'
+        : 'Incorrect password — try again';
       authErr.style.display = 'block';
     }
   } catch {
     authErr.textContent = 'Network error — check your connection';
     authErr.style.display = 'block';
+  } finally {
+    pwSubmit.disabled = false;
   }
 });
-keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') keySubmit.click(); });
+pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') pwSubmit.click(); });
+
+checkSession();
 
 // ── Data fetch ───────────────────────────────────────────────────────
 const errBanner = document.getElementById('err-banner');
 
 async function fetchDigest() {
-  const k = getKey();
-  if (!k) return;
+  if (overlay.style.display !== 'none') return;
   try {
-    const r = await fetch(API, { headers: { 'X-Admin-Key': k } });
-    if (r.status === 403) { sessionStorage.removeItem(KEY_STORE); location.reload(); return; }
+    const r = await fetch(API, { credentials: 'include' });
+    if (r.status === 403) { overlay.style.display = 'flex'; return; }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     errBanner.style.display = 'none';
     hydrate(await r.json());
@@ -264,9 +279,9 @@ function hydrate(d) {
   document.getElementById('spend-note').textContent = `spend since last digest: ${d.spend_note || 'n/a'}`;
 }
 
-// ── Init + 60s refresh ───────────────────────────────────────────────
-if (getKey()) fetchDigest();
-setInterval(() => { if (getKey()) fetchDigest(); }, 60000);
+// ── 60s refresh (checkSession() above does the initial fetchDigest once
+// unlocked) ────────────────────────────────────────────────────────────
+setInterval(fetchDigest, 60000);
 </script>
 </body>
 </html>
