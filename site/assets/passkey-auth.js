@@ -1,19 +1,14 @@
-// Passkey (WebAuthn) login gate for /cpo + /quality (brief #403).
+// PWA service worker registration for /cpo + /quality.
 //
-// Registers the PWA service worker, then blocks the page behind a
-// full-viewport overlay until a valid dip_session cookie is confirmed via
-// GET /ops/api/auth/session. Two paths remove the overlay:
-//   1. "Sign in with Passkey" — usernameless navigator.credentials.get()
-//      (Dashlane / FaceID / Windows Hello all work here; no username
-//      prompt because the passkey is discoverable/resident-key).
-//   2. Visiting with ?enroll_token=<token> (from the one-time enrollment
-//      link Ed retrieves via chat) — navigator.credentials.create(),
-//      then an automatic login to complete the ceremony in one visit.
-//
-// This is the ONLY app-layer gate available to this repo: the site is a
-// static Caddy file server with no backend of its own, so there is no
-// server-side redirect to add — the gate has to run client-side, in this
-// script, before the rest of the page's own logic runs.
+// Brief #403 added a passkey (WebAuthn) login gate here that blocked the
+// page behind a full-viewport overlay until a dip_session cookie was
+// confirmed. Brief #495 removed that gate: Cloudflare Access now fronts
+// these pages as the sole auth wall, and the app-level passkey check was
+// stacking a second wall that broke ("Failed to fetch") whenever CF Access
+// intercepted the request first. The login/enroll functions below are kept
+// as dead code (matching the dip-service passkey routes, also left in
+// place unused) rather than deleted, so the ceremony can be resurrected
+// without re-deriving it if that's ever needed.
 (function () {
   "use strict";
 
@@ -222,29 +217,9 @@
   }
 
   async function init() {
+    // brief #495: no passkey gate — Cloudflare Access is the sole auth
+    // wall now, so the page renders directly with no client-side check.
     registerServiceWorker();
-
-    if (!window.PublicKeyCredential) {
-      buildOverlay(
-        "Unsupported Browser",
-        "This browser does not support passkeys (WebAuthn). Open this page in a current Chrome, Safari, or Edge.",
-        "Retry",
-        function () {
-          location.reload();
-        }
-      );
-      return;
-    }
-
-    var params = new URLSearchParams(location.search);
-    var enrollToken = params.get("enroll_token");
-    if (enrollToken) {
-      showEnrollGate(enrollToken);
-      return;
-    }
-
-    var authed = await checkSession();
-    if (!authed) showLoginGate();
   }
 
   if (document.readyState === "loading") {
