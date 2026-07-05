@@ -157,6 +157,28 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .footer-note a{color:var(--indigo2);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
 
+/* ── Multi-Model Consultant (brief #567) ─────────────────────────────── */
+.consultant-panel{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:16px}
+.consultant-row{display:flex;gap:10px;flex-wrap:wrap}
+.consultant-input{flex:1;min-width:260px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none}
+.consultant-input:focus{border-color:rgba(69,111,221,.5)}
+.consultant-status{margin-top:10px;font-size:12px;color:var(--muted);min-height:16px}
+.consultant-status.bad{color:var(--coral)}
+.consultant-status.ok{color:var(--teal)}
+.consultant-result{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.consultant-cluster{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:12.5px;color:var(--ink-dim)}
+.consultant-cluster-claim{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.consultant-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.consultant-badge{font-size:10px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:100px;text-transform:uppercase;white-space:nowrap}
+.consultant-badge.agree{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
+.consultant-badge.disagree{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
+.consultant-badge.neutral{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
+.consultant-positions{display:flex;flex-direction:column;gap:4px}
+.consultant-position{font-size:11.5px;color:var(--ink-dim);padding-left:10px;border-left:2px solid var(--line)}
+.consultant-position b{color:var(--ink);text-transform:capitalize}
+.consultant-synthesis{background:rgba(69,111,221,.08);border:1px solid rgba(69,111,221,.25);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:var(--ink-dim)}
+.consultant-synthesis b{color:var(--sky)}
+
 @media(max-width:900px){.tcards{grid-template-columns:1fr}}
 
 /* ── Ask-the-CPO chat + directive panel (brief #398, merged with the
@@ -293,6 +315,30 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <div class="activity-feed" id="activity-feed"></div>
     <div class="section-empty" id="activity-empty" style="display:none">
       <span class="check">✓</span> No CPO activity in the last 48h.
+    </div>
+  </div>
+
+  <!-- 7.5 MULTI-MODEL CONSULTANT (brief #567) — Ed's "send it to the
+       multi-agent" affordance for an existing consortium consultation
+       (brief #527/#562). Consortium is v1.5 manual-ledger by design — Ed
+       pastes research prompts into three chat products by hand (see
+       migration 216) — so there's no consultation list/browser yet; this
+       takes a consultation_id Ed already has (e.g. from a bus report),
+       starts the async adjudicate job, polls it to terminal, then polls
+       the auto-chained CPO synthesis a few times before rendering
+       whatever landed. -->
+  <div class="section-block section-consultant">
+    <div class="section-head">
+      <h2>Multi-Model Consultant</h2>
+      <span class="section-sub">adjudicate an existing consortium consultation across Claude / OpenAI / Perplexity</span>
+    </div>
+    <div class="consultant-panel">
+      <div class="consultant-row">
+        <input type="text" id="consultant-consultation-id" class="consultant-input" placeholder="consultation_id (UUID)" autocomplete="off" spellcheck="false">
+        <button class="btn-action" id="consultant-send-btn">Send to Multi-Model Consultant</button>
+      </div>
+      <div class="consultant-status" id="consultant-status"></div>
+      <div class="consultant-result" id="consultant-result"></div>
     </div>
   </div>
 
@@ -781,6 +827,129 @@ async function verifyApproval(approvalId, inputEl, msgEl, btn) {
   }
 }
 
+// ── Multi-Model Consultant (brief #567) ─────────────────────────────
+// Drives brief #562's async adjudicate contract: POST enqueues (or
+// returns the already-active/already-done job), GET .../status is polled
+// every few seconds while the referee call runs (it can take minutes —
+// that's the whole reason #562 made this async), then once the job is
+// done GET .../result is polled a few more times waiting on the
+// auto-chained CPO synthesis step before rendering whatever landed.
+const CONSULTANT_POLL_INTERVAL_MS = 4000;
+const CONSULTANT_JOB_POLL_MAX_ATTEMPTS = 90; // ~6 min — real 3-report referee calls run minutes, not seconds
+const CONSULTANT_RESULT_POLL_MAX_ATTEMPTS = 8; // extra polls waiting on the synthesis hop after the job itself lands
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+function consultantStatus(msg, cls) {
+  const el = document.getElementById('consultant-status');
+  el.textContent = msg;
+  el.className = 'consultant-status' + (cls ? ' ' + cls : '');
+}
+
+function consultantAgreementBadgeClass(agreementClass) {
+  if (agreementClass === 'substantive_disagreement' || agreementClass === 'terminological_disagreement') return 'disagree';
+  if (agreementClass === 'real_agreement' || agreementClass === 'apparent_agreement' || agreementClass === 'correlated_convergence') return 'agree';
+  return 'neutral';
+}
+
+function renderConsultantResult(result) {
+  const el = document.getElementById('consultant-result');
+  if (!result.adjudication) {
+    el.innerHTML = '<div class="consultant-cluster">Job finished but no adjudication was found yet — try again shortly.</div>';
+    return;
+  }
+  const clusters = result.adjudication.claim_clusters.map(c => {
+    const badges = [
+      c.agreement_class ? `<span class="consultant-badge ${consultantAgreementBadgeClass(c.agreement_class)}">${esc_html(c.agreement_class.replace(/_/g, ' '))}</span>` : '',
+      c.confidence_band ? `<span class="consultant-badge neutral">${esc_html(c.confidence_band)} confidence</span>` : '',
+    ].join('');
+    const positions = (c.engine_positions || []).map(p =>
+      `<div class="consultant-position"><b>${esc_html(p.engine)}</b> (${esc_html(p.support_status || 'unknown')}): ${esc_html(p.verbatim_claim || p.normalized_claim || '')}</div>`
+    ).join('');
+    return `<div class="consultant-cluster">`+
+      `<div class="consultant-cluster-claim">${esc_html(c.canonical_claim)}</div>`+
+      `<div class="consultant-badges">${badges}</div>`+
+      `<div class="consultant-positions">${positions}</div>`+
+    `</div>`;
+  }).join('');
+
+  const contested = result.synthesis && result.synthesis.contested_findings && result.synthesis.contested_findings.length
+    ? `<br><b>Dissent / contested:</b> ${esc_html(JSON.stringify(result.synthesis.contested_findings))}`
+    : '';
+  const synthesisHtml = result.synthesis
+    ? `<div class="consultant-synthesis"><b>Bottom line:</b> ${esc_html(result.synthesis.bottom_line || '(no bottom line yet)')}${contested}</div>`
+    : `<div class="consultant-cluster">Adjudication done — CPO synthesis (decision + dissent) hasn't landed yet.</div>`;
+
+  el.innerHTML = clusters + synthesisHtml;
+}
+
+async function pollConsultantResult(consultationId) {
+  for (let attempt = 0; attempt < CONSULTANT_RESULT_POLL_MAX_ATTEMPTS; attempt++) {
+    const r = await authedFetch(`${BASE}/api/admin/consortium/adjudicate/result?consultation_id=${encodeURIComponent(consultationId)}`);
+    if (r.status === 403) { consultantStatus('not authorized — check the password or admin key', 'bad'); return; }
+    if (!r.ok) { consultantStatus(`result fetch failed: HTTP ${r.status}`, 'bad'); return; }
+    const result = await r.json();
+    renderConsultantResult(result);
+    if (result.synthesis || !result.adjudication) { consultantStatus('Done.', 'ok'); return; }
+    consultantStatus('Adjudication done — waiting on CPO synthesis…', 'ok');
+    await sleep(CONSULTANT_POLL_INTERVAL_MS);
+  }
+  consultantStatus('Verdict rendered (synthesis step still pending — check back later).', 'ok');
+}
+
+async function pollConsultantJob(consultationId, jobId) {
+  const qs = jobId ? `job_id=${encodeURIComponent(jobId)}` : `consultation_id=${encodeURIComponent(consultationId)}`;
+  for (let attempt = 0; attempt < CONSULTANT_JOB_POLL_MAX_ATTEMPTS; attempt++) {
+    const r = await authedFetch(`${BASE}/api/admin/consortium/adjudicate/status?${qs}`);
+    if (r.status === 403) { consultantStatus('not authorized — check the password or admin key', 'bad'); return; }
+    if (!r.ok) { consultantStatus(`status check failed: HTTP ${r.status}`, 'bad'); return; }
+    const job = await r.json();
+    if (job.state === 'done') {
+      consultantStatus('Adjudication complete — loading verdict…', 'ok');
+      await pollConsultantResult(consultationId);
+      return;
+    }
+    if (job.state === 'error') {
+      consultantStatus(`Adjudication failed: ${job.error_detail || 'unknown error'}`, 'bad');
+      return;
+    }
+    consultantStatus(`Adjudicating… (${job.state}, ${job.tokens_out || 0} tokens out so far)`, null);
+    await sleep(CONSULTANT_POLL_INTERVAL_MS);
+  }
+  consultantStatus('Timed out waiting for the adjudication job to finish — check back later.', 'bad');
+}
+
+async function sendToConsultant() {
+  const input = document.getElementById('consultant-consultation-id');
+  const consultationId = input.value.trim();
+  const btn = document.getElementById('consultant-send-btn');
+  document.getElementById('consultant-result').innerHTML = '';
+  if (!consultationId) { consultantStatus('Enter a consultation_id first.', 'bad'); return; }
+  btn.disabled = true;
+  consultantStatus('Starting adjudication…', null);
+  try {
+    const r = await authedFetch(`${BASE}/api/admin/consortium/adjudicate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ consultation_id: consultationId }),
+    });
+    if (r.status === 403) throw new Error('not authorized — check the password or admin key');
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.detail || `HTTP ${r.status}`);
+    if (json.status === 'already_adjudicated') {
+      consultantStatus('Already adjudicated — loading verdict…', 'ok');
+      await pollConsultantResult(consultationId);
+    } else {
+      consultantStatus(`Queued (job ${esc_html(json.job_id || 'unknown')})…`, null);
+      await pollConsultantJob(consultationId, json.job_id);
+    }
+  } catch (e) {
+    consultantStatus(`Failed to start: ${e.message}`, 'bad');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // Delegated click handling — cards are re-rendered wholesale on every
 // fetchTriage(), so listeners live on the stable .wrap container instead.
 document.querySelector('.wrap').addEventListener('click', (e) => {
@@ -940,6 +1109,11 @@ document.getElementById('cpo-chat-input').addEventListener('keydown', e => {
 document.getElementById('cpo-chat-input').addEventListener('input', function () {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+document.getElementById('consultant-send-btn').addEventListener('click', sendToConsultant);
+document.getElementById('consultant-consultation-id').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); sendToConsultant(); }
 });
 
 // ── Init + 60s refresh ───────────────────────────────────────────────
