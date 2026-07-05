@@ -164,6 +164,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .cpo-chat-send:disabled{opacity:.5;cursor:default}
 .tcard-diagnosis{font-size:12px;line-height:1.5;color:var(--ink-dim);margin-bottom:10px;padding:8px 10px;border-radius:8px;background:rgba(219,84,97,.06);border:1px solid rgba(219,84,97,.18)}
 .tcard-diagnosis b{color:var(--coral);font-weight:700}
+
+/* ── CEO-first card restructure (brief #674): badge / one-line ask / $ /
+   blocked, technical diagnosis collapsed below ──────────────────────── */
+.btn-action.primary{background:var(--teal);color:var(--navy-deep);border-color:var(--teal)}
+.btn-action.primary:hover{background:var(--teal-bright)}
+.tcard-badge-row{margin-bottom:8px}
+.tcard-badge{font-family:Consolas,'JetBrains Mono',monospace;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block}
+.tcard-badge.decision{background:rgba(219,84,97,.18);color:var(--coral);border:1px solid rgba(219,84,97,.4)}
+.tcard-badge.fyi{background:rgba(69,111,221,.14);color:var(--indigo2);border:1px solid rgba(69,111,221,.32)}
+.tcard-facts{display:flex;flex-direction:column;gap:4px;margin:2px 0 10px}
+.tcard-fact{font-size:12px;line-height:1.5;display:flex;gap:6px}
+.tcard-fact-label{color:var(--muted);font-weight:600;flex:none;min-width:88px}
+.tcard-fact-value{color:var(--ink)}
+details.tcard-tech{margin-bottom:10px}
+details.tcard-tech summary{cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);list-style:none}
+details.tcard-tech summary::-webkit-details-marker{display:none}
+details.tcard-tech summary::before{content:"▸ "}
+details.tcard-tech[open] summary::before{content:"▾ "}
+details.tcard-tech .tcard-tech-body{margin-top:8px}
 @media(max-width:520px){.cpo-chat-drawer{width:100vw;height:78vh;border-radius:14px 14px 0 0}}
 </style>
 </head>
@@ -341,14 +360,30 @@ function fmt_elapsed(ms) {
 }
 
 // ── Card rendering ──────────────────────────────────────────────────
-// Needs-attention cards follow the CEO card spec (brief #390, Ed feedback
-// 2026-07-02): THE ASK / CONTEXT / GOOD-BAD / CPO RECOMMENDATION / ACTIONS,
-// in that order, with the session/CI link as supporting evidence BELOW the
-// summary — never the primary content, never a bare link to a raw CI page.
+// Needs-attention cards follow the CEO-first restructure (brief #674, Ed
+// feedback: the old card shouted its diagnosis twice — red "Diagnosed
+// cause" ≈ blue "CPO recommends" — and buried the two things Ed actually
+// needs: is this MINE to decide, and what does it cost. New order: badge
+// (DECISION/FYI) / one-line ask / $ implication / what's blocked / the old
+// technical diagnosis+evidence, collapsed behind a disclosure / actions,
+// with the session/CI link as supporting evidence at the very bottom —
+// never the primary content, never a bare link to a raw CI page.
 function needsEdCardHtml(it) {
   const title = `#${esc_html(it.brief_id)} · ${esc_html(it.title || '')}`;
   const card = it.card || {};
-  const ask = esc_html(card.ask || it.title || 'Review needed');
+  const askType = card.ed_ask_type === 'decision' ? 'decision' : 'fyi';
+  const askLine = esc_html(card.ed_ask_line || 'Review and acknowledge');
+  const costImplication = esc_html(card.ed_cost_implication || 'None');
+  const blocks = esc_html(card.ed_blocks || 'Nothing');
+
+  const badgeHtml = `<div class="tcard-badge-row"><span class="tcard-badge ${askType}">${askType === 'decision' ? 'DECISION' : 'FYI'}</span></div>`;
+  const factsHtml = `<div class="tcard-facts">`+
+    `<div class="tcard-fact"><span class="tcard-fact-label">$ implication</span><span class="tcard-fact-value">${costImplication}</span></div>`+
+    `<div class="tcard-fact"><span class="tcard-fact-label">Blocked</span><span class="tcard-fact-value">${blocks}</span></div>`+
+  `</div>`;
+
+  // Everything below is the old technical narrative — kept, never deleted,
+  // just no longer shouted at the top of the card (brief #674).
   const context = esc_html(card.context || it.intent_blurb || '');
   const good = (card.good || []).map(g => `<li>${esc_html(g)}</li>`).join('');
   const bad = (card.bad || []).map(b => `<li>${esc_html(b)}</li>`).join('');
@@ -364,10 +399,18 @@ function needsEdCardHtml(it) {
   const diagnosis = card.diagnosis && card.diagnosis.cause
     ? `<div class="tcard-diagnosis"><b>Diagnosed cause:</b> ${esc_html(card.diagnosis.cause)}</div>`
     : '';
+  const techBody = `${context ? `<div class="tcard-context">${context}</div>` : ''}${evidence}${diagnosis}${recommendation}`;
+  const techDetailHtml = techBody
+    ? `<details class="tcard-tech"><summary>Show technical detail</summary><div class="tcard-tech-body">${techBody}</div></details>`
+    : '';
 
-  const actions = [`<button class="btn-action" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Acknowledge</button>`];
-  if (REQUEUE_ALLOWED.has(it.status)) {
-    actions.push(`<button class="btn-action" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
+  // Acknowledge is primary/default for FYI cards; Re-run is primary only for
+  // DECISION cards where re-run is a valid resolution (brief #674 req 6).
+  const canRequeue = REQUEUE_ALLOWED.has(it.status);
+  const ackPrimary = askType === 'fyi' || !canRequeue;
+  const actions = [`<button class="btn-action${ackPrimary ? ' primary' : ''}" data-action="resolve" data-brief-id="${esc_html(it.brief_id)}">Acknowledge</button>`];
+  if (canRequeue) {
+    actions.push(`<button class="btn-action${!ackPrimary ? ' primary' : ''}" data-action="requeue" data-brief-id="${esc_html(it.brief_id)}">Re-run</button>`);
   }
   const actionsHtml = `<div class="tcard-actions">${actions.join('')}</div>`;
 
@@ -387,10 +430,11 @@ function needsEdCardHtml(it) {
     : '<span></span>';
 
   return `<div class="tcard">`+
-    `<div class="tcard-ask">${ask}</div>`+
+    badgeHtml+
+    `<div class="tcard-ask">${askLine}</div>`+
     `<div class="tcard-title">${title}</div>`+
-    (context ? `<div class="tcard-context">${context}</div>` : '')+
-    evidence+diagnosis+recommendation+
+    factsHtml+
+    techDetailHtml+
     actionsHtml+approvalsHtml+
     `<div class="tcard-evidence-link">${link}</div>`+
   `</div>`;
