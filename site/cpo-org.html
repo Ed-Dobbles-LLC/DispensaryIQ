@@ -133,6 +133,28 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .op-directive textarea:focus{outline:none;border-color:rgba(69,111,221,.5)}
 .op-directive-msg{font-size:11.5px;color:var(--teal);margin-top:7px}
 
+.op-recent-toggle summary{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-d);cursor:pointer;list-style:none}
+.op-recent-toggle summary::-webkit-details-marker{display:none}
+.op-recent-toggle[open] summary{margin-bottom:9px}
+
+.op-thread{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding-right:2px}
+.op-msg{display:flex}
+.op-msg.mine{justify-content:flex-end}
+.op-msg.theirs{justify-content:flex-start}
+.op-msg-bubble{max-width:84%;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:12px;line-height:1.5;color:var(--ink-dim)}
+.op-msg.mine .op-msg-bubble{background:rgba(219,84,97,.08);border-color:rgba(219,84,97,.3);color:var(--ink)}
+.op-msg-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--coral);background:rgba(219,84,97,.12);border:1px solid rgba(219,84,97,.28);padding:2px 7px;border-radius:100px;margin-right:6px}
+.op-msg-directive-status{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:100px}
+.op-msg-directive-status.open{color:var(--amber);background:rgba(232,179,65,.12);border:1px solid rgba(232,179,65,.3)}
+.op-msg-directive-status.done{color:var(--teal);background:rgba(0,185,142,.12);border:1px solid rgba(0,185,142,.3)}
+.op-msg-subject{font-size:11.5px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.op-msg-text{white-space:pre-wrap;word-break:break-word}
+.op-msg-ts{margin-top:5px;font-size:9.5px;color:var(--muted-d)}
+
+.op-composer{position:sticky;bottom:-1px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line);background:linear-gradient(180deg, rgba(6,10,45,.55), var(--navy-mid) 35%)}
+.op-directive-toggle{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-bottom:8px;cursor:pointer}
+.op-directive-toggle input{accent-color:var(--coral)}
+
 .action-toast{position:fixed;top:18px;right:28px;z-index:300;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);display:none}
 .action-toast.ok{display:block;background:rgba(0,185,142,.16);color:var(--teal);border:1px solid rgba(0,185,142,.35)}
 .action-toast.bad{display:block;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
@@ -192,7 +214,9 @@ const BASE = 'https://dip-service-production-0db3.up.railway.app';
 const STATE_API = `${BASE}/api/admin/office/state`;
 const ROSTER_API = `${BASE}/ops/api/org-roster`;
 const AGENT_API = (name) => `${BASE}/api/admin/office/agent/${encodeURIComponent(name)}`;
+const THREAD_API = (name) => `${BASE}/api/admin/office/thread/${encodeURIComponent(name)}`;
 const DIRECTIVE_API = `${BASE}/api/admin/office/directive`;
+const MESSAGE_API = `${BASE}/api/admin/office/message`;
 const ACK_API = `${BASE}/api/admin/office/ack`;
 const KEY_STORE = 'dip_ops_key';
 const MACHINE_LANE_PARENT = 'dip-bus-executor';
@@ -378,6 +402,7 @@ async function ackItem(kind, id, btn) {
     const strip = document.getElementById('notif-strip');
     if (!strip.querySelector('.notif-row')) strip.innerHTML = '<div class="notif-empty">Nothing needs you.</div>';
     toast('Acked', true);
+    fetchState();
   } catch (e) {
     toast(`Ack failed: ${e.message}`, false);
     btn.disabled = false;
@@ -422,7 +447,6 @@ function recentWorkItems(detail) {
 function panelBodyHtml(row, detail) {
   const gov = row.governance_id ? governanceByKey[String(row.governance_id)] : null;
   const items = recentWorkItems(detail);
-  const directives = detail.open_directives || [];
   return `
     <div class="op-head">
       <div class="op-name">${esc_html(row.display_name)}</div>
@@ -440,20 +464,78 @@ function panelBodyHtml(row, detail) {
       </div>
     </div>` : ''}
     <div class="op-section">
-      <h3>Recent work</h3>
-      ${items.length ? `<div class="op-list">${items.map((it) => `<div class="op-item">${it.label}<span class="ts">${esc_html(it.ts || '')}</span></div>`).join('')}</div>` : '<div class="op-empty">Nothing recent.</div>'}
+      <details class="op-recent-toggle">
+        <summary>Recent work${items.length ? ` (${items.length})` : ''}</summary>
+        ${items.length ? `<div class="op-list">${items.map((it) => `<div class="op-item">${it.label}<span class="ts">${esc_html(it.ts || '')}</span></div>`).join('')}</div>` : '<div class="op-empty">Nothing recent.</div>'}
+      </details>
     </div>
     <div class="op-section">
-      <h3>Open directives</h3>
-      ${directives.length ? `<div class="op-list">${directives.map((d) => `<div class="op-item">${esc_html(d.text)}<span class="ts">from ${esc_html(d.created_by || '')} · ${esc_html(d.created_at || '')}</span></div>`).join('')}</div>` : '<div class="op-empty">None open.</div>'}
+      <h3>Conversation</h3>
+      <div class="op-thread" id="op-thread"><div class="section-loading">Loading…</div></div>
     </div>
-    <div class="op-section op-directive">
-      <h3>Send a directive</h3>
-      <textarea id="directive-text" placeholder="Tell ${esc_html(row.display_name)} what to do…"></textarea>
-      <button class="btn-action" id="directive-send" style="margin-top:9px">Send</button>
-      <div class="op-directive-msg" id="directive-msg"></div>
+    <div class="op-composer op-directive">
+      <label class="op-directive-toggle">
+        <input type="checkbox" id="composer-directive-toggle" checked>
+        <span>Directive — agent must act + mark read</span>
+      </label>
+      <textarea id="composer-text" placeholder="Message ${esc_html(row.display_name)}…"></textarea>
+      <button class="btn-action" id="composer-send" style="margin-top:9px">Send</button>
+      <div class="op-directive-msg" id="composer-msg"></div>
     </div>
   `;
+}
+
+function threadItemHtml(it) {
+  const mine = it.from === 'ed';
+  const isDirective = it.kind === 'directive';
+  const done = isDirective && (it.status === 'done' || !!it.read_at);
+  const text = it.text != null ? it.text : it.body;
+  return `<div class="op-msg ${mine ? 'mine' : 'theirs'}">`+
+    `<div class="op-msg-bubble">`+
+      `${isDirective ? `<span class="op-msg-tag">Directive</span><span class="op-msg-directive-status ${done ? 'done' : 'open'}">${done ? 'done' : 'open'}</span>` : ''}`+
+      (it.subject ? `<div class="op-msg-subject">${esc_html(it.subject)}</div>` : '')+
+      `<div class="op-msg-text">${esc_html(text)}</div>`+
+      `<div class="op-msg-ts mono">${esc_html(it.ts || '')}</div>`+
+    `</div>`+
+  `</div>`;
+}
+
+function renderThread(items) {
+  const el = document.getElementById('op-thread');
+  if (!el) return;
+  if (!items || !items.length) {
+    el.innerHTML = '<div class="op-empty">No messages yet.</div>';
+    return;
+  }
+  el.innerHTML = items.map(threadItemHtml).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+async function loadThread(agentName) {
+  const el = document.getElementById('op-thread');
+  try {
+    const r = await authedFetch(THREAD_API(agentName));
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    if (el) renderThread(json.items || []);
+  } catch (e) {
+    if (el) el.innerHTML = `<div class="section-err" style="display:block">Thread failed: ${esc_html(e.message)}</div>`;
+  }
+}
+
+function appendOptimisticThreadItem(text, isDirective) {
+  const el = document.getElementById('op-thread');
+  if (!el) return;
+  const empty = el.querySelector('.op-empty');
+  if (empty) empty.remove();
+  el.insertAdjacentHTML('beforeend', threadItemHtml({
+    ts: new Date().toISOString(),
+    from: 'ed',
+    kind: isDirective ? 'directive' : 'message',
+    text,
+    status: 'open',
+  }));
+  el.scrollTop = el.scrollHeight;
 }
 
 async function openAgent(agentName) {
@@ -467,35 +549,41 @@ async function openAgent(agentName) {
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const detail = await r.json();
     document.getElementById('office-panel-body').innerHTML = panelBodyHtml(row, detail);
-    document.getElementById('directive-send').addEventListener('click', () => sendDirective(agentName));
   } catch (e) {
     document.getElementById('office-panel-body').innerHTML = `
       ${panelBodyHtml(row, {})}
       <div class="section-err" style="display:block">Detail load failed: ${esc_html(e.message)}</div>`;
-    const btn = document.getElementById('directive-send');
-    if (btn) btn.addEventListener('click', () => sendDirective(agentName));
   }
+  const sendBtn = document.getElementById('composer-send');
+  if (sendBtn) sendBtn.addEventListener('click', () => sendComposer(agentName));
+  loadThread(agentName);
 }
 
-async function sendDirective(agentName) {
-  const ta = document.getElementById('directive-text');
-  const msg = document.getElementById('directive-msg');
+async function sendComposer(agentName) {
+  const ta = document.getElementById('composer-text');
+  const msg = document.getElementById('composer-msg');
+  const toggle = document.getElementById('composer-directive-toggle');
   const text = (ta.value || '').trim();
   if (!text) return;
-  const btn = document.getElementById('directive-send');
+  const isDirective = !toggle || toggle.checked;
+  const btn = document.getElementById('composer-send');
   btn.disabled = true;
   try {
-    const r = await authedFetch(DIRECTIVE_API, {
+    const url = isDirective ? DIRECTIVE_API : MESSAGE_API;
+    const body = isDirective ? { to_agent: agentName, text } : { to_agent: agentName, body: text };
+    const r = await authedFetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to_agent: agentName, text }),
+      body: JSON.stringify(body),
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     ta.value = '';
-    msg.textContent = 'Queued — picked up on their next cycle.';
+    msg.textContent = isDirective ? 'Queued — picked up on their next cycle.' : 'Sent.';
+    appendOptimisticThreadItem(text, isDirective);
+    fetchState();
   } catch (e) {
     msg.textContent = '';
-    toast(`Directive failed: ${e.message}`, false);
+    toast(`Send failed: ${e.message}`, false);
   } finally {
     btn.disabled = false;
   }

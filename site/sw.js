@@ -7,7 +7,7 @@
 // than this static site) or any same-origin path containing "/ops/api/"
 // falls straight through to the network, uncached, unintercepted.
 
-const SHELL_CACHE = "dip-ops-shell-v1";
+const SHELL_CACHE = "dip-ops-shell-v2";
 const SHELL_ASSETS = [
   "/cpo.html",
   "/quality.html",
