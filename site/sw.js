@@ -7,7 +7,7 @@
 // than this static site) or any same-origin path containing "/ops/api/"
 // falls straight through to the network, uncached, unintercepted.
 
-const SHELL_CACHE = "dip-ops-shell-v3";
+const SHELL_CACHE = "dip-ops-shell-v4";
 const SHELL_ASSETS = [
   "/cpo.html",
   "/quality.html",
@@ -53,6 +53,23 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (event.request.method !== "GET") return;
+
+  if (event.request.mode === "navigate") {
+    // Navigations: network-first, so Ed sees the latest deploy on one
+    // reload. Cache is only a fallback for offline access.
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(SHELL_CACHE).then((cache) => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
