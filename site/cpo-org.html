@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workforce Org Chart - Dispensary · DispensaryIntelligence</title>
+<title>The Office - Dispensary · DispensaryIntelligence</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#03051F">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
@@ -18,6 +18,7 @@
   --coral:#DB5461; --teal:#00B98E; --teal-bright:#00D3A3;
   --line:rgba(232,230,220,.12); --muted:rgba(232,230,220,.6); --muted-d:rgba(232,230,220,.32);
   --indigo1:#332CB3; --indigo2:#456FDD;
+  --amber:#E8B341;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
@@ -37,43 +38,104 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .btn-action{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,185,142,.35);background:rgba(0,185,142,.12);color:var(--teal);white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center}
 .btn-action:hover{background:rgba(0,185,142,.22)}
 
-.wrap{max-width:1100px;margin:0 auto;padding:26px 28px 60px}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 28px 80px}
 
-.page-intro{margin-bottom:22px}
+.page-intro{margin-bottom:20px}
 .page-intro h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px}
-.page-intro p{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:640px}
+.page-intro p{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:680px}
 
 .section-loading{font-size:12px;color:var(--muted);padding:16px 0}
 .section-err{font-size:12px;color:var(--coral);padding:10px 0}
 
-.roster{display:flex;flex-direction:column;gap:12px}
-.seat{border-radius:14px;padding:18px 20px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-left-width:3px}
-.seat[data-status="active"]{border-left-color:var(--teal)}
-.seat[data-status="active-phase-1"]{border-left-color:var(--teal-bright)}
-.seat[data-status="planned"]{border-left-color:var(--muted-d)}
-.seat[data-status="gated"]{border-left-color:var(--coral)}
+/* ── notification strip ─────────────────────────────────────────── */
+.notif-strip{margin-bottom:26px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);overflow:hidden}
+.notif-empty{padding:14px 18px;font-size:12.5px;color:var(--muted-d)}
+.notif-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid var(--line);font-size:12.5px}
+.notif-row:first-child{border-top:none}
+.notif-kind{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:rgba(219,84,97,.12);color:var(--coral);border:1px solid rgba(219,84,97,.28);white-space:nowrap;flex:none}
+.notif-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.notif-title a{color:inherit;text-decoration:underline}
+.notif-meta{font-size:11px;color:var(--muted);white-space:nowrap;flex:none}
+.notif-ack{font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink-dim);flex:none}
+.notif-ack:hover{background:rgba(255,255,255,.09)}
+.notif-ack:disabled{opacity:.5;cursor:default}
 
-.seat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-.seat-name-role{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.seat-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px}
-.seat-role{font-size:12.5px;color:var(--ink-dim);font-weight:500}
-.seat-badges{display:flex;align-items:center;gap:8px;flex:none}
+/* ── org tree ────────────────────────────────────────────────────── */
+.org-tree-wrap{overflow-x:auto;padding-bottom:10px}
+.tree, .tree ul{list-style:none;display:flex;justify-content:center}
+.tree{padding:10px 0 0}
+.tree ul{padding-top:34px}
+.tree li{display:flex;flex-direction:column;align-items:center;padding:0 14px;position:relative}
+.tree li::before, .tree li::after{content:'';position:absolute;top:0;right:50%;border-top:1px solid var(--line);width:50%;height:34px}
+.tree li::after{right:auto;left:50%;border-left:1px solid var(--line)}
+.tree li:only-child::after, .tree li:only-child::before{display:none}
+.tree li:only-child{padding-top:0}
+.tree li:first-child::before{border:none}
+.tree li:last-child::after{border:none}
+.tree li:first-child:not(:last-child)::after{border-radius:6px 0 0 0}
+.tree li:last-child:not(:first-child)::before{border-radius:0 6px 0 0}
+.tree > li{padding-top:0}
+.tree > li::before, .tree > li::after{display:none}
+.tree ul::before{content:'';position:absolute;top:0;left:50%;margin-left:-1px;border-left:1px solid var(--line);width:0;height:34px}
 
-.badge{font-family:Consolas,'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase;white-space:nowrap}
-.badge.status-active{background:rgba(0,185,142,.14);color:var(--teal);border:1px solid rgba(0,185,142,.3)}
-.badge.status-active-phase-1{background:rgba(0,211,163,.14);color:var(--teal-bright);border:1px solid rgba(0,211,163,.32)}
-.badge.status-planned{background:rgba(232,230,220,.08);color:var(--muted);border:1px solid var(--line)}
-.badge.status-gated{background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.3)}
-.badge.tenant{background:rgba(69,111,221,.12);color:var(--indigo2);border:1px solid rgba(69,111,221,.28)}
+.card{width:186px;border-radius:12px;padding:13px 14px;background:rgba(255,255,255,.04);border:1px solid var(--line);cursor:pointer;text-align:left;transition:background .12s,border-color .12s}
+.card:hover{background:rgba(255,255,255,.075);border-color:rgba(232,230,220,.24)}
+.card.planned{opacity:.55}
+.card-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:3px}
+.led{width:8px;height:8px;border-radius:50%;flex:none;margin-top:4px;box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.led.active{background:var(--teal)}
+.led.idle{background:var(--amber)}
+.led.down{background:var(--coral)}
+.led.off{background:var(--muted-d)}
+.card-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12.5px;line-height:1.3}
+.card-role{font-size:10.5px;color:var(--ink-dim);line-height:1.35;margin-top:2px}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:8px}
+.planned-tag{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.06em;color:var(--muted-d);text-transform:uppercase}
+.unread-badge{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:100px;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.32)}
 
-.seat-authority{font-size:13px;line-height:1.55;color:var(--ink);margin:10px 0}
+.machine-strip{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-width:220px}
+.chip{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink-dim);padding:4px 9px;border-radius:100px;background:rgba(255,255,255,.03);border:1px solid var(--line);cursor:pointer}
+.chip:hover{background:rgba(255,255,255,.07)}
+.chip .led{width:6px;height:6px;margin-top:0}
 
-.seat-gate{font-size:12px;line-height:1.55;color:var(--ink-dim);margin-bottom:10px;padding:9px 12px;border-radius:8px;background:rgba(219,84,97,.06);border:1px solid rgba(219,84,97,.18)}
-.seat-gate b{color:var(--coral);font-weight:700}
+@media (max-width:720px){
+  .tree, .tree ul{display:block}
+  .tree li{display:block;padding:8px 0 8px 18px;text-align:left}
+  .tree li::before, .tree li::after, .tree ul::before{display:none}
+  .tree ul{padding-top:0;border-left:1px solid var(--line);margin-left:8px}
+  .card{width:100%}
+}
 
-.seat-meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
-.seat-meta div b{color:var(--muted-d);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;display:block;margin-bottom:2px}
-.seat-meta div span{color:var(--ink-dim);font-family:Consolas,'JetBrains Mono',monospace;font-size:11px}
+/* ── slide-over ──────────────────────────────────────────────────── */
+.office-backdrop{position:fixed;inset:0;background:rgba(3,5,31,.6);backdrop-filter:blur(2px);z-index:200;display:none}
+.office-backdrop.open{display:block}
+.office-panel{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);background:linear-gradient(180deg,rgba(51,44,179,.14),var(--navy-mid));border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(0,0,0,.5);z-index:210;transform:translateX(100%);transition:transform .18s ease;overflow-y:auto}
+.office-panel.open{transform:translateX(0)}
+.office-panel-inner{padding:22px 22px 60px}
+.office-panel-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px}
+.op-head{margin-bottom:16px;padding-right:30px}
+.op-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px}
+.op-role{font-size:12.5px;color:var(--ink-dim);margin-top:3px}
+.op-status{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.op-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.op-section h3{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-d);margin-bottom:9px}
+.op-gate{font-size:12px;line-height:1.55;color:var(--ink-dim);margin-bottom:8px;padding:9px 12px;border-radius:8px;background:rgba(219,84,97,.06);border:1px solid rgba(219,84,97,.18)}
+.op-gate b{color:var(--coral);font-weight:700}
+.op-authority{font-size:12.5px;line-height:1.55;color:var(--ink)}
+.op-meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:11px;color:var(--muted);margin-top:10px}
+.op-meta div b{color:var(--muted-d);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:9px;display:block;margin-bottom:2px}
+.op-meta div span{color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:11px}
+.op-list{display:flex;flex-direction:column;gap:8px}
+.op-item{font-size:12px;line-height:1.5;color:var(--ink-dim);padding:8px 10px;border-radius:7px;background:rgba(255,255,255,.03)}
+.op-item .ts{color:var(--muted-d);font-family:'JetBrains Mono',monospace;font-size:10px;display:block;margin-top:2px}
+.op-empty{font-size:11.5px;color:var(--muted-d)}
+.op-directive textarea{width:100%;min-height:70px;resize:vertical;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:inherit;font-size:12.5px;padding:9px 11px}
+.op-directive textarea:focus{outline:none;border-color:rgba(69,111,221,.5)}
+.op-directive-msg{font-size:11.5px;color:var(--teal);margin-top:7px}
+
+.action-toast{position:fixed;top:18px;right:28px;z-index:300;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);display:none}
+.action-toast.ok{display:block;background:rgba(0,185,142,.16);color:var(--teal);border:1px solid rgba(0,185,142,.35)}
+.action-toast.bad{display:block;background:rgba(219,84,97,.16);color:var(--coral);border:1px solid rgba(219,84,97,.35)}
 
 .footer-note{margin-top:24px;font-size:11px;color:var(--muted-d);text-align:center;line-height:1.7}
 .footer-note a{color:var(--indigo2);text-decoration:none}
@@ -85,7 +147,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <header>
   <div style="display:flex;align-items:center;gap:20px">
     <a href="cpo.html" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:5px;white-space:nowrap" title="Back to AI CPO">← CPO</a>
-    <div class="brand"><span class="dot"></span><div><h1>Workforce Org Chart</h1><small>DispensaryIntelligence · who Ed is talking to</small></div></div>
+    <div class="brand"><span class="dot"></span><div><h1>The Office</h1><small>DispensaryIntelligence · Ed's virtual office</small></div></div>
   </div>
   <div style="display:flex;align-items:center;gap:16px">
     <span class="refreshed" id="last-refreshed">loading…</span>
@@ -95,25 +157,45 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 <div class="wrap">
 
   <div class="page-intro">
-    <h2>Every seat, human or agent</h2>
-    <p>One row per workforce seat — status, authority, permanent gates, and which credential it acts under. Data-driven: adding a row to <span class="mono">governance.org_roster</span> surfaces here without a deploy.</p>
+    <h2>Every seat is a live agent</h2>
+    <p>Classic org tree — click any seat to inspect it, see its permanent gate and recent work, and send it a directive. Data-driven from <span class="mono">ops.agent_roster</span> and <span class="mono">governance.org_roster</span>.</p>
+  </div>
+
+  <div class="notif-strip" id="notif-strip">
+    <div class="notif-empty" id="notif-empty">Loading…</div>
   </div>
 
   <div class="section-loading" id="section-loading">Loading…</div>
   <div class="section-err" id="section-err" style="display:none"></div>
 
-  <div class="roster" id="roster"></div>
+  <div class="org-tree-wrap">
+    <ul class="tree" id="org-tree"></ul>
+  </div>
 
   <div class="footer-note">
-    Live data via <span class="mono">dip-service /ops/api/org-roster</span> · refreshes every 60 s.<br>
+    Live data via <span class="mono">dip-service /api/admin/office/state</span> + <span class="mono">/ops/api/org-roster</span> · refreshes every 60 s.<br>
     Internal ops cockpit · not the public DispensaryIntelligence.com marketing site.
   </div>
 
 </div><!-- /wrap -->
 
+<div class="office-backdrop" id="office-backdrop"></div>
+<aside class="office-panel" id="office-panel">
+  <button class="office-panel-close" id="office-panel-close" aria-label="Close">✕</button>
+  <div class="office-panel-inner" id="office-panel-body"></div>
+</aside>
+
+<div class="action-toast" id="action-toast"></div>
+
 <script>
 const BASE = 'https://dip-service-production-0db3.up.railway.app';
+const STATE_API = `${BASE}/api/admin/office/state`;
 const ROSTER_API = `${BASE}/ops/api/org-roster`;
+const AGENT_API = (name) => `${BASE}/api/admin/office/agent/${encodeURIComponent(name)}`;
+const DIRECTIVE_API = `${BASE}/api/admin/office/directive`;
+const ACK_API = `${BASE}/api/admin/office/ack`;
+const KEY_STORE = 'dip_ops_key';
+const MACHINE_LANE_PARENT = 'dip-bus-executor';
 
 function esc_html(s) {
   return String(s == null ? '' : s)
@@ -121,59 +203,333 @@ function esc_html(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function statusLabel(status) {
-  if (status === 'active-phase-1') return 'active · phase 1';
-  return status;
+function fmtAge(min) {
+  if (min == null) return 'no evidence';
+  if (min < 1) return 'just now';
+  if (min < 60) return `${Math.floor(min)}m ago`;
+  const hours = min / 60;
+  if (hours < 48) return `${hours.toFixed(1)}h ago`;
+  return `${(hours / 24).toFixed(1)}d ago`;
 }
 
-function seatHtml(seat) {
-  const status = seat.status || 'planned';
-  const gateText = seat.permanent_gates || '';
-  return `<div class="seat" data-status="${esc_html(status)}">`+
-    `<div class="seat-head">`+
-      `<div class="seat-name-role">`+
-        `<span class="seat-name">${esc_html(seat.name)}</span>`+
-        `<span class="seat-role">${esc_html(seat.role)}</span>`+
-      `</div>`+
-      `<div class="seat-badges">`+
-        `<span class="badge tenant">${esc_html(seat.tenant)}</span>`+
-        `<span class="badge status-${esc_html(status)}">${esc_html(statusLabel(status))}</span>`+
-      `</div>`+
-    `</div>`+
-    `<div class="seat-authority">${esc_html(seat.authority_summary)}</div>`+
-    (gateText ? `<div class="seat-gate"><b>Permanent gate:</b> ${esc_html(gateText)}</div>` : '')+
-    `<div class="seat-meta">`+
-      `<div><b>Supervising authority</b><span>${esc_html(seat.supervising_authority)}</span></div>`+
-      `<div><b>Identity binding</b><span>${esc_html(seat.identity_binding)}</span></div>`+
-    `</div>`+
-  `</div>`;
+// Cookie-first, admin-key-as-fallback (same pattern as cpo.html): every call
+// carries credentials:'include' so a valid cpo_session cookie authorizes it.
+// Only on a 403 with no cached key do we prompt once and retry.
+function getKey() { return sessionStorage.getItem(KEY_STORE) || ''; }
+function setKey(k) { sessionStorage.setItem(KEY_STORE, k); }
+function clearKey() { sessionStorage.removeItem(KEY_STORE); }
+
+async function authedFetch(url, opts) {
+  opts = opts || {};
+  const headers = Object.assign({}, opts.headers || {});
+  const cachedKey = getKey();
+  if (cachedKey) headers['X-Admin-Key'] = cachedKey;
+  let r = await fetch(url, Object.assign({}, opts, { headers, credentials: 'include' }));
+  if (r.status === 403 && !cachedKey) {
+    const entered = prompt('Ops admin key required for this action:');
+    if (!entered || !entered.trim()) return r;
+    setKey(entered.trim());
+    const retryHeaders = Object.assign({}, headers);
+    retryHeaders['X-Admin-Key'] = getKey();
+    r = await fetch(url, Object.assign({}, opts, { headers: retryHeaders, credentials: 'include' }));
+  }
+  if (r.status === 403 && getKey()) clearKey();
+  return r;
 }
 
-function render(d) {
-  document.getElementById('last-refreshed').textContent =
-    `live · refreshed ${new Date().toLocaleTimeString()}`;
-  const roster = d.roster || [];
-  document.getElementById('roster').innerHTML = roster.map(seatHtml).join('');
-  document.getElementById('section-loading').style.display = 'none';
+function toast(msg, ok) {
+  const t = document.getElementById('action-toast');
+  t.textContent = msg;
+  t.className = 'action-toast ' + (ok ? 'ok' : 'bad');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.className = 'action-toast'; }, 4000);
 }
 
-async function fetchRoster() {
+// ── governance join ──────────────────────────────────────────────────
+// /ops/api/org-roster does not return an `id` column (deliberately left off
+// that read-only endpoint, which we're not allowed to touch here), but
+// governance.org_roster.id is always String(sort_order + 1) for every seat
+// today, so we key the client-side join on that instead. If a future seat
+// breaks that pattern the join just quietly misses (gate/authority omitted
+// for that card) rather than throwing.
+let governanceByKey = {};
+
+async function fetchGovernance() {
   try {
     const r = await fetch(ROSTER_API);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const json = await r.json();
-    document.getElementById('section-err').style.display = 'none';
-    render(json);
+    const roster = json.roster || [];
+    governanceByKey = {};
+    roster.forEach((seat) => { governanceByKey[String((seat.sort_order || 0) + 1)] = seat; });
   } catch (e) {
-    document.getElementById('section-loading').style.display = 'none';
+    governanceByKey = {};
     const err = document.getElementById('section-err');
-    err.textContent = `Refresh failed: ${e.message}`;
+    err.textContent = `Governance feed failed (gates/authority unavailable): ${e.message}`;
     err.style.display = 'block';
   }
 }
 
-fetchRoster();
-setInterval(fetchRoster, 60000);
+// ── roster / tree ────────────────────────────────────────────────────
+let rosterByName = {};
+let childrenOf = {};
+
+function statusLed(row) {
+  const s = row.status || 'off';
+  return `<span class="led ${esc_html(s)}" title="${esc_html(row.status_detail || '')}"></span>`;
+}
+
+function cardHtml(row) {
+  const planned = row.commissioned === false;
+  const unread = row.unread_count || 0;
+  return `<div class="card${planned ? ' planned' : ''}" data-agent="${esc_html(row.agent_name)}" title="${esc_html(row.status_detail || '')}">`+
+    `<div class="card-head">${statusLed(row)}<div><div class="card-name">${esc_html(row.display_name)}</div>`+
+    `<div class="card-role">${esc_html(row.role_line)}</div></div></div>`+
+    `<div class="card-foot">${planned ? '<span class="planned-tag">Planned</span>' : '<span></span>'}${unread > 0 ? `<span class="unread-badge">${unread}</span>` : ''}</div>`+
+  `</div>`;
+}
+
+function chipHtml(row) {
+  return `<div class="chip" data-agent="${esc_html(row.agent_name)}" title="${esc_html(row.status_detail || '')}">`+
+    `<span class="led ${esc_html(row.status || 'off')}"></span>${esc_html(row.display_name)}`+
+  `</div>`;
+}
+
+function nodeLi(name) {
+  const row = rosterByName[name];
+  if (!row) return '';
+  const kids = childrenOf[name] || [];
+  const isMachineParent = name === MACHINE_LANE_PARENT;
+  let inner = cardHtml(row);
+  let ul = '';
+  if (isMachineParent && kids.length) {
+    inner += `<div class="machine-strip">${kids.map((k) => chipHtml(rosterByName[k])).filter(Boolean).join('')}</div>`;
+  } else if (kids.length) {
+    ul = `<ul>${kids.map(nodeLi).join('')}</ul>`;
+  }
+  return `<li>${inner}${ul}</li>`;
+}
+
+function renderTree(roster) {
+  rosterByName = {};
+  childrenOf = {};
+  roster.forEach((r) => { rosterByName[r.agent_name] = r; });
+  roster.forEach((r) => {
+    if (r.reports_to) {
+      childrenOf[r.reports_to] = childrenOf[r.reports_to] || [];
+      childrenOf[r.reports_to].push(r.agent_name);
+    }
+  });
+  Object.keys(childrenOf).forEach((k) => {
+    childrenOf[k].sort((a, b) => (rosterByName[a].sort_order || 0) - (rosterByName[b].sort_order || 0));
+  });
+  const root = roster.find((r) => !r.reports_to);
+  const tree = document.getElementById('org-tree');
+  tree.innerHTML = root ? nodeLi(root.agent_name) : '';
+  tree.querySelectorAll('[data-agent]').forEach((el) => {
+    el.addEventListener('click', () => openAgent(el.getAttribute('data-agent')));
+  });
+}
+
+// ── notifications ────────────────────────────────────────────────────
+const KIND_LABEL = {
+  cc_brief_needs_ed: 'needs ed',
+  cos_message: 'message',
+  cc_report_alert: 'alert',
+  ceo_directive: 'directive',
+};
+
+function notifRowHtml(n) {
+  const label = KIND_LABEL[n.kind] || n.kind;
+  const titleHtml = n.kind === 'cc_brief_needs_ed'
+    ? `<a href="cpo.html">${esc_html(n.title)}</a>`
+    : esc_html(n.title);
+  return `<div class="notif-row" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">`+
+    `<span class="notif-kind">${esc_html(label)}</span>`+
+    `<span class="notif-title">${titleHtml}</span>`+
+    `<span class="notif-meta">${esc_html(n.agent || '')} · ${esc_html(fmtAge(n.age_min))}</span>`+
+    `<button class="notif-ack" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">Ack</button>`+
+  `</div>`;
+}
+
+function renderNotifs(notifications) {
+  const strip = document.getElementById('notif-strip');
+  if (!notifications || !notifications.length) {
+    strip.innerHTML = '<div class="notif-empty">Nothing needs you.</div>';
+    return;
+  }
+  strip.innerHTML = notifications.map(notifRowHtml).join('');
+  strip.querySelectorAll('.notif-ack').forEach((btn) => {
+    btn.addEventListener('click', () => ackItem(btn.getAttribute('data-kind'), btn.getAttribute('data-id'), btn));
+  });
+}
+
+async function ackItem(kind, id, btn) {
+  btn.disabled = true;
+  try {
+    const r = await authedFetch(ACK_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_kind: kind, item_id: id }),
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const row = btn.closest('.notif-row');
+    if (row) row.remove();
+    const strip = document.getElementById('notif-strip');
+    if (!strip.querySelector('.notif-row')) strip.innerHTML = '<div class="notif-empty">Nothing needs you.</div>';
+    toast('Acked', true);
+  } catch (e) {
+    toast(`Ack failed: ${e.message}`, false);
+    btn.disabled = false;
+  }
+}
+
+// ── agent slide-over ─────────────────────────────────────────────────
+const panel = () => document.getElementById('office-panel');
+const backdrop = () => document.getElementById('office-backdrop');
+
+function closePanel() {
+  panel().classList.remove('open');
+  backdrop().classList.remove('open');
+}
+
+function recentWorkItems(detail) {
+  const items = [];
+  (detail.cc_reports_recent || []).forEach((r) => items.push({
+    ts: r.created_at, label: `[${esc_html(r.verdict || '')}] ${esc_html(r.report_head || '')}`,
+  }));
+  (detail.cos_messages_recent || []).forEach((m) => items.push({
+    ts: m.created_at, label: `${esc_html(m.kind || 'message')}: ${esc_html(m.subject || '')}`,
+  }));
+  (detail.historian_facts_recent || []).forEach((f) => items.push({
+    ts: f.created_at, label: esc_html(f.fact_text || ''),
+  }));
+  (detail.cpo_briefs_recent || []).forEach((b) => items.push({
+    ts: b.created_at, label: `#${b.brief_id} ${esc_html(b.title || '')} (${esc_html(b.status || '')})`,
+  }));
+  if (detail.cron_evidence) {
+    const ce = detail.cron_evidence;
+    items.push({ ts: ce.tick_at || ce.created_at, label: esc_html(JSON.stringify(ce)) });
+  }
+  if (detail.live_claim) {
+    const lc = detail.live_claim;
+    items.push({ ts: lc.heartbeat_at || lc.claimed_at, label: `Currently claimed: brief #${lc.brief_id}` });
+  }
+  items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
+  return items;
+}
+
+function panelBodyHtml(row, detail) {
+  const gov = row.governance_id ? governanceByKey[String(row.governance_id)] : null;
+  const items = recentWorkItems(detail);
+  const directives = detail.open_directives || [];
+  return `
+    <div class="op-head">
+      <div class="op-name">${esc_html(row.display_name)}</div>
+      <div class="op-role">${esc_html(row.role_line)}</div>
+      <div class="op-status">${statusLed(row)} ${esc_html(row.status_detail || row.status || '')}</div>
+    </div>
+    ${gov ? `
+    <div class="op-section">
+      <h3>Permanent gate &amp; authority</h3>
+      ${gov.permanent_gates ? `<div class="op-gate"><b>Permanent gate:</b> ${esc_html(gov.permanent_gates)}</div>` : ''}
+      <div class="op-authority">${esc_html(gov.authority_summary || '')}</div>
+      <div class="op-meta">
+        <div><b>Supervising authority</b><span>${esc_html(gov.supervising_authority || '')}</span></div>
+        <div><b>Identity binding</b><span>${esc_html(gov.identity_binding || '')}</span></div>
+      </div>
+    </div>` : ''}
+    <div class="op-section">
+      <h3>Recent work</h3>
+      ${items.length ? `<div class="op-list">${items.map((it) => `<div class="op-item">${it.label}<span class="ts">${esc_html(it.ts || '')}</span></div>`).join('')}</div>` : '<div class="op-empty">Nothing recent.</div>'}
+    </div>
+    <div class="op-section">
+      <h3>Open directives</h3>
+      ${directives.length ? `<div class="op-list">${directives.map((d) => `<div class="op-item">${esc_html(d.text)}<span class="ts">from ${esc_html(d.created_by || '')} · ${esc_html(d.created_at || '')}</span></div>`).join('')}</div>` : '<div class="op-empty">None open.</div>'}
+    </div>
+    <div class="op-section op-directive">
+      <h3>Send a directive</h3>
+      <textarea id="directive-text" placeholder="Tell ${esc_html(row.display_name)} what to do…"></textarea>
+      <button class="btn-action" id="directive-send" style="margin-top:9px">Send</button>
+      <div class="op-directive-msg" id="directive-msg"></div>
+    </div>
+  `;
+}
+
+async function openAgent(agentName) {
+  const row = rosterByName[agentName];
+  if (!row) return;
+  panel().classList.add('open');
+  backdrop().classList.add('open');
+  document.getElementById('office-panel-body').innerHTML = `<div class="section-loading">Loading…</div>`;
+  try {
+    const r = await authedFetch(AGENT_API(agentName));
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const detail = await r.json();
+    document.getElementById('office-panel-body').innerHTML = panelBodyHtml(row, detail);
+    document.getElementById('directive-send').addEventListener('click', () => sendDirective(agentName));
+  } catch (e) {
+    document.getElementById('office-panel-body').innerHTML = `
+      ${panelBodyHtml(row, {})}
+      <div class="section-err" style="display:block">Detail load failed: ${esc_html(e.message)}</div>`;
+    const btn = document.getElementById('directive-send');
+    if (btn) btn.addEventListener('click', () => sendDirective(agentName));
+  }
+}
+
+async function sendDirective(agentName) {
+  const ta = document.getElementById('directive-text');
+  const msg = document.getElementById('directive-msg');
+  const text = (ta.value || '').trim();
+  if (!text) return;
+  const btn = document.getElementById('directive-send');
+  btn.disabled = true;
+  try {
+    const r = await authedFetch(DIRECTIVE_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to_agent: agentName, text }),
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    ta.value = '';
+    msg.textContent = 'Queued — picked up on their next cycle.';
+  } catch (e) {
+    msg.textContent = '';
+    toast(`Directive failed: ${e.message}`, false);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('office-panel-close').addEventListener('click', closePanel);
+document.getElementById('office-backdrop').addEventListener('click', closePanel);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+
+// ── load / refresh ───────────────────────────────────────────────────
+async function fetchState() {
+  try {
+    const r = await authedFetch(STATE_API);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    renderTree(json.roster || []);
+    renderNotifs(json.notifications || []);
+    document.getElementById('section-err').style.display = 'none';
+    document.getElementById('last-refreshed').textContent = `live · refreshed ${new Date().toLocaleTimeString()}`;
+  } catch (e) {
+    const err = document.getElementById('section-err');
+    err.textContent = `Office feed failed: ${e.message}`;
+    err.style.display = 'block';
+  } finally {
+    document.getElementById('section-loading').style.display = 'none';
+  }
+}
+
+async function refreshAll() {
+  await Promise.allSettled([fetchGovernance(), fetchState()]);
+}
+
+refreshAll();
+setInterval(refreshAll, 60000);
 </script>
 </body>
 </html>
