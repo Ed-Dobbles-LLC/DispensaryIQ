@@ -40,25 +40,32 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
 .wrap{max-width:1180px;margin:0 auto;padding:26px 28px 80px}
 
-.page-intro{margin-bottom:20px}
-.page-intro h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px}
-.page-intro p{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:680px}
+.page-intro{margin-top:28px;opacity:.8}
+.page-intro h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;margin-bottom:5px}
+.page-intro p{font-size:11.5px;color:var(--muted);line-height:1.6;max-width:680px}
 
 .section-loading{font-size:12px;color:var(--muted);padding:16px 0}
 .section-err{font-size:12px;color:var(--coral);padding:10px 0}
 
-/* ── notification strip ─────────────────────────────────────────── */
-.notif-strip{margin-bottom:26px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);overflow:hidden}
-.notif-empty{padding:14px 18px;font-size:12.5px;color:var(--muted-d)}
-.notif-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid var(--line);font-size:12.5px}
-.notif-row:first-child{border-top:none}
-.notif-kind{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:rgba(219,84,97,.12);color:var(--coral);border:1px solid rgba(219,84,97,.28);white-space:nowrap;flex:none}
-.notif-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
-.notif-title a{color:inherit;text-decoration:underline}
-.notif-meta{font-size:11px;color:var(--muted);white-space:nowrap;flex:none}
-.notif-ack{font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink-dim);flex:none}
-.notif-ack:hover{background:rgba(255,255,255,.09)}
-.notif-ack:disabled{opacity:.5;cursor:default}
+/* ── header "N need you" chip ───────────────────────────────────── */
+.need-chip{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:5px 11px;border-radius:100px;background:rgba(219,84,97,.14);color:var(--coral);border:1px solid rgba(219,84,97,.32);white-space:nowrap}
+
+/* ── per-seat alert callouts (anchored under the owning agent card) ── */
+.seat-callouts{display:flex;flex-direction:column;gap:5px;margin-top:7px;width:186px}
+.callout{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:8px;background:rgba(219,84,97,.1);border:1px solid rgba(219,84,97,.3);cursor:pointer;text-align:left;font-size:11px;width:100%}
+.callout:hover{background:rgba(219,84,97,.18)}
+.callout-kind{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--coral);white-space:nowrap;flex:none}
+.callout-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.callout-age{font-size:9.5px;color:var(--muted);white-space:nowrap;flex:none}
+.callout-more{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:5px 9px;border-radius:8px;cursor:pointer;border:1px solid rgba(219,84,97,.3);background:rgba(219,84,97,.06);color:var(--coral);width:100%;text-align:center}
+.callout-more:hover{background:rgba(219,84,97,.14)}
+
+/* ── "needs you" list inside agent slide-over ───────────────────── */
+.op-need-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;background:rgba(219,84,97,.08);border:1px solid rgba(219,84,97,.22);font-size:12px;margin-bottom:7px}
+.op-need-title{flex:1;min-width:0;color:var(--ink)}
+.op-need-ack{font-family:inherit;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink-dim);flex:none}
+.op-need-ack:hover{background:rgba(255,255,255,.09)}
+.op-need-ack:disabled{opacity:.5;cursor:default}
 
 /* ── org tree ────────────────────────────────────────────────────── */
 .org-tree-wrap{overflow-x:auto;padding-bottom:10px}
@@ -104,6 +111,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   .tree li::before, .tree li::after, .tree ul::before{display:none}
   .tree ul{padding-top:0;border-left:1px solid var(--line);margin-left:8px}
   .card{width:100%}
+  .seat-callouts{width:100%}
 }
 
 /* ── slide-over ──────────────────────────────────────────────────── */
@@ -172,26 +180,23 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <div class="brand"><span class="dot"></span><div><h1>The Office</h1><small>DispensaryIntelligence · Ed's virtual office</small></div></div>
   </div>
   <div style="display:flex;align-items:center;gap:16px">
+    <span class="need-chip" id="need-chip" style="display:none"></span>
     <span class="refreshed" id="last-refreshed">loading…</span>
   </div>
 </header>
 
 <div class="wrap">
 
-  <div class="page-intro">
-    <h2>Every seat is a live agent</h2>
-    <p>Classic org tree — click any seat to inspect it, see its permanent gate and recent work, and send it a directive. Data-driven from <span class="mono">ops.agent_roster</span> and <span class="mono">governance.org_roster</span>.</p>
-  </div>
-
-  <div class="notif-strip" id="notif-strip">
-    <div class="notif-empty" id="notif-empty">Loading…</div>
-  </div>
-
   <div class="section-loading" id="section-loading">Loading…</div>
   <div class="section-err" id="section-err" style="display:none"></div>
 
   <div class="org-tree-wrap">
     <ul class="tree" id="org-tree"></ul>
+  </div>
+
+  <div class="page-intro">
+    <h2>Every seat is a live agent</h2>
+    <p>Classic org tree — click any seat to inspect it, see its permanent gate and recent work, and send it a directive. Data-driven from <span class="mono">ops.agent_roster</span> and <span class="mono">governance.org_roster</span>.</p>
   </div>
 
   <div class="footer-note">
@@ -319,22 +324,23 @@ function chipHtml(row) {
   `</div>`;
 }
 
-function nodeLi(name) {
+function nodeLi(name, calloutsBySeat) {
   const row = rosterByName[name];
   if (!row) return '';
   const kids = childrenOf[name] || [];
   const isMachineParent = name === MACHINE_LANE_PARENT;
   let inner = cardHtml(row);
+  inner += calloutsHtml(name, calloutsBySeat);
   let ul = '';
   if (isMachineParent && kids.length) {
     inner += `<div class="machine-strip">${kids.map((k) => chipHtml(rosterByName[k])).filter(Boolean).join('')}</div>`;
   } else if (kids.length) {
-    ul = `<ul>${kids.map(nodeLi).join('')}</ul>`;
+    ul = `<ul>${kids.map((k) => nodeLi(k, calloutsBySeat)).join('')}</ul>`;
   }
   return `<li>${inner}${ul}</li>`;
 }
 
-function renderTree(roster) {
+function indexRoster(roster) {
   rosterByName = {};
   childrenOf = {};
   roster.forEach((r) => { rosterByName[r.agent_name] = r; });
@@ -347,49 +353,134 @@ function renderTree(roster) {
   Object.keys(childrenOf).forEach((k) => {
     childrenOf[k].sort((a, b) => (rosterByName[a].sort_order || 0) - (rosterByName[b].sort_order || 0));
   });
+}
+
+function renderTree(roster, calloutsBySeat) {
+  indexRoster(roster);
   const root = roster.find((r) => !r.reports_to);
   const tree = document.getElementById('org-tree');
-  tree.innerHTML = root ? nodeLi(root.agent_name) : '';
+  tree.innerHTML = root ? nodeLi(root.agent_name, calloutsBySeat || {}) : '';
   tree.querySelectorAll('[data-agent]').forEach((el) => {
     el.addEventListener('click', () => openAgent(el.getAttribute('data-agent')));
   });
+  tree.querySelectorAll('[data-open-agent]').forEach((el) => {
+    el.addEventListener('click', (e) => { e.stopPropagation(); openAgent(el.getAttribute('data-open-agent')); });
+  });
 }
 
-// ── notifications ────────────────────────────────────────────────────
+// ── notifications → key alerts, anchored under owning seat ────────────
+// CEO-grade filter (client-side until the API grows a tier field): only
+// decision-forcing kinds surface as callouts. cc_report_alert (reap/tick/
+// watcher/stale-reaped noise) is dropped entirely unless its own title
+// flags SECURITY. Cap 5 callouts page-wide; overflow collapses to a
+// "+N more" chip on the seat that owns the oldest-ranked overflow item.
 const KIND_LABEL = {
   cc_brief_needs_ed: 'needs ed',
   cos_message: 'message',
   cc_report_alert: 'alert',
   ceo_directive: 'directive',
 };
+const CALLOUT_CAP = 5;
+const OWN_DIRECTIVES_KEY = 'office_own_directive_ids';
 
-function notifRowHtml(n) {
-  const label = KIND_LABEL[n.kind] || n.kind;
-  const titleHtml = n.kind === 'cc_brief_needs_ed'
-    ? `<a href="cpo.html">${esc_html(n.title)}</a>`
-    : esc_html(n.title);
-  return `<div class="notif-row" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">`+
-    `<span class="notif-kind">${esc_html(label)}</span>`+
-    `<span class="notif-title">${titleHtml}</span>`+
-    `<span class="notif-meta">${esc_html(n.agent || '')} · ${esc_html(fmtAge(n.age_min))}</span>`+
-    `<button class="notif-ack" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">Ack</button>`+
-  `</div>`;
+// The /office/state feed doesn't expose ceo_directives.created_by to the
+// client (backend-only field, out of scope for this frontend-only change),
+// so "not authored via this page" is approximated by remembering directive
+// ids this page itself created (via the composer) in localStorage and
+// excluding those from the key-alert list.
+function rememberOwnDirective(id) {
+  try {
+    const ids = JSON.parse(localStorage.getItem(OWN_DIRECTIVES_KEY) || '[]');
+    ids.push(String(id));
+    localStorage.setItem(OWN_DIRECTIVES_KEY, JSON.stringify(ids.slice(-200)));
+  } catch (e) { /* localStorage unavailable — degrade to showing all directives */ }
+}
+function isOwnDirective(id) {
+  try {
+    const ids = JSON.parse(localStorage.getItem(OWN_DIRECTIVES_KEY) || '[]');
+    return ids.includes(String(id));
+  } catch (e) { return false; }
 }
 
-function renderNotifs(notifications) {
-  const strip = document.getElementById('notif-strip');
-  if (!notifications || !notifications.length) {
-    strip.innerHTML = '<div class="notif-empty">Nothing needs you.</div>';
-    return;
-  }
-  strip.innerHTML = notifications.map(notifRowHtml).join('');
-  strip.querySelectorAll('.notif-ack').forEach((btn) => {
-    btn.addEventListener('click', () => ackItem(btn.getAttribute('data-kind'), btn.getAttribute('data-id'), btn));
+function isKeyAlert(n) {
+  if (/security/i.test(n.title || '')) return true;
+  if (n.kind === 'cc_brief_needs_ed') return true;
+  if (n.kind === 'cos_message') return true;
+  if (n.kind === 'ceo_directive') return !isOwnDirective(n.id);
+  return false; // cc_report_alert and anything unrecognized: noise, hidden
+}
+
+const AGENT_SEAT_ALIAS = {
+  engineer: 'dip-bus-executor',
+  'claude-code': 'dip-bus-executor',
+  'strategy-planner': 'strategy-planner',
+  cos: 'cos',
+};
+
+function resolveSeat(agentName) {
+  const mapped = AGENT_SEAT_ALIAS[agentName] || agentName;
+  return (mapped && rosterByName[mapped]) ? mapped : 'cpo';
+}
+
+// Dedupe: same kind+id seen twice (e.g. across an overlapping refresh)
+// collapses to one, keeping the newest (lowest age_min).
+function dedupeAlerts(alerts) {
+  const byKey = {};
+  alerts.forEach((n) => {
+    const key = `${n.kind}:${n.id}`;
+    const existing = byKey[key];
+    if (!existing || (n.age_min || 0) < (existing.age_min || 0)) byKey[key] = n;
   });
+  return Object.values(byKey);
+}
+
+function buildKeyAlerts(notifications) {
+  const key = dedupeAlerts((notifications || []).filter(isKeyAlert));
+  key.sort((a, b) => (a.age_min == null ? 0 : a.age_min) - (b.age_min == null ? 0 : b.age_min));
+  const shown = key.slice(0, CALLOUT_CAP);
+  const overflow = key.slice(CALLOUT_CAP);
+  const bySeat = {};
+  shown.forEach((n) => {
+    const seat = resolveSeat(n.agent);
+    (bySeat[seat] = bySeat[seat] || { items: [], overflow: 0 }).items.push(n);
+  });
+  overflow.forEach((n) => {
+    const seat = resolveSeat(n.agent);
+    (bySeat[seat] = bySeat[seat] || { items: [], overflow: 0 }).overflow += 1;
+  });
+  return { bySeat, total: key.length, all: key };
+}
+
+function calloutItemHtml(n, seat) {
+  const label = KIND_LABEL[n.kind] || n.kind;
+  return `<button class="callout" data-open-agent="${esc_html(seat)}" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">`+
+    `<span class="callout-kind">${esc_html(label)}</span>`+
+    `<span class="callout-title">${esc_html(n.title)}</span>`+
+    `<span class="callout-age">${esc_html(fmtAge(n.age_min))}</span>`+
+  `</button>`;
+}
+
+function calloutsHtml(seatName, calloutsBySeat) {
+  const bucket = (calloutsBySeat || {})[seatName];
+  if (!bucket || (!bucket.items.length && !bucket.overflow)) return '';
+  let html = `<div class="seat-callouts">`;
+  html += bucket.items.map((n) => calloutItemHtml(n, seatName)).join('');
+  if (bucket.overflow > 0) {
+    html += `<button class="callout-more" data-open-agent="${esc_html(seatName)}">+${bucket.overflow} more</button>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function updateNeedChip(total) {
+  const chip = document.getElementById('need-chip');
+  if (!total) { chip.style.display = 'none'; return; }
+  chip.textContent = `${total} need you`;
+  chip.style.display = 'inline-flex';
 }
 
 async function ackItem(kind, id, btn) {
-  btn.disabled = true;
+  if (btn) btn.disabled = true;
   try {
     const r = await authedFetch(ACK_API, {
       method: 'POST',
@@ -397,19 +488,16 @@ async function ackItem(kind, id, btn) {
       body: JSON.stringify({ item_kind: kind, item_id: id }),
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const row = btn.closest('.notif-row');
-    if (row) row.remove();
-    const strip = document.getElementById('notif-strip');
-    if (!strip.querySelector('.notif-row')) strip.innerHTML = '<div class="notif-empty">Nothing needs you.</div>';
     toast('Acked', true);
     fetchState();
   } catch (e) {
     toast(`Ack failed: ${e.message}`, false);
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }
 
 // ── agent slide-over ─────────────────────────────────────────────────
+let lastKeyAlerts = [];
 const panel = () => document.getElementById('office-panel');
 const backdrop = () => document.getElementById('office-backdrop');
 
@@ -444,6 +532,19 @@ function recentWorkItems(detail) {
   return items;
 }
 
+function needsYouHtml(seatName) {
+  const mine = lastKeyAlerts.filter((n) => resolveSeat(n.agent) === seatName);
+  if (!mine.length) return '';
+  return `
+    <div class="op-section">
+      <h3>Needs you (${mine.length})</h3>
+      ${mine.map((n) => `<div class="op-need-item" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">`+
+        `<span class="op-need-title">${esc_html(KIND_LABEL[n.kind] || n.kind)} · ${esc_html(n.title)} · ${esc_html(fmtAge(n.age_min))}</span>`+
+        `<button class="op-need-ack" data-kind="${esc_html(n.kind)}" data-id="${esc_html(n.id)}">Ack</button>`+
+      `</div>`).join('')}
+    </div>`;
+}
+
 function panelBodyHtml(row, detail) {
   const gov = row.governance_id ? governanceByKey[String(row.governance_id)] : null;
   const items = recentWorkItems(detail);
@@ -453,6 +554,7 @@ function panelBodyHtml(row, detail) {
       <div class="op-role">${esc_html(row.role_line)}</div>
       <div class="op-status">${statusLed(row)} ${esc_html(row.status_detail || row.status || '')}</div>
     </div>
+    ${needsYouHtml(row.agent_name)}
     ${gov ? `
     <div class="op-section">
       <h3>Permanent gate &amp; authority</h3>
@@ -556,6 +658,9 @@ async function openAgent(agentName) {
   }
   const sendBtn = document.getElementById('composer-send');
   if (sendBtn) sendBtn.addEventListener('click', () => sendComposer(agentName));
+  document.querySelectorAll('.op-need-ack').forEach((btn) => {
+    btn.addEventListener('click', () => ackItem(btn.getAttribute('data-kind'), btn.getAttribute('data-id'), btn));
+  });
   loadThread(agentName);
 }
 
@@ -577,6 +682,12 @@ async function sendComposer(agentName) {
       body: JSON.stringify(body),
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (isDirective) {
+      try {
+        const created = await r.json();
+        if (created && created.directive_id != null) rememberOwnDirective(created.directive_id);
+      } catch (e) { /* response body not needed beyond this — non-fatal */ }
+    }
     ta.value = '';
     msg.textContent = isDirective ? 'Queued — picked up on their next cycle.' : 'Sent.';
     appendOptimisticThreadItem(text, isDirective);
@@ -599,8 +710,12 @@ async function fetchState() {
     const r = await authedFetch(STATE_API);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const json = await r.json();
-    renderTree(json.roster || []);
-    renderNotifs(json.notifications || []);
+    const roster = json.roster || [];
+    indexRoster(roster);
+    const { bySeat, total, all } = buildKeyAlerts(json.notifications || []);
+    lastKeyAlerts = all;
+    renderTree(roster, bySeat);
+    updateNeedChip(total);
     document.getElementById('section-err').style.display = 'none';
     document.getElementById('last-refreshed').textContent = `live · refreshed ${new Date().toLocaleTimeString()}`;
   } catch (e) {
