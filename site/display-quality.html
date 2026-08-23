@@ -90,9 +90,9 @@
         <p class="diq-tile-sub">Share of Curaleaf SKUs carrying a discount on capture day.</p>
       </div>
       <div class="diq-tile">
-        <p class="diq-tile-label">Featured share &middot; pilot-wide</p>
+        <p class="diq-tile-label">Badged placement &middot; measured</p>
         <p class="diq-tile-value"><span data-bind="curaleaf-featured">—</span>%</p>
-        <p class="diq-tile-sub">Curaleaf SKUs flagged "featured" or "staff pick" by the dispensary.</p>
+        <p class="diq-tile-sub">Curaleaf listings carrying a sponsored or staff-pick badge, read from the rendered menu across <span data-bind="badge-doors">—</span> doors.</p>
       </div>
     </div>
   </section>
@@ -261,7 +261,21 @@ fetch(API_BASE + '/pitch/api/display-quality')
     var fw = document.getElementById('diq-footer-week'); if (fw) fw.textContent = manifest.week_iso || '—';
     document.querySelector('[data-bind="curaleaf-priced-rows"]').textContent = fmt(cura.priced_rows);
     document.querySelector('[data-bind="curaleaf-promo"]').textContent = fmtPct(cura.promo_pct);
-    document.querySelector('[data-bind="curaleaf-featured"]').textContent = fmtPct(cura.featured_pct);
+    // Badge placement is read from DOM measurement of the rendered menu, not
+    // from the retailer feed's is_featured flag. That flag is populated on a
+    // small minority of listings: it reported 0.15% against a measured 3.26%,
+    // a twentyfold understatement that showed Curaleaf as absent from
+    // placement it actually holds. Provenance: site/data/shelf-badges.json.
+    fetch('data/shelf-badges.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (b) {
+        if (!b || !b.portfolio) return;
+        var el = document.querySelector('[data-bind="curaleaf-featured"]');
+        var dr = document.querySelector('[data-bind="badge-doors"]');
+        if (el) el.textContent = fmtPct(b.portfolio.badged_pct);
+        if (dr) dr.textContent = fmt(b.portfolio.doors_measured);
+      })
+      .catch(function () { /* tile keeps its placeholder */ });
     render();
   })
   .catch(function (err) {

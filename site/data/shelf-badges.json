@@ -1,0 +1,23 @@
+{
+  "source": "shelf_capture_manifest / w34-vision-v2 \u00b7 DOM measurement of the rendered menu",
+  "week_iso": "2026-W34",
+  "captured": "2026-08-23",
+  "note": "Badge placement is read from the rendered category page, not from the retailer feed's is_featured flag. The feed flag is populated on a small minority of listings and understates placement by roughly twentyfold.",
+  "portfolio": {
+    "listings_measured": 5432,
+    "doors_measured": 372,
+    "badged_listings": 177,
+    "badged_pct": 3.26,
+    "badged_doors": 52,
+    "sponsored_listings": 105,
+    "sponsored_doors": 29,
+    "staff_pick_listings": 72,
+    "staff_pick_doors": 26
+  },
+  "panel": {
+    "sponsored_doors_all_brands": 192,
+    "staff_pick_doors_all_brands": 161,
+    "ranked_positions": 83649,
+    "doors_with_measurement": 745
+  }
+}
