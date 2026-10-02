@@ -62,7 +62,7 @@ td.b{font-weight:800}
 .defs{font-size:11.5px;color:var(--mute);line-height:1.7;border-top:1px solid var(--line);padding-top:14px;max-width:120ch}.defs b{color:var(--ink)}
 .foot2{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--mute);border-top:1px solid var(--line);padding-top:14px}.foot2 b{color:var(--ink)}
 code{font-size:11px}
-@media (max-width:1000px){.g2,.g32{grid-template-columns:1fr}.g6{grid-template-columns:repeat(2,1fr)}.legend{grid-template-columns:1fr 1fr}}
+@media (max-width:1000px){.g2,.g32{grid-template-columns:1fr}section.panel .grid{grid-template-columns:1fr 1fr!important}.g6{grid-template-columns:repeat(2,1fr)}.legend{grid-template-columns:1fr 1fr}}
 @media (max-width:480px){.g6{grid-template-columns:1fr}.legend{grid-template-columns:1fr}.crow{grid-template-columns:90px 1fr 32px}}
 </style>
 
@@ -82,6 +82,17 @@ code{font-size:11px}
   </div>
   <div class="den"><b>Denominator:</b> 428 independent dispensaries with a readable menu on a validated platform (Dutchie, Sweed, Carrot, JointCommerce, Jane), of 437 captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. 9 Data Issue doors are excluded from every rate. Each door's most recent read is used (425 read this morning, 12 carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
 </header>
+
+<section class="panel">
+  <div class="k">Your Pillar 1 KPIs against target · this morning</div>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:14px">
+    <div><div class="big" style="color:var(--green)">48%</div><div class="sub" style="font-weight:700">First-page rate · target ≥ 80%</div><div class="note">204 of 428 doors. 139 more doors needed to reach target.</div></div>
+    <div><div class="big">25%</div><div class="sub" style="font-weight:700">Top-position rate (1–5)</div><div class="note">106 doors with a Curaleaf brand in the top 5; 43 at #1.</div></div>
+    <div><div class="big">2.1%</div><div class="sub" style="font-weight:700">Share of menu</div><div class="note">Curaleaf share of all first-page slots; 8.2 competitor products ahead on average.</div></div>
+    <div><div class="big"><span class="up">+4</span> / <span class="down">−2</span></div><div class="sub" style="font-weight:700">Position slippage &amp; recovery</div><div class="note">Doors onto / off page 1, Oct 1 vs Sep 30, door by door.</div></div>
+  </div>
+  <p class="note" style="margin:12px 0 0">Category accuracy and content completeness: wrong-page listings and broken product titles are flagged daily; rates switch on with your SKU list. Menu presence needs your distribution file; volume lift needs sell-through from Insights.</p>
+</section>
 
 <section class="grid g2">
   <div class="panel hero">
@@ -117,7 +128,7 @@ code{font-size:11px}
   <div class="card locked"><div class="k">Critical gap rate</div><div class="v">—</div><div class="sub">Requires master file</div><div class="foot">Distributed and brand not found. Needs distribution status per door.</div></div>
   <div class="card locked"><div class="k">Assortment completion</div><div class="v">—</div><div class="sub">Requires master file</div><div class="foot">Expected SKUs live ÷ expected. Needs the expected SKU list per door.</div></div>
   <div class="card locked"><div class="k">Out-of-stock rate</div><div class="v">—</div><div class="sub">Requires master file</div><div class="foot">Needs expected SKUs; stock-state read switches on with the file.</div></div>
-  <div class="card locked"><div class="k">Content accuracy</div><div class="v">—</div><div class="sub">Requires reference content</div><div class="foot">Name, image and description checks need your product content.</div></div>
+  <div class="card locked"><div class="k">Content accuracy</div><div class="v">—</div><div class="sub">Partly live</div><div class="foot">Product-name and wrong-page flags read daily; a rate needs your reference content.</div></div>
   <div class="card locked"><div class="k">Open exceptions &gt; 7 days</div><div class="v">—</div><div class="sub">Requires owner roster</div><div class="foot">Unresolved problems by owner. Needs the owner list.</div></div>
 </section>
 
