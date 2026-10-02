@@ -6,8 +6,10 @@
 // cross-origin request (dip-service lives on a different Railway domain
 // than this static site) or any same-origin path containing "/ops/api/"
 // falls straight through to the network, uncached, unintercepted.
+// The private client section /curaleaf/* is also never intercepted or
+// cached: it sits behind basic auth and must not land in a shared cache.
 
-const SHELL_CACHE = "dip-ops-shell-v4";
+const SHELL_CACHE = "dip-ops-shell-v5";
 const SHELL_ASSETS = [
   "/cpo.html",
   "/quality.html",
@@ -40,6 +42,8 @@ function isLiveOpsSurface(url) {
   if (url.origin !== self.location.origin) return true;
   // Same-origin ops/api path, if this ever changes shape — never cache.
   if (url.pathname.startsWith("/ops/api/")) return true;
+  // Private client section behind basic auth — never intercept, never cache.
+  if (url.pathname === "/curaleaf" || url.pathname.startsWith("/curaleaf/")) return true;
   return false;
 }
 

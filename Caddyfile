@@ -9,6 +9,18 @@
 :{$PORT:8080} {
 	root * /srv
 	encode gzip zstd
+
+	# Private client section: /curaleaf/* sits behind HTTP basic auth.
+	# Only bcrypt hashes live in Railway variables (CL_USER_ED/CL_HASH_ED,
+	# CL_USER_2/CL_HASH_2); plaintext logins live in ops.secrets. Slot 2 is
+	# disabled (unknown password) until CL_USER_2 and CL_HASH_2 are set.
+	@private path /curaleaf /curaleaf/*
+	basic_auth @private {
+		{$CL_USER_ED:disabled-ed} {$CL_HASH_ED:$2a$12$vACsLm.QqoxESfbVe7w0K.nvbzCVvb6o4EafSG1x68ZRiJkuqZ7O6}
+		{$CL_USER_2:disabled-slot-2} {$CL_HASH_2:$2a$12$vACsLm.QqoxESfbVe7w0K.nvbzCVvb6o4EafSG1x68ZRiJkuqZ7O6}
+	}
+	header @private Cache-Control "private, no-store"
+
 	file_server
 
 	# Friendly 404
