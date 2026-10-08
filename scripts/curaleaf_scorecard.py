@@ -13,7 +13,8 @@ CURRENT_DATE so an edition is reproducible for any date.
 Definitions, door universe, exclusions, DATA ISSUE handling and labels are the ones the
 hand-built page carries; nothing here changes a metric definition.
 
-Edition date = the latest audit date <= today in America/Chicago whose door count is at
+Edition date = the latest audit date <= today in America/Chicago, taken from
+(now() AT TIME ZONE 'America/Chicago')::date in SQL (never CURRENT_DATE), whose door count is at
 least 90% of the trailing 7-date average. A short day keeps the previous day's edition
 and logs why; a partial day is never published as current.
 
@@ -58,8 +59,13 @@ def log(msg):
     print(f"[curaleaf-scorecard] {msg}", file=sys.stderr, flush=True)
 
 
+# The edition date is always the Central date, computed in SQL (brief #5799): never
+# CURRENT_DATE, which is the UTC date on Neon and runs a day ahead after 19:00 CT.
+CT_TODAY_SQL = "(now() AT TIME ZONE 'America/Chicago')::date"
+
+
 # Panel + window rows: dsps.v_firstpage_scorecard_latest's CTEs verbatim, with the
-# CURRENT_DATE window replaced by an explicit [lo, hi] audit_date range.
+# CURRENT_DATE window replaced by an explicit [lo, hi] audit_date range (SQL date expressions).
 def _panel_rows_sql(lo, hi):
     return f"""
 ind AS (
@@ -87,14 +93,15 @@ ind AS (
   FROM dsps.fact_first_page_audit a
   JOIN ind2 i ON i.dispensary_id = a.dispensary_id::bigint AND i.dup_rn = 1
              AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_rn = 1)
-  WHERE a.audit_date BETWEEN date '{lo}' AND date '{hi}' AND a.run_id ~ '{PLATFORM_RUNS}'
+  WHERE a.audit_date BETWEEN {lo} AND {hi} AND a.run_id ~ '{PLATFORM_RUNS}'
 )"""
 
 
-def door_counts_sql(ct_today):
-    lo = (ct_today - dt.timedelta(days=20)).isoformat()
-    return f"""WITH {_panel_rows_sql(lo, ct_today.isoformat())}
-SELECT audit_date::text AS d, count(DISTINCT dispensary_id) AS doors FROM raw GROUP BY 1 ORDER BY 1 DESC"""
+def door_counts_sql():
+    return f"""WITH {_panel_rows_sql(CT_TODAY_SQL + " - 20", CT_TODAY_SQL)}
+SELECT {CT_TODAY_SQL}::text AS ct_today, c.d, c.doors
+FROM (SELECT 1) one LEFT JOIN (SELECT audit_date::text AS d, count(DISTINCT dispensary_id) AS doors FROM raw GROUP BY 1) c ON true
+ORDER BY c.d DESC"""
 
 
 def pick_edition(counts, ct_today):
@@ -114,7 +121,7 @@ def metrics_sql(edition):
     d = edition.isoformat()
     lo = (edition - dt.timedelta(days=TREND_DAYS + 3)).isoformat()
     excl = ", ".join(f"'{b}'" for b in COMPETITOR_EXCLUDE)
-    return f"""WITH {_panel_rows_sql(lo, d)},
+    return f"""WITH {_panel_rows_sql(f"date '{lo}'", f"date '{d}'")},
 win AS (SELECT *, row_number() OVER (PARTITION BY dispensary_id, category_canonical, brand_key ORDER BY audit_ts DESC) AS rn
         FROM raw WHERE audit_date BETWEEN date '{d}' - 2 AND date '{d}'),
 v AS (SELECT * FROM win WHERE rn = 1),
@@ -129,6 +136,8 @@ last_read AS (SELECT dispensary_id, max(audit_date) AS d FROM v GROUP BY 1),
 p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present)
 SELECT json_build_object(
   'edition', '{d}',
+  'built_at', to_char(now() AT TIME ZONE 'America/Chicago', 'YYYY-MM-DD"T"HH24:MI'),
+  'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup_rn = 1),
   'captured', (SELECT count(DISTINCT dispensary_id) FROM v),
   'scored', (SELECT count(DISTINCT dispensary_id) FROM v WHERE status <> 'DATA ISSUE'),
   'read_today', (SELECT count(*) FROM last_read WHERE d = date '{d}'),
@@ -295,6 +304,13 @@ def render(m, template_head):
     dod_kpi = (f"Doors onto / off page 1, {dod_t.strftime('%b %-d')} vs {dod_y.strftime('%b %-d')}, door by door." if dod_y else "No prior day read.")
     platforms = "Dutchie, Sweed, Carrot, JointCommerce, Jane"
     asof_pill = f"AS OF {fdate_long(ed).upper()} · DAILY EDITION"
+    built = dt.datetime.fromisoformat(m["built_at"]) if m.get("built_at") else None
+    built_txt = f"{built.strftime('%a %b %-d, %Y %H:%M')} CT" if built else "time not recorded"
+    # The as-of line only states doors actually read on the audit date at build time
+    # (read_today), never captured or carried doors, so it cannot overstate the read.
+    asof_line = (f"Pre-certification read. Audit date {fdate_long(ed)}; edition built {built_txt}; "
+                 f"{m['read_today']} of {m.get('panel', '—')} panel doors read on {fdate_short(ed)}. "
+                 f"Figures are not yet certified and may change.")
     trend_note = (f"Read every day for {len(trend)} days; {min(tscored)}–{max(tscored)} doors scored per day. "
                   f"Each point is that day's own read. Holding the brand list constant, the six-brand rate ranged "
                   f"{round(min(ta))}–{round(max(ta))}% and the original four {round(min(tb))}–{round(max(tb))}% over the window.") if trend else ""
@@ -304,7 +320,7 @@ def render(m, template_head):
 <header>
   <div class="top">
     <div class="kick">CURALEAF · PROJECT FIRST PAGE</div>
-    <div class="pills"><a class="pill line" href="/curaleaf/outlets/" style="text-decoration:none">OUTLET VIEW →</a><div class="pill dark">LIVE READ — INDEPENDENT PANEL</div><div class="pill line">{esc(asof_pill)}</div></div>
+    <div class="pills"><a class="pill line" href="/curaleaf/outlets/" style="text-decoration:none">OUTLET VIEW →</a><div class="pill dark">PRE-CERTIFICATION READ</div><div class="pill line">{esc(asof_pill)}</div></div>
   </div>
   <h1>Project First Page — Weekly Scorecard</h1>
   <div class="meta">
@@ -313,6 +329,7 @@ def render(m, template_head):
     <div>States: <span>NY · NJ · IL</span></div>
     <div>Period: <span>{esc(period)}</span></div>
   </div>
+  <div class="den" style="margin-bottom:8px"><b>As of:</b> {esc(asof_line)}</div>
   <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. {di} Data Issue doors are excluded from every rate. Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
 </header>
 
@@ -410,7 +427,7 @@ def render(m, template_head):
 
 <div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
 <b>AUDIT STANDARD:</b> Store's default sort, no brand search, natural category navigation, the platform's actual first page. Text read from the storefront's own data layer. Every figure on this page reproduces from the stored daily shelf reads.</div>
-<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Daily edition for audit date {esc(fdate_long(ed))}. Refreshed every afternoon after the day's capture and QC.</div></div>
+<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily at 07:00 CT from the latest complete audit day.</div></div>
 
 </div>
 <!-- curaleaf-scorecard edition={ed.isoformat()} -->
@@ -436,14 +453,6 @@ def write_atomic(path, text):
     os.replace(tmp, path)
 
 
-def ct_today():
-    try:
-        from zoneinfo import ZoneInfo
-        return dt.datetime.now(ZoneInfo("America/Chicago")).date()
-    except Exception:  # no tzdata: CDT/CST bound, conservative (never ahead of Chicago)
-        return (dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=6)).date()
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="site/curaleaf/index.html")
@@ -455,7 +464,7 @@ def main(argv=None):
 
     if a.print_sql:
         if not a.date:
-            print(door_counts_sql(ct_today()))
+            print(door_counts_sql())
         else:
             print(metrics_sql(dt.date.fromisoformat(a.date)))
         return 0
@@ -472,8 +481,9 @@ def main(argv=None):
             if a.date:
                 edition, why = dt.date.fromisoformat(a.date), "explicit --date"
             else:
-                today = ct_today()
-                counts = [(r["d"], r["doors"]) for r in neon_sql(dsn, door_counts_sql(today))]
+                rows = neon_sql(dsn, door_counts_sql())
+                today = dt.date.fromisoformat(rows[0]["ct_today"][:10])
+                counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
                 edition, why = pick_edition(counts, today)
             log(f"edition {edition} ({why})")
             rows = neon_sql(dsn, metrics_sql(edition))
