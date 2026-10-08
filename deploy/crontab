@@ -1,4 +1,5 @@
-# Curaleaf First Page daily edition: 07:00 CT (12:00 UTC in CDT, 13:00 UTC in CST);
-# curaleaf-publish.sh drops whichever run is not at Chicago hour 07.
-0 12 * * * /app/curaleaf-publish.sh cron >/proc/1/fd/1 2>&1
-0 13 * * * /app/curaleaf-publish.sh cron >/proc/1/fd/1 2>&1
+# Curaleaf First Page daily edition (brief #5806): every 15 minutes from 07:00 to
+# 12:00 CT, stopping once today's edition is published. The UTC hours cover both CDT
+# (12-17 UTC) and CST (13-18 UTC); curaleaf-publish.sh drops runs outside the
+# Central window and runs after today is published.
+*/15 12-18 * * * /app/curaleaf-publish.sh cron >/proc/1/fd/1 2>&1
