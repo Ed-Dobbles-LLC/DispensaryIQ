@@ -26,6 +26,13 @@ Usage:
 Env: CURALEAF_SCORECARD_DSN (falls back to DIP_DATABASE_URL). Stdlib only.
 Exit codes: 0 rendered (or kept the previous edition on a short day), 2 no DSN, 1 error.
 On any error the existing page is left untouched.
+
+Brief #5806 (CURALEAF SELF-HEAL, TASK 2): --status-file PATH writes one line,
+"published <date>" when the edition is today's Central date or "held <edition>" when
+the short-day guard kept an earlier one, so deploy/curaleaf-publish.sh can stop
+retrying once today is out. --event-mode MODE also appends that outcome to
+ops.curaleaf_publish_events (kind 'published' / 'held'; the read-only renderer role
+holds INSERT on that one table only). An event write failure never blocks the page.
 """
 
 import argparse
@@ -102,6 +109,15 @@ def door_counts_sql():
 SELECT {CT_TODAY_SQL}::text AS ct_today, c.d, c.doors
 FROM (SELECT 1) one LEFT JOIN (SELECT audit_date::text AS d, count(DISTINCT dispensary_id) AS doors FROM raw GROUP BY 1) c ON true
 ORDER BY c.d DESC"""
+
+
+def log_publish_event(dsn, kind, detail):
+    """Append one row to ops.curaleaf_publish_events; never raises."""
+    try:
+        neon_sql(dsn, "INSERT INTO ops.curaleaf_publish_events (kind, detail) VALUES ($1, $2::jsonb)",
+                 [kind, json.dumps(detail)])
+    except Exception as e:  # noqa: BLE001
+        log(f"event log failed ({kind}): {e!r}")
 
 
 def pick_edition(counts, ct_today):
@@ -183,10 +199,10 @@ SELECT json_build_object(
 ) AS m"""
 
 
-def neon_sql(dsn, query):
+def neon_sql(dsn, query, params=None):
     host = dsn.split("@")[1].split("/")[0].split(":")[0]
     req = urllib.request.Request(
-        f"https://{host}/sql", data=json.dumps({"query": query}).encode(),
+        f"https://{host}/sql", data=json.dumps({"query": query, "params": params or []}).encode(),
         headers={"Content-Type": "application/json", "Neon-Connection-String": dsn},
     )
     with urllib.request.urlopen(req, timeout=120) as r:
@@ -427,7 +443,7 @@ def render(m, template_head):
 
 <div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
 <b>AUDIT STANDARD:</b> Store's default sort, no brand search, natural category navigation, the platform's actual first page. Text read from the storefront's own data layer. Every figure on this page reproduces from the stored daily shelf reads.</div>
-<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily at 07:00 CT from the latest complete audit day.</div></div>
+<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily from 07:00 CT once the day's read is complete; until then the latest complete audit day is shown.</div></div>
 
 </div>
 <!-- curaleaf-scorecard edition={ed.isoformat()} -->
@@ -460,6 +476,8 @@ def main(argv=None):
     ap.add_argument("--date", help="edition date YYYY-MM-DD (skips the short-day guard)")
     ap.add_argument("--print-sql", action="store_true")
     ap.add_argument("--from-json", help="render from a saved metrics JSON instead of querying")
+    ap.add_argument("--status-file", help="write 'published <date>' or 'held <edition>' here")
+    ap.add_argument("--event-mode", help="log the outcome to ops.curaleaf_publish_events with this mode label")
     a = ap.parse_args(argv)
 
     if a.print_sql:
@@ -478,6 +496,7 @@ def main(argv=None):
             if not dsn:
                 log("no CURALEAF_SCORECARD_DSN / DIP_DATABASE_URL; leaving the current page as is")
                 return 2
+            today = None
             if a.date:
                 edition, why = dt.date.fromisoformat(a.date), "explicit --date"
             else:
@@ -496,6 +515,16 @@ def main(argv=None):
             head = split_head(f.read())
         write_atomic(a.out, render(m, head))
         log(f"wrote {a.out} for edition {m['edition']}: {m['doors_p1']} of {m['scored']} doors on page 1")
+        if not a.from_json and today is not None:
+            kind = "published" if edition >= today else "held"
+            if a.status_file:
+                with open(a.status_file, "w") as f:
+                    f.write(f"{kind} {edition.isoformat()}\n")
+            if a.event_mode:
+                log_publish_event(dsn, kind, {
+                    "mode": a.event_mode, "ct_today": today.isoformat(), "edition": edition.isoformat(),
+                    "reason": why, "read_today": m.get("read_today"), "scored": m["scored"],
+                    "doors_p1": m["doors_p1"], "built_at": m.get("built_at")})
         return 0
     except Exception as e:  # leave the served page untouched on any failure
         log(f"ERROR {e!r}; current page left unchanged")
