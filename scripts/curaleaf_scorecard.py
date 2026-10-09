@@ -18,6 +18,21 @@ Edition date = the latest audit date <= today in America/Chicago, taken from
 least 90% of the trailing 7-date average. A short day keeps the previous day's edition
 and logs why; a partial day is never published as current.
 
+09:00 CT hard deadline (brief #5807, Ed ruling Historian #780): cron runs --attempt
+every 10 min from 06:00 to 08:50 CT and stops once today's edition is served. From
+08:45 CT (the hard publish) today's edition is published if it has at least 75% of
+the 7-date average doors (the as-of line states doors read of panel doors); under
+75% the prior edition is kept and a 'held' event is recorded. Every published / held
+/ short attempt is logged to ops.curaleaf_publish_events.
+
+Email on publish (brief #5807 TASK 3): when today's edition publishes (never a held or
+prior edition), one email per edition date goes to each ops.curaleaf_subscribers row
+with approved_by_ed AND unsubscribed_at IS NULL, idempotent through
+ops.curaleaf_publish_events ('email_sent' per edition + address). SMTP comes from
+SCORECARD_SMTP_HOST/PORT/USER/PASSWORD; while they are unset the send is skipped and
+'email_skipped_no_credentials' is logged; an email problem never fails the publish.
+Kill switch: CURALEAF_EMAIL_DISABLED=1.
+
 Usage:
     python3 scripts/curaleaf_scorecard.py --out site/curaleaf/index.html          # live (Neon HTTP SQL)
     python3 scripts/curaleaf_scorecard.py --print-sql --date 2026-10-07           # emit the metrics SQL
@@ -30,15 +45,23 @@ On any error the existing page is left untouched.
 
 import argparse
 import datetime as dt
+import email.message
+import email.utils
+import fcntl
 import html
 import json
 import math
 import os
+import smtplib
 import sys
 import tempfile
 import urllib.request
 
 SHORT_DAY_RATIO = 0.90
+HARD_RATIO = 0.75          # 08:45 CT hard publish floor (brief #5807)
+HARD_HM = 845              # America/Chicago HHMM from which HARD_RATIO applies to today
+PAGE_URL = os.environ.get("CURALEAF_PAGE_URL", "https://curaleaf.dispensaryintelligence.com/")
+SENDER = '"DispensaryIntelligence" <ed@dispensaryintelligence.com>'
 TARGET = 0.80
 TREND_DAYS = 11
 
@@ -99,21 +122,25 @@ ind AS (
 
 def door_counts_sql():
     return f"""WITH {_panel_rows_sql(CT_TODAY_SQL + " - 20", CT_TODAY_SQL)}
-SELECT {CT_TODAY_SQL}::text AS ct_today, c.d, c.doors
+SELECT {CT_TODAY_SQL}::text AS ct_today, to_char(now() AT TIME ZONE 'America/Chicago', 'HH24MI') AS ct_hm, c.d, c.doors
 FROM (SELECT 1) one LEFT JOIN (SELECT audit_date::text AS d, count(DISTINCT dispensary_id) AS doors FROM raw GROUP BY 1) c ON true
 ORDER BY c.d DESC"""
 
 
-def pick_edition(counts, ct_today):
-    """counts: [(date_str, doors)] newest first. Returns (edition_date, reason)."""
+def pick_edition(counts, ct_today, today_ratio=SHORT_DAY_RATIO):
+    """counts: [(date_str, doors)] newest first. Returns (edition_date, reason).
+    today_ratio applies to ct_today only (HARD_RATIO from 08:45 CT); older dates
+    always need SHORT_DAY_RATIO."""
     counts = [(dt.date.fromisoformat(d[:10]), int(n)) for d, n in counts]
     counts = [c for c in counts if c[0] <= ct_today]
     for i, (d, n) in enumerate(counts):
         prior = [m for _, m in counts[i + 1:i + 8]]
         avg = sum(prior) / len(prior) if prior else 0
-        if not prior or n >= SHORT_DAY_RATIO * avg:
-            return d, (f"{d}: {n} doors vs 7-date avg {avg:.0f}" if prior else f"{d}: no prior history")
-        log(f"short day {d}: {n} doors < {SHORT_DAY_RATIO:.0%} of 7-date avg {avg:.0f}; keeping previous day's edition")
+        ratio = today_ratio if d == ct_today else SHORT_DAY_RATIO
+        if not prior or n >= ratio * avg:
+            return d, (f"{d}: {n} doors vs 7-date avg {avg:.0f} ({n / avg:.0%}, floor {ratio:.0%})" if prior
+                       else f"{d}: no prior history")
+        log(f"short day {d}: {n} doors < {ratio:.0%} of 7-date avg {avg:.0f}; keeping previous day's edition")
     raise RuntimeError("no audit date passes the short-day guard")
 
 
@@ -183,14 +210,135 @@ SELECT json_build_object(
 ) AS m"""
 
 
-def neon_sql(dsn, query):
+def neon_sql(dsn, query, params=None):
     host = dsn.split("@")[1].split("/")[0].split(":")[0]
     req = urllib.request.Request(
-        f"https://{host}/sql", data=json.dumps({"query": query}).encode(),
+        f"https://{host}/sql", data=json.dumps({"query": query, "params": params or []}).encode(),
         headers={"Content-Type": "application/json", "Neon-Connection-String": dsn},
     )
     with urllib.request.urlopen(req, timeout=120) as r:
         return json.load(r).get("rows", [])
+
+
+# ---------------------------------------------------------------- publish events + email (brief #5807)
+
+def served_edition(path):
+    """Edition date of the page currently served at `path` (its trailing marker), or None."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return None
+    i = text.rfind("curaleaf-scorecard edition=")
+    if i < 0:
+        return None
+    try:
+        return dt.date.fromisoformat(text[i + len("curaleaf-scorecard edition="):][:10])
+    except ValueError:
+        return None
+
+
+def log_event(dsn, kind, detail):
+    """Append one row to ops.curaleaf_publish_events; never raises."""
+    try:
+        neon_sql(dsn, "INSERT INTO ops.curaleaf_publish_events (kind, detail) VALUES ($1, $2::jsonb)",
+                 [kind, json.dumps(detail)])
+    except Exception as e:  # noqa: BLE001
+        log(f"could not log {kind} event: {e!r}")
+
+
+def has_event(dsn, kind, edition, email_addr=None):
+    q = ("SELECT count(*) AS n FROM ops.curaleaf_publish_events WHERE kind = $1 AND detail->>'edition' = $2"
+         + (" AND detail->>'email' = $3" if email_addr else ""))
+    params = [kind, edition] + ([email_addr] if email_addr else [])
+    return int(neon_sql(dsn, q, params)[0]["n"]) > 0
+
+
+def fdate_email(d):
+    return f"{d.strftime('%A')} {d.strftime('%b')} {d.day}"
+
+
+def email_content(m):
+    """(subject, text, html) from the metrics of the render that was just published."""
+    ed = dt.date.fromisoformat(m["edition"])
+    day = fdate_email(ed)
+    subject = f"Curaleaf First Page - {day} edition is live"
+    text = (f"The {day} edition of your Project First Page scorecard is live: {PAGE_URL}. "
+            f"Pre-certification read: {m['read_today']} of {m['panel']} panel doors read; "
+            f"Curaleaf on Page 1 at {m['doors_p1']} of {m['scored']} doors. Reply to unsubscribe.")
+    body = (f'<p>The {esc(day)} edition of your Project First Page scorecard is live: '
+            f'<a href="{esc(PAGE_URL)}">{esc(PAGE_URL)}</a>.</p>'
+            f"<p>Pre-certification read: {esc(m['read_today'])} of {esc(m['panel'])} panel doors read; "
+            f"Curaleaf on Page 1 at {esc(m['doors_p1'])} of {esc(m['scored'])} doors.</p>"
+            f"<p>Reply to unsubscribe.</p>")
+    return subject, text, body
+
+
+def send_publish_emails(dsn, m, smtp_factory=None):
+    """One email per approved subscriber per edition date. Never raises."""
+    edition = m["edition"]
+    try:
+        if (os.environ.get("CURALEAF_EMAIL_DISABLED") or "").strip().lower() in ("1", "true", "yes", "on"):
+            if not has_event(dsn, "email_skipped_disabled", edition):
+                log_event(dsn, "email_skipped_disabled", {"edition": edition})
+            return "disabled"
+        subs = [r["email"] for r in neon_sql(
+            dsn, "SELECT email FROM ops.curaleaf_subscribers WHERE approved_by_ed = true AND unsubscribed_at IS NULL "
+                 "ORDER BY email")]
+        todo = [a for a in subs if not has_event(dsn, "email_sent", edition, a)]
+        if not todo:
+            return "nothing to send"
+        host = os.environ.get("SCORECARD_SMTP_HOST")
+        user = os.environ.get("SCORECARD_SMTP_USER")
+        password = os.environ.get("SCORECARD_SMTP_PASSWORD")
+        if not (host and user and password):
+            if not has_event(dsn, "email_skipped_no_credentials", edition):
+                log_event(dsn, "email_skipped_no_credentials", {"edition": edition, "recipients": len(todo)})
+            return "skipped: no SMTP credentials"
+        port = int(os.environ.get("SCORECARD_SMTP_PORT") or 587)
+        subject, text, body = email_content(m)
+        factory = smtp_factory or (smtplib.SMTP_SSL if port == 465 else smtplib.SMTP)
+        sent = 0
+        with factory(host, port, timeout=30) as smtp:
+            if port != 465 and smtp_factory is None:
+                smtp.starttls()
+            smtp.login(user, password)
+            for addr in todo:
+                msg = email.message.EmailMessage()
+                msg["From"] = SENDER
+                msg["To"] = addr
+                msg["Subject"] = subject
+                msg["Date"] = email.utils.formatdate(localtime=False)
+                msg["Message-ID"] = email.utils.make_msgid(domain="dispensaryintelligence.com")
+                msg.set_content(text)
+                msg.add_alternative(f"<html><body>{body}</body></html>", subtype="html")
+                try:
+                    smtp.send_message(msg)
+                    log_event(dsn, "email_sent", {"edition": edition, "email": addr})
+                    sent += 1
+                except Exception as e:  # noqa: BLE001
+                    log_event(dsn, "email_failed", {"edition": edition, "email": addr, "error": type(e).__name__})
+        return f"sent {sent} of {len(todo)}"
+    except Exception as e:  # noqa: BLE001 -- an email problem never fails the publish
+        log(f"email step error {e!r}")
+        log_event(dsn, "email_failed", {"edition": edition, "error": type(e).__name__})
+        return f"error {type(e).__name__}"
+
+
+def after_render(dsn, m, ct_today, ct_hm, attempt, why):
+    """Publish bookkeeping once the page is written: a 'published' event + emails for
+    today's edition; a 'held' (from 08:45 CT) or 'attempt_short' event otherwise."""
+    edition = dt.date.fromisoformat(m["edition"])
+    if edition == ct_today:
+        if not has_event(dsn, "published", m["edition"]):
+            log_event(dsn, "published", {
+                "edition": m["edition"], "doors_read": m["read_today"], "panel_doors": m["panel"],
+                "p1": m["doors_p1"], "p1_denom": m["scored"], "hard": ct_hm >= HARD_HM, "why": why})
+        log(f"email: {send_publish_emails(dsn, m)}")
+    elif attempt:
+        kind = "held" if ct_hm >= HARD_HM else "attempt_short"
+        log_event(dsn, kind, {"edition": ct_today.isoformat(), "kept": m["edition"], "ct_hm": f"{ct_hm:04d}",
+                              "reason": why})
 
 
 # ---------------------------------------------------------------- rendering
@@ -427,7 +575,7 @@ def render(m, template_head):
 
 <div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
 <b>AUDIT STANDARD:</b> Store's default sort, no brand search, natural category navigation, the platform's actual first page. Text read from the storefront's own data layer. Every figure on this page reproduces from the stored daily shelf reads.</div>
-<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily at 07:00 CT from the latest complete audit day.</div></div>
+<div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily by 09:00 CT from the latest complete audit day.</div></div>
 
 </div>
 <!-- curaleaf-scorecard edition={ed.isoformat()} -->
@@ -460,6 +608,8 @@ def main(argv=None):
     ap.add_argument("--date", help="edition date YYYY-MM-DD (skips the short-day guard)")
     ap.add_argument("--print-sql", action="store_true")
     ap.add_argument("--from-json", help="render from a saved metrics JSON instead of querying")
+    ap.add_argument("--attempt", action="store_true",
+                    help="cron publish attempt: no-op once today's edition is served; logs held/short attempts")
     a = ap.parse_args(argv)
 
     if a.print_sql:
@@ -469,7 +619,13 @@ def main(argv=None):
             print(metrics_sql(dt.date.fromisoformat(a.date)))
         return 0
 
+    lock = None
     try:
+        if a.attempt:
+            # boot render and cron attempts never run the render + email step at once
+            lock = open(os.path.join(tempfile.gettempdir(), "curaleaf-publish.lock"), "w")
+            fcntl.flock(lock, fcntl.LOCK_EX)
+        dsn, live = None, None
         if a.from_json:
             with open(a.from_json) as f:
                 m = json.load(f)
@@ -483,8 +639,14 @@ def main(argv=None):
             else:
                 rows = neon_sql(dsn, door_counts_sql())
                 today = dt.date.fromisoformat(rows[0]["ct_today"][:10])
+                ct_hm = int(rows[0].get("ct_hm") or 0)
+                if a.attempt and served_edition(a.out) == today:
+                    log(f"today's edition {today} is already served; nothing to do")
+                    return 0
                 counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
-                edition, why = pick_edition(counts, today)
+                ratio = HARD_RATIO if ct_hm >= HARD_HM else SHORT_DAY_RATIO
+                edition, why = pick_edition(counts, today, ratio)
+                live = (today, ct_hm, why)
             log(f"edition {edition} ({why})")
             rows = neon_sql(dsn, metrics_sql(edition))
             m = rows[0]["m"]
@@ -496,10 +658,15 @@ def main(argv=None):
             head = split_head(f.read())
         write_atomic(a.out, render(m, head))
         log(f"wrote {a.out} for edition {m['edition']}: {m['doors_p1']} of {m['scored']} doors on page 1")
+        if live:
+            after_render(dsn, m, live[0], live[1], a.attempt, live[2])
         return 0
     except Exception as e:  # leave the served page untouched on any failure
         log(f"ERROR {e!r}; current page left unchanged")
         return 1
+    finally:
+        if lock:
+            lock.close()
 
 
 if __name__ == "__main__":

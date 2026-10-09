@@ -9,7 +9,7 @@ COPY site/ /srv/
 # Copy Caddy config
 COPY Caddyfile /etc/caddy/Caddyfile
 
-# Curaleaf First Page: 07:00 CT daily edition rendered in place into /srv/curaleaf/
+# Curaleaf First Page: daily edition, published by 09:00 CT (#5807), rendered in place into /srv/curaleaf/
 COPY scripts/curaleaf_scorecard.py /app/curaleaf_scorecard.py
 COPY deploy/curaleaf-publish.sh deploy/entrypoint.sh /app/
 COPY deploy/crontab /etc/crontabs/root
