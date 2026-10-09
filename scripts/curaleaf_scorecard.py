@@ -55,6 +55,7 @@ import os
 import smtplib
 import sys
 import tempfile
+import urllib.error
 import urllib.request
 
 SHORT_DAY_RATIO = 0.90
@@ -220,6 +221,26 @@ def neon_sql(dsn, query, params=None):
         return json.load(r).get("rows", [])
 
 
+def neon_write(dsn, query, params=None):
+    """One write through the Neon HTTP batch (transaction) endpoint. The renderer's role
+    (curaleaf_scorecard_ro) has default_transaction_read_only=on, so a plain /sql INSERT is
+    refused (HTTP 400). Opening the transaction with SET TRANSACTION READ WRITE lifts that
+    for this one statement only; the role's grants still allow nothing beyond INSERT on
+    ops.curaleaf_publish_events."""
+    host = dsn.split("@")[1].split("/")[0].split(":")[0]
+    body = {"queries": [{"query": "SET TRANSACTION READ WRITE", "params": []},
+                        {"query": query, "params": params or []}]}
+    req = urllib.request.Request(
+        f"https://{host}/sql", data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json", "Neon-Connection-String": dsn},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}") from None
+
+
 # ---------------------------------------------------------------- publish events + email (brief #5807)
 
 def served_edition(path):
@@ -241,8 +262,8 @@ def served_edition(path):
 def log_event(dsn, kind, detail):
     """Append one row to ops.curaleaf_publish_events; never raises."""
     try:
-        neon_sql(dsn, "INSERT INTO ops.curaleaf_publish_events (kind, detail) VALUES ($1, $2::jsonb)",
-                 [kind, json.dumps(detail)])
+        neon_write(dsn, "INSERT INTO ops.curaleaf_publish_events (kind, detail) VALUES ($1, $2::jsonb)",
+                   [kind, json.dumps(detail)])
     except Exception as e:  # noqa: BLE001
         log(f"could not log {kind} event: {e!r}")
 

@@ -18,9 +18,11 @@ M = {"edition": "2026-10-09", "read_today": 412, "panel": 520, "doors_p1": 131, 
 class FakeDB:
     def __init__(self, subs=("ed@dobbles.ai",)):
         self.events, self.subs = [], list(subs)
+        self.writing = False
 
     def __call__(self, dsn, query, params=None):
         if query.startswith("INSERT INTO ops.curaleaf_publish_events"):
+            assert self.writing, "INSERT sent on the read-only path"
             self.events.append((params[0], json.loads(params[1])))
             return []
         if "FROM ops.curaleaf_subscribers" in query:
@@ -62,6 +64,7 @@ def test_short_today_holds_before_0845_and_publishes_at_75pct_after():
 def test_publish_logs_event_and_skips_email_without_credentials(monkeypatch):
     db = FakeDB()
     monkeypatch.setattr(cs, "neon_sql", db)
+    monkeypatch.setattr(cs, "neon_write", lambda d, q, p=None: (setattr(db, "writing", True), db(d, q, p), setattr(db, "writing", False)))
     for v in ("SCORECARD_SMTP_HOST", "SCORECARD_SMTP_USER", "SCORECARD_SMTP_PASSWORD", "CURALEAF_EMAIL_DISABLED"):
         monkeypatch.delenv(v, raising=False)
     cs.after_render("dsn", M, TODAY, 712, True, "ok")
@@ -74,6 +77,7 @@ def test_publish_logs_event_and_skips_email_without_credentials(monkeypatch):
 def test_email_once_per_edition_to_approved_only(monkeypatch):
     db = FakeDB(subs=("ed@dobbles.ai",))
     monkeypatch.setattr(cs, "neon_sql", db)
+    monkeypatch.setattr(cs, "neon_write", lambda d, q, p=None: (setattr(db, "writing", True), db(d, q, p), setattr(db, "writing", False)))
     monkeypatch.setenv("SCORECARD_SMTP_HOST", "smtp.example")
     monkeypatch.setenv("SCORECARD_SMTP_USER", "u")
     monkeypatch.setenv("SCORECARD_SMTP_PASSWORD", "p")
@@ -93,6 +97,7 @@ def test_email_once_per_edition_to_approved_only(monkeypatch):
 def test_prior_edition_never_emails_and_records_held(monkeypatch):
     db = FakeDB()
     monkeypatch.setattr(cs, "neon_sql", db)
+    monkeypatch.setattr(cs, "neon_write", lambda d, q, p=None: (setattr(db, "writing", True), db(d, q, p), setattr(db, "writing", False)))
     prior = dict(M, edition="2026-10-08")
     cs.after_render("dsn", prior, TODAY, 650, True, "short")
     cs.after_render("dsn", prior, TODAY, 845, True, "short")
@@ -105,3 +110,27 @@ def test_served_edition_marker(tmp_path):
     p.write_text("<html>...<!-- curaleaf-scorecard edition=2026-10-09 -->\n</body></html>")
     assert cs.served_edition(str(p)) == TODAY
     assert cs.served_edition(str(tmp_path / "missing.html")) is None
+
+
+def test_neon_write_opens_read_write_transaction(monkeypatch):
+    sent = {}
+
+    class _R:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b'{"results": []}'
+
+    def fake_urlopen(req, timeout=None):
+        sent["url"], sent["body"] = req.full_url, json.loads(req.data)
+        return _R()
+
+    monkeypatch.setattr(cs.urllib.request, "urlopen", fake_urlopen)
+    cs.neon_write("postgresql://u:p@ep-x.neon.tech/db", "INSERT INTO t VALUES ($1)", [1])
+    assert sent["url"] == "https://ep-x.neon.tech/sql"
+    assert sent["body"] == {"queries": [{"query": "SET TRANSACTION READ WRITE", "params": []},
+                                        {"query": "INSERT INTO t VALUES ($1)", "params": [1]}]}
