@@ -126,10 +126,49 @@ def test_watch_alerts_once_and_logs(monkeypatch):
     logged = []
     monkeypatch.setattr(cs, "log_event", lambda dsn, kind, detail: logged.append((kind, detail)))
     sent = []
-    out = cs.watch("dsn", sql=_watch_row(720), dm=lambda dsn, text: sent.append(text) or "sent (ts=1)")
-    assert out == "missing; alert sent (ts=1)"
+    texts = []
+    out = cs.watch("dsn", sql=_watch_row(720), dm=lambda dsn, text: sent.append(text) or "sent (ts=1)",
+                   text_ed=lambda dsn, key, body: texts.append((key, body)) or "queued id=5")
+    assert out == "missing; alert sent (ts=1); imessage queued id=5"
     assert sent[0].startswith("First Page check has not run today")
+    assert texts == [("check_missing:2026-10-11:07:15",
+                      "First Page check NOT RUN 10/11 - dip-service tick may be down (DispensaryIQ cross-watch)")]
     assert logged[0][0] == "check_missing_alert" and logged[0][1]["dm"] == "sent (ts=1)"
+    assert logged[0][1]["imessage"] == "queued id=5"
+
+
+# ---- brief #5852: Mac iMessage poller heartbeat ----
+
+def _poller_row(hm, age, alerted=0):
+    return lambda dsn, q, params=None: [{"ct_hm": hm, "ct_today": "2026-10-11", "age_min": age, "alerted": alerted}]
+
+
+def test_poller_watch_quiet_cases():
+    dm = lambda d, t: (_ for _ in ()).throw(AssertionError("no DM expected"))
+    assert cs.poller_watch("dsn", sql=_poller_row(430, None), dm=dm) == "outside 05:00-10:00 CT"
+    assert cs.poller_watch("dsn", sql=_poller_row(1005, None), dm=dm) == "outside 05:00-10:00 CT"
+    assert cs.poller_watch("dsn", sql=_poller_row(600, 1), dm=dm) == "ok: heartbeat 1 min ago"
+    assert cs.poller_watch("dsn", sql=_poller_row(600, 45, alerted=1), dm=dm) == "stale; already alerted today"
+
+
+def test_poller_watch_alerts_on_stale_or_missing(monkeypatch):
+    logged = []
+    monkeypatch.setattr(cs, "log_event", lambda dsn, kind, detail: logged.append((kind, detail)))
+    sent = []
+    dm = lambda d, t: sent.append(t) or "sent (ts=2)"
+    assert cs.poller_watch("dsn", sql=_poller_row(615, 21), dm=dm) == "stale; alert sent (ts=2)"
+    assert cs.poller_watch("dsn", sql=_poller_row(615, None), dm=dm) == "stale; alert sent (ts=2)"
+    assert "last heartbeat 21 min ago" in sent[0] and "last heartbeat never" in sent[1]
+    assert [k for k, _ in logged] == ["poller_dead_alert", "poller_dead_alert"]
+
+
+def test_enqueue_text_never_raises(monkeypatch):
+    monkeypatch.setattr(cs, "neon_sql", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("down")))
+    assert cs.enqueue_text("dsn", "k", "b") == "failed: RuntimeError"
+    monkeypatch.setattr(cs, "neon_sql", lambda *a, **k: [{"id": None}])
+    assert cs.enqueue_text("dsn", "k", "b").startswith("not queued")
+    monkeypatch.setattr(cs, "neon_sql", lambda *a, **k: [{"id": 9}])
+    assert cs.enqueue_text("dsn", "k", "b") == "queued id=9"
 
 
 def test_watch_kill_switch(monkeypatch):

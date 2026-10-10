@@ -4,3 +4,6 @@
 # runs outside 06:00-08:50 CT, and the renderer stops once today's edition is served.
 */10 11-14 * * * /app/curaleaf-publish.sh cron >/proc/1/fd/1 2>&1
 45 13,14 * * * /app/curaleaf-publish.sh cron >/proc/1/fd/1 2>&1
+# Brief #5852: cross-watch only (daily check + iMessage poller heartbeat), 05:00-10:00 CT.
+# 10-15 UTC covers it in both CDT and CST; the script drops runs outside the window.
+5-55/10 10-15 * * * /app/curaleaf-publish.sh watch >/proc/1/fd/1 2>&1

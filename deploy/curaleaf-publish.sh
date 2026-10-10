@@ -10,6 +10,17 @@
 set -u
 MODE="${1:-cron}"
 ATTEMPT=""
+# Brief #5852: "watch" mode = cross-watch only (daily check + Mac iMessage poller),
+# every 10 min 05:00-10:00 CT, so a dead poller is noticed outside the publish window.
+if [ "$MODE" = "watch" ]; then
+  HM=$(TZ=America/Chicago date +%H%M | sed "s/^0*//"); HM=${HM:-0}
+  if [ "$HM" -lt 500 ] || [ "$HM" -gt 1000 ]; then
+    exit 0
+  fi
+  [ -f /app/scorecard.env ] && . /app/scorecard.env
+  python3 /app/curaleaf_scorecard.py --watch
+  exit 0
+fi
 if [ "$MODE" = "cron" ]; then
   HM=$(TZ=America/Chicago date +%H%M | sed "s/^0*//"); HM=${HM:-0}
   if [ "$HM" -lt 600 ] || [ "$HM" -gt 850 ]; then

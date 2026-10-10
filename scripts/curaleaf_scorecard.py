@@ -43,6 +43,13 @@ SELECT on ops.secrets). Once per day, guarded by a 'check_missing_alert' row in
 ops.curaleaf_publish_events. Two Railway projects watch each other.
 Kill switch: CURALEAF_WATCH_DISABLED=1.
 
+iMessage (brief #5852 IMESSAGE-ALERT-1): the check-missing alert also queues a text to Ed
+through ops.fn_enqueue_alert() (SECURITY DEFINER; resolves ED_IMESSAGE_HANDLE itself), which
+the launchd poller on the Mac mini sends. --watch also checks that poller: from 05:00 to
+10:00 CT, if ops.alert_poller_heartbeat has no row seen in the last 20 min, it DMs Ed on
+Slack (a dead poller cannot text), once per day ('poller_dead_alert' event). The cron path
+runs --watch every 10 min 05:00-10:00 CT (curaleaf-publish.sh watch).
+
 Usage:
     python3 scripts/curaleaf_scorecard.py --out site/curaleaf/index.html          # live (Neon HTTP SQL)
     python3 scripts/curaleaf_scorecard.py --watch                                 # cross-watch (cron)
@@ -301,7 +308,7 @@ def slack_dm(dsn, text, opener=urllib.request.urlopen):
     return f"sent (ts={res.get('ts')})" if res.get("ok") else f"failed: {res.get('error')}"
 
 
-def watch(dsn, sql=None, dm=None):
+def watch(dsn, sql=None, dm=None, text_ed=None):
     """One cross-watch tick. Returns a short status string; never raises."""
     sql = sql or neon_sql
     dm = dm or slack_dm
@@ -321,8 +328,69 @@ def watch(dsn, sql=None, dm=None):
             "no ops.curaleaf_daily_check_log row since 06:00 CT. dip-service tick "
             "(org_worker.firstpage_check) may be down. Sent by the DispensaryIQ cross-watch.")
     res = dm(dsn, text)
-    log_event(dsn, "check_missing_alert", {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]), "dm": res})
-    return f"missing; alert {res}"
+    imsg = (text_ed or enqueue_text)(
+        dsn, f"check_missing:{r['ct_today']}:07:15",
+        f"First Page check NOT RUN {fmd(r['ct_today'])} - dip-service tick may be down (DispensaryIQ cross-watch)")
+    log_event(dsn, "check_missing_alert",
+              {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]), "dm": res, "imessage": imsg})
+    return f"missing; alert {res}; imessage {imsg}"
+
+
+def fmd(iso_day):
+    d = dt.date.fromisoformat(iso_day)
+    return f"{d.month}/{d.day}"
+
+
+def enqueue_text(dsn, dedupe_key, body):
+    """Queue one iMessage to Ed via ops.fn_enqueue_alert (brief #5852). Never raises."""
+    try:
+        rows = neon_sql(dsn, "SELECT ops.fn_enqueue_alert($1, $2) AS id", [dedupe_key, body])
+    except Exception as e:  # noqa: BLE001
+        return f"failed: {type(e).__name__}"
+    rid = rows[0].get("id") if rows else None
+    return f"queued id={rid}" if rid is not None else "not queued (duplicate key or no ED_IMESSAGE_HANDLE)"
+
+
+POLLER_WINDOW = (500, 1000)   # America/Chicago HHMM window in which a dead poller alerts
+POLLER_STALE_MIN = 20
+POLLER_SQL = """
+SELECT to_char(now() AT TIME ZONE 'America/Chicago', 'HH24MI')::int AS ct_hm,
+       ((now() AT TIME ZONE 'America/Chicago')::date)::text AS ct_today,
+       (SELECT round(extract(epoch FROM now() - max(seen_at)) / 60)::int
+          FROM ops.alert_poller_heartbeat) AS age_min,
+       (SELECT count(*) FROM ops.curaleaf_publish_events
+         WHERE kind = 'poller_dead_alert'
+           AND event_at >= (((now() AT TIME ZONE 'America/Chicago')::date)::timestamp
+                            AT TIME ZONE 'America/Chicago')) AS alerted"""
+
+
+def poller_watch(dsn, sql=None, dm=None):
+    """Brief #5852: Slack-DM Ed once a day when the Mac iMessage poller's heartbeat is
+    older than 20 min between 05:00 and 10:00 CT. Returns a short status; never raises."""
+    sql = sql or neon_sql
+    dm = dm or slack_dm
+    if os.environ.get("CURALEAF_WATCH_DISABLED", "").strip().lower() in ("1", "true", "yes", "on"):
+        return "disabled"
+    try:
+        r = sql(dsn, POLLER_SQL)[0]
+    except Exception as e:  # noqa: BLE001
+        return f"error: {type(e).__name__}"
+    if not (POLLER_WINDOW[0] <= int(r["ct_hm"]) <= POLLER_WINDOW[1]):
+        return "outside 05:00-10:00 CT"
+    age = r.get("age_min")
+    if age is not None and int(age) <= POLLER_STALE_MIN:
+        return f"ok: heartbeat {age} min ago"
+    if int(r["alerted"]) > 0:
+        return "stale; already alerted today"
+    seen = "never" if age is None else f"{age} min ago"
+    text = (f"iMessage alert poller on the Mac mini is DOWN (last heartbeat {seen}; "
+            f"{r['ct_today']} {int(r['ct_hm']):04d} CT): First Page texts will not arrive. "
+            "Re-run dip-service alert-poller-install.yml (action=install) or check the Mac. "
+            "Sent by the DispensaryIQ cross-watch.")
+    res = dm(dsn, text)
+    log_event(dsn, "poller_dead_alert", {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]),
+                                         "age_min": age, "dm": res})
+    return f"stale; alert {res}"
 
 
 def fdate_email(d):
@@ -698,6 +766,7 @@ def main(argv=None):
             log("watch: no CURALEAF_SCORECARD_DSN / DIP_DATABASE_URL")
             return 2
         log(f"watch: {watch(dsn)}")
+        log(f"poller watch: {poller_watch(dsn)}")
         return 0
 
     lock = None
