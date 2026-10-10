@@ -4,7 +4,7 @@
 umask 077
 : > /app/scorecard.env
 for v in CURALEAF_SCORECARD_DSN SCORECARD_SMTP_HOST SCORECARD_SMTP_PORT SCORECARD_SMTP_USER \
-         SCORECARD_SMTP_PASSWORD CURALEAF_EMAIL_DISABLED CURALEAF_PAGE_URL; do
+         SCORECARD_SMTP_PASSWORD CURALEAF_EMAIL_DISABLED CURALEAF_PAGE_URL CURALEAF_WATCH_DISABLED; do
   eval "val=\${$v:-}"
   if [ -n "$val" ]; then
     printf "export %s='%s'\n" "$v" "$(printf '%s' "$val" | sed "s/'/'\\\\''/g")" >> /app/scorecard.env

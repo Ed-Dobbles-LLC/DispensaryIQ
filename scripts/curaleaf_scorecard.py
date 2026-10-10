@@ -33,8 +33,19 @@ SCORECARD_SMTP_HOST/PORT/USER/PASSWORD; while they are unset the send is skipped
 'email_skipped_no_credentials' is logged; an email problem never fails the publish.
 Kill switch: CURALEAF_EMAIL_DISABLED=1.
 
+Cross-watch (brief #5851 FIRST-PAGE-CLOCK-1, TASK 2): --watch, run by the cron path after
+each publish attempt, in its own process so it can never touch the render. At the first
+tick at/after 07:15 CT, if ops.curaleaf_daily_check_log has no row since 06:00 CT today
+(the dip-service daily check, on the dip-service Railway tick), it DMs Ed "First Page
+check has not run today" via chat.postMessage with SLACK_USER_TOKEN /
+SLACK_ED_DM_CHANNEL_ID, read through ops.fn_firstpage_alert_creds() (this role has no
+SELECT on ops.secrets). Once per day, guarded by a 'check_missing_alert' row in
+ops.curaleaf_publish_events. Two Railway projects watch each other.
+Kill switch: CURALEAF_WATCH_DISABLED=1.
+
 Usage:
     python3 scripts/curaleaf_scorecard.py --out site/curaleaf/index.html          # live (Neon HTTP SQL)
+    python3 scripts/curaleaf_scorecard.py --watch                                 # cross-watch (cron)
     python3 scripts/curaleaf_scorecard.py --print-sql --date 2026-10-07           # emit the metrics SQL
     python3 scripts/curaleaf_scorecard.py --from-json m.json --out index.html     # render saved metrics
 
@@ -252,6 +263,66 @@ def has_event(dsn, kind, edition, email_addr=None):
          + (" AND detail->>'email' = $3" if email_addr else ""))
     params = [kind, edition] + ([email_addr] if email_addr else [])
     return int(neon_sql(dsn, q, params)[0]["n"]) > 0
+
+
+# ---------------------------------------------------------------- cross-watch (brief #5851)
+
+WATCH_HM = 715             # America/Chicago HHMM from which a missing daily check alerts
+WATCH_SQL = """
+SELECT to_char(now() AT TIME ZONE 'America/Chicago', 'HH24MI')::int AS ct_hm,
+       ((now() AT TIME ZONE 'America/Chicago')::date)::text AS ct_today,
+       (SELECT count(*) FROM ops.curaleaf_daily_check_log
+         WHERE run_at >= (((now() AT TIME ZONE 'America/Chicago')::date + time '06:00')
+                          AT TIME ZONE 'America/Chicago')) AS checks,
+       (SELECT count(*) FROM ops.curaleaf_publish_events
+         WHERE kind = 'check_missing_alert'
+           AND event_at >= (((now() AT TIME ZONE 'America/Chicago')::date)::timestamp
+                            AT TIME ZONE 'America/Chicago')) AS alerted"""
+
+
+def slack_dm(dsn, text, opener=urllib.request.urlopen):
+    """chat.postMessage to Ed's DM; returns 'sent (ts=...)' / 'skipped: ...' / 'failed: ...'."""
+    try:
+        creds = neon_sql(dsn, "SELECT slack_token, slack_channel FROM ops.fn_firstpage_alert_creds()")
+    except Exception as e:  # noqa: BLE001
+        return f"failed: creds {type(e).__name__}"
+    token = (creds[0].get("slack_token") or "").strip() if creds else ""
+    channel = (creds[0].get("slack_channel") or "").strip() if creds else ""
+    if not token or not channel:
+        return "skipped: no SLACK_USER_TOKEN / SLACK_ED_DM_CHANNEL_ID in ops.secrets"
+    req = urllib.request.Request(
+        "https://slack.com/api/chat.postMessage", data=json.dumps({"channel": channel, "text": text}).encode(),
+        headers={"Content-Type": "application/json; charset=utf-8", "Authorization": f"Bearer {token}"})
+    try:
+        with opener(req, timeout=20) as r:
+            res = json.load(r)
+    except Exception as e:  # noqa: BLE001
+        return f"failed: {type(e).__name__}"
+    return f"sent (ts={res.get('ts')})" if res.get("ok") else f"failed: {res.get('error')}"
+
+
+def watch(dsn, sql=None, dm=None):
+    """One cross-watch tick. Returns a short status string; never raises."""
+    sql = sql or neon_sql
+    dm = dm or slack_dm
+    if os.environ.get("CURALEAF_WATCH_DISABLED", "").strip().lower() in ("1", "true", "yes", "on"):
+        return "disabled"
+    try:
+        r = sql(dsn, WATCH_SQL)[0]
+    except Exception as e:  # noqa: BLE001
+        return f"error: {type(e).__name__}"
+    if int(r["ct_hm"]) < WATCH_HM:
+        return "before 07:15 CT"
+    if int(r["checks"]) > 0:
+        return f"ok: {r['checks']} check rows since 06:00 CT"
+    if int(r["alerted"]) > 0:
+        return "missing; already alerted today"
+    text = (f"First Page check has not run today ({r['ct_today']}, {int(r['ct_hm']):04d} CT): "
+            "no ops.curaleaf_daily_check_log row since 06:00 CT. dip-service tick "
+            "(org_worker.firstpage_check) may be down. Sent by the DispensaryIQ cross-watch.")
+    res = dm(dsn, text)
+    log_event(dsn, "check_missing_alert", {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]), "dm": res})
+    return f"missing; alert {res}"
 
 
 def fdate_email(d):
@@ -608,6 +679,8 @@ def main(argv=None):
     ap.add_argument("--date", help="edition date YYYY-MM-DD (skips the short-day guard)")
     ap.add_argument("--print-sql", action="store_true")
     ap.add_argument("--from-json", help="render from a saved metrics JSON instead of querying")
+    ap.add_argument("--watch", action="store_true",
+                    help="cross-watch: DM Ed if the dip-service daily check has not run by 07:15 CT")
     ap.add_argument("--attempt", action="store_true",
                     help="cron publish attempt: no-op once today's edition is served; logs held/short attempts")
     a = ap.parse_args(argv)
@@ -617,6 +690,14 @@ def main(argv=None):
             print(door_counts_sql())
         else:
             print(metrics_sql(dt.date.fromisoformat(a.date)))
+        return 0
+
+    if a.watch:
+        dsn = os.environ.get("CURALEAF_SCORECARD_DSN") or os.environ.get("DIP_DATABASE_URL")
+        if not dsn:
+            log("watch: no CURALEAF_SCORECARD_DSN / DIP_DATABASE_URL")
+            return 2
+        log(f"watch: {watch(dsn)}")
         return 0
 
     lock = None

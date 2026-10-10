@@ -22,3 +22,8 @@ fi
 echo "[curaleaf-publish] mode=$MODE start $(TZ=America/Chicago date '+%Y-%m-%d %H:%M %Z')"
 python3 /app/curaleaf_scorecard.py --out /srv/curaleaf/index.html $ATTEMPT
 echo "[curaleaf-publish] mode=$MODE exit $?"
+# Brief #5851: cross-watch of the dip-service daily check (from 07:15 CT, once a day),
+# separate process so it can never affect the render above.
+if [ "$MODE" = "cron" ]; then
+  python3 /app/curaleaf_scorecard.py --watch
+fi

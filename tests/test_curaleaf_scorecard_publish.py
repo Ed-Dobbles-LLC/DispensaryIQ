@@ -105,3 +105,38 @@ def test_served_edition_marker(tmp_path):
     p.write_text("<html>...<!-- curaleaf-scorecard edition=2026-10-09 -->\n</body></html>")
     assert cs.served_edition(str(p)) == TODAY
     assert cs.served_edition(str(tmp_path / "missing.html")) is None
+
+
+# ---- brief #5851: cross-watch of the dip-service daily check ----
+
+def _watch_row(hm, checks=0, alerted=0):
+    return lambda dsn, q, params=None: [{"ct_hm": hm, "ct_today": "2026-10-11", "checks": checks, "alerted": alerted}]
+
+
+def test_watch_quiet_before_0715_and_when_check_ran(monkeypatch):
+    sent = []
+    dm = lambda dsn, text: sent.append(text) or "sent (ts=1)"
+    assert cs.watch("dsn", sql=_watch_row(710), dm=dm) == "before 07:15 CT"
+    assert cs.watch("dsn", sql=_watch_row(720, checks=9), dm=dm).startswith("ok")
+    assert cs.watch("dsn", sql=_watch_row(720, alerted=1), dm=dm) == "missing; already alerted today"
+    assert sent == []
+
+
+def test_watch_alerts_once_and_logs(monkeypatch):
+    logged = []
+    monkeypatch.setattr(cs, "log_event", lambda dsn, kind, detail: logged.append((kind, detail)))
+    sent = []
+    out = cs.watch("dsn", sql=_watch_row(720), dm=lambda dsn, text: sent.append(text) or "sent (ts=1)")
+    assert out == "missing; alert sent (ts=1)"
+    assert sent[0].startswith("First Page check has not run today")
+    assert logged[0][0] == "check_missing_alert" and logged[0][1]["dm"] == "sent (ts=1)"
+
+
+def test_watch_kill_switch(monkeypatch):
+    monkeypatch.setenv("CURALEAF_WATCH_DISABLED", "1")
+    assert cs.watch("dsn", sql=_watch_row(720), dm=lambda d, t: "x") == "disabled"
+
+
+def test_slack_dm_skips_without_creds(monkeypatch):
+    monkeypatch.setattr(cs, "neon_sql", lambda dsn, q, params=None: [{"slack_token": None, "slack_channel": None}])
+    assert cs.slack_dm("dsn", "x").startswith("skipped")
