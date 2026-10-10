@@ -76,7 +76,9 @@ SENDER = '"DispensaryIntelligence" <ed@dispensaryintelligence.com>'
 TARGET = 0.80
 TREND_DAYS = 11
 
-PLATFORM_RUNS = r"^(dutchie-residential|jane-(direct|residential)|sweed-(daily|direct)|carrot-daily|joint-daily)"
+# Brief #5864 (TREEZ-ADAPTER-1): treez-daily added, read_tier page1 -- in lockstep with dip-service
+# migration 437 (dsps.v_firstpage_scorecard_latest / _all_latest / fn_firstpage_headline).
+PLATFORM_RUNS = r"^(dutchie-residential|jane-(direct|residential)|sweed-(daily|direct)|carrot-daily|joint-daily|treez-daily)"
 CHAIN_RE = (
     r"curaleaf|\mrise\M|verilife|sunnyside|ascend|acreage|columbia care|cannabist|zen leaf|verano|"
     r"\mayr\M|jushi|beyond hello|greenthumb|\mgti\M|cresco|trulieve|terrasana|liberty|apothecarium|"
@@ -521,7 +523,7 @@ def render(m, template_head):
     period = f"{fdate_short(tdays[0])} – {fdate_short(tdays[-1])}, read daily" if tdays else fdate_short(ed)
     dod_txt = (f"{fdate_short(dod_t)} vs. {fdate_short(dod_y)}, on the {dod['both']} doors read both days" if dod_y else "no prior day read")
     dod_kpi = (f"Doors onto / off page 1, {dod_t.strftime('%b %-d')} vs {dod_y.strftime('%b %-d')}, door by door." if dod_y else "No prior day read.")
-    platforms = "Dutchie, Sweed, Carrot, JointCommerce, Jane"
+    platforms = "Dutchie, Sweed, Carrot, JointCommerce, Jane, Treez"
     asof_pill = f"AS OF {fdate_long(ed).upper()} · DAILY EDITION"
     built = dt.datetime.fromisoformat(m["built_at"]) if m.get("built_at") else None
     built_txt = f"{built.strftime('%a %b %-d, %Y %H:%M')} CT" if built else "time not recorded"
@@ -644,7 +646,7 @@ def render(m, template_head):
   </div>
 </section>
 
-<div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
+<div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce and Treez), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
 <b>AUDIT STANDARD:</b> Store's default sort, no brand search, natural category navigation, the platform's actual first page. Text read from the storefront's own data layer. Every figure on this page reproduces from the stored daily shelf reads.</div>
 <div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily by 09:00 CT from the latest complete audit day.</div></div>
 
