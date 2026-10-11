@@ -125,11 +125,38 @@ def test_watch_quiet_before_0715_and_when_check_ran(monkeypatch):
 def test_watch_alerts_once_and_logs(monkeypatch):
     logged = []
     monkeypatch.setattr(cs, "log_event", lambda dsn, kind, detail: logged.append((kind, detail)))
-    sent = []
-    out = cs.watch("dsn", sql=_watch_row(720), dm=lambda dsn, text: sent.append(text) or "sent (ts=1)")
-    assert out == "missing; alert sent (ts=1)"
+    sent, texts = [], []
+    out = cs.watch("dsn", sql=_watch_row(720), dm=lambda dsn, text: sent.append(text) or "sent (ts=1)",
+                   text=lambda dsn, key, alert: texts.append((key, alert)) or "queued id=4")
+    assert out == "missing; text queued id=4; alert sent (ts=1)"
     assert sent[0].startswith("First Page check has not run today")
+    assert texts == [("firstpage:check_missing:2026-10-11", sent[0])]
     assert logged[0][0] == "check_missing_alert" and logged[0][1]["dm"] == "sent (ts=1)"
+    assert logged[0][1]["text"] == "queued id=4"
+
+
+def test_watch_texts_even_when_slack_raises(monkeypatch):
+    monkeypatch.setattr(cs, "log_event", lambda dsn, kind, detail: None)
+    texts = []
+
+    def slack_down(dsn, text):
+        raise RuntimeError("token_revoked")
+    out = cs.watch("dsn", sql=_watch_row(720), dm=slack_down,
+                   text=lambda dsn, key, alert: texts.append(key) or "queued id=5")
+    assert texts == ["firstpage:check_missing:2026-10-11"]
+    assert out == "missing; text queued id=5; alert failed: RuntimeError"
+
+
+def test_text_ed_body_and_dedupe():
+    calls = []
+    got = cs.text_ed("dsn", "firstpage:check_missing:2026-10-11", "x\ny" + "z" * 400,
+                     sql=lambda dsn, q, params=None: calls.append((q, params)) or [{"id": 6}])
+    assert got == "queued id=6" and "ops.fn_enqueue_alert" in calls[0][0]
+    key, body = calls[0][1]
+    assert key == "firstpage:check_missing:2026-10-11"
+    assert body.startswith("DIP First Page: x y") and len(body) == 300
+    assert cs.text_ed("dsn", "k", "a", sql=lambda d, q, p=None: [{"id": None}]).startswith("duplicate")
+    assert cs.text_ed("dsn", "k", "a", sql=lambda d, q, p=None: 1 / 0).startswith("failed")
 
 
 def test_watch_kill_switch(monkeypatch):
