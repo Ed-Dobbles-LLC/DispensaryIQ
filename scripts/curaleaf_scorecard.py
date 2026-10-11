@@ -117,11 +117,12 @@ ind AS (
   FROM ind i
   JOIN dim_dispensary d ON d.dispensary_id::bigint = i.dispensary_id
   LEFT JOIN dispensaries ds ON ds.id = i.dispensary_id
-  LEFT JOIN ops.pfp_ownership_20260923 o ON o.dispensary_id = i.dispensary_id
+  LEFT JOIN ops.v_pfp_ownership_effective o ON o.dispensary_id = i.dispensary_id
   WHERE COALESCE(d.dispensary_name, '') !~* '{CHAIN_RE}'
     AND COALESCE(d.chain_name, '') !~* '{CHAIN_RE}'
     AND o.dispensary_id IS NOT NULL AND o.verdict IN ('RETAIL_ONLY', 'CANNOT_DETERMINE')
-    AND i.dispensary_id <> 37360912
+    AND i.dispensary_id <> 37360912 AND NOT EXISTS (SELECT 1 FROM ops.independent_panel_20260831 xp
+                                                    WHERE xp.did::bigint = i.dispensary_id AND xp.class <> 'INDEPENDENT')
 ), raw AS (
   SELECT a.dispensary_id, a.audit_date, a.audit_ts, a.category_canonical, a.brand_key, a.brand_present,
          a.on_page_1, a.first_product_rank, a.brand_skus_on_page_1, a.competitors_ahead, a.page_1_n,
@@ -180,6 +181,8 @@ SELECT json_build_object(
   'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup_rn = 1),
   'captured', (SELECT count(DISTINCT dispensary_id) FROM v),
   'scored', (SELECT count(DISTINCT dispensary_id) FROM v WHERE status <> 'DATA ISSUE'),
+  'undetermined', (SELECT count(DISTINCT v.dispensary_id) FROM v JOIN ops.v_pfp_ownership_effective o ON o.dispensary_id = v.dispensary_id::bigint
+                   WHERE v.status <> 'DATA ISSUE' AND o.verdict = 'CANNOT_DETERMINE'),
   'read_today', (SELECT count(*) FROM last_read WHERE d = date '{d}'),
   'doors_p1', (SELECT count(DISTINCT dispensary_id) FROM p1),
   'doors_p1_4', (SELECT count(DISTINCT dispensary_id) FROM p1 WHERE brand_key NOT IN ('anthem', 'b_noble')),
@@ -551,7 +554,7 @@ def render(m, template_head):
     <div>Period: <span>{esc(period)}</span></div>
   </div>
   <div class="den" style="margin-bottom:8px"><b>As of:</b> {esc(asof_line)}</div>
-  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. {di} Data Issue doors are excluded from every rate. Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
+  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed: {m.get('undetermined', 0)} of {scored} scored doors have undetermined ownership. {di} Data Issue doors are excluded from every rate. Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
 </header>
 
 <section class="panel">
