@@ -6,9 +6,11 @@ Until this script existed, site/curaleaf/index.html was a hand-built static page
 (commit eab62a4, 2026-10-02) with its numbers typed in, so it froze at
 "AS OF FRI OCT 2, 2026 07:22 CT". This script recomputes the same page from the same
 source: the logic of dsps.v_firstpage_scorecard_latest (independent panel, dedup,
-validated-platform run_ids, latest read per door x category x brand over the edition
-date and the two days before it), parameterized on an edition date instead of
-CURRENT_DATE so an edition is reproducible for any date.
+validated-platform run_ids, latest read per door x category x brand on the edition date
+only -- brief #5899: no carry-forward, a door with no read that day is not counted),
+parameterized on an edition date instead of CURRENT_DATE so an edition is reproducible
+for any date. Independent = effective ownership verdict RETAIL_ONLY (latest override,
+else the base table); same-storefront doors count once (brief #5899).
 
 Definitions, door universe, exclusions, DATA ISSUE handling and labels are the ones the
 hand-built page carries; nothing here changes a metric definition.
@@ -19,7 +21,9 @@ least 90% of the trailing 7-date average. A short day keeps the previous day's e
 and logs why; a partial day is never published as current.
 
 09:00 CT hard deadline (brief #5807, Ed ruling Historian #780): cron runs --attempt
-every 10 min from 06:00 to 08:50 CT and stops once today's edition is served. From
+every 10 min from 06:00 to 11:00 CT. Once today's edition is served, an attempt re-renders
+only when today's panel reads are newer than the served page's build minute and logs
+kind='republished' (no email; brief #5899). From
 08:45 CT (the hard publish) today's edition is published if it has at least 75% of
 the 7-date average doors (the as-of line states doors read of panel doors); under
 75% the prior edition is kept and a 'held' event is recorded. Every published / held
@@ -100,8 +104,24 @@ def log(msg):
 CT_TODAY_SQL = "(now() AT TIME ZONE 'America/Chicago')::date"
 
 
-# Panel + window rows: dsps.v_firstpage_scorecard_latest's CTEs verbatim, with the
-# CURRENT_DATE window replaced by an explicit [lo, hi] audit_date range (SQL date expressions).
+# Panel + window rows, in lockstep with dip-service migration 446 (brief #5899
+# FIRST-PAGE-TRUTH-1; dsps.v_firstpage_scorecard_latest / fn_firstpage_headline), with the
+# window as an explicit [lo, hi] audit_date range (SQL date expressions).
+#   * eff: effective ownership = the latest ops.pfp_ownership_overrides row per door, else
+#     ops.pfp_ownership_20260923. The headline universe is effective RETAIL_ONLY only;
+#     CANNOT_DETERMINE panel doors are excluded and counted ('undetermined').
+#   * storefront dedupe: two panel doors are one storefront when they share the leading
+#     street number of dim_dispensary.address and lie within 150 m; the lowest
+#     dispensary_id is kept and the storefront takes that door's verdict. The address/name
+#     (dup1) and dutchie menu (menu_ok) dedupes are kept.
+#   * the panel flags are booleans (dup1, menu_ok, head) rather than row_number() = 1 filters:
+#     on the latter the planner estimated 1 panel door and nested-looped over the fact table
+#     (> 60 s); joined on a boolean it hash/merge-joins (~2 s for the 14-day window).
+#   * rows are cut at the build minute (audit_ts <= date_trunc('minute', now())) so the
+#     daily check's fn_firstpage_headline(edition, built HH:MM) re-derives the same count.
+STOREFRONT_M = 150
+
+
 def _panel_rows_sql(lo, hi):
     return f"""
 ind AS (
@@ -109,27 +129,45 @@ ind AS (
   UNION
   SELECT c.dispensary_id::bigint, d.state FROM ops.nj_expansion_candidates c
     JOIN dim_dispensary d ON d.dispensary_id::bigint = c.dispensary_id::bigint
-), ind2 AS (
-  SELECT i.dispensary_id, i.state,
-    row_number() OVER (PARTITION BY COALESCE(NULLIF(lower(regexp_replace(d.address::text, '[^a-z0-9]', '', 'gi')), ''),
-                       lower(trim(d.dispensary_name)) || '|' || lower(COALESCE(d.city, ''))) ORDER BY i.dispensary_id) AS dup_rn,
-    row_number() OVER (PARTITION BY COALESCE(ds.dutchie_dispensary_id, 'door-' || i.dispensary_id::text) ORDER BY i.dispensary_id) AS menu_rn
+), eff AS (
+  SELECT DISTINCT ON (x.dispensary_id) x.dispensary_id, x.verdict
+  FROM (SELECT ov.dispensary_id, ov.verdict, ov.created_at, 0 AS pri FROM ops.pfp_ownership_overrides ov
+        UNION ALL
+        SELECT b.dispensary_id, b.verdict, b.created_at, 1 FROM ops.pfp_ownership_20260923 b) x
+  ORDER BY x.dispensary_id, x.pri, x.created_at DESC
+), pan AS (
+  SELECT i.dispensary_id, i.state, e.verdict, d.address, d.dispensary_name, d.city, ds.dutchie_dispensary_id,
+         substring(d.address::text from '^\\s*(\\d+)') AS snum,
+         NULLIF(d.latitude, 0)::float8 AS lat, NULLIF(d.longitude, 0)::float8 AS lon
   FROM ind i
   JOIN dim_dispensary d ON d.dispensary_id::bigint = i.dispensary_id
   LEFT JOIN dispensaries ds ON ds.id = i.dispensary_id
-  LEFT JOIN ops.pfp_ownership_20260923 o ON o.dispensary_id = i.dispensary_id
+  JOIN eff e ON e.dispensary_id = i.dispensary_id
   WHERE COALESCE(d.dispensary_name, '') !~* '{CHAIN_RE}'
     AND COALESCE(d.chain_name, '') !~* '{CHAIN_RE}'
-    AND o.dispensary_id IS NOT NULL AND o.verdict IN ('RETAIL_ONLY', 'CANNOT_DETERMINE')
+    AND e.verdict IN ('RETAIL_ONLY', 'CANNOT_DETERMINE')
     AND i.dispensary_id <> 37360912
+), ind2 AS (
+  SELECT p.dispensary_id, p.state, p.verdict,
+    row_number() OVER (PARTITION BY COALESCE(NULLIF(lower(regexp_replace(p.address::text, '[^a-z0-9]', '', 'gi')), ''),
+                       lower(trim(p.dispensary_name)) || '|' || lower(COALESCE(p.city, ''))) ORDER BY p.dispensary_id) = 1 AS dup1,
+    row_number() OVER (PARTITION BY COALESCE(p.dutchie_dispensary_id, 'door-' || p.dispensary_id::text) ORDER BY p.dispensary_id) = 1 AS menu_ok
+  FROM pan p
+  WHERE NOT EXISTS (
+    SELECT 1 FROM pan q
+    WHERE q.dispensary_id < p.dispensary_id AND q.snum = p.snum
+      AND 6371000 * 2 * asin(sqrt(power(sin(radians(q.lat - p.lat) / 2), 2)
+          + cos(radians(p.lat)) * cos(radians(q.lat)) * power(sin(radians(q.lon - p.lon) / 2), 2))) <= {STOREFRONT_M})
 ), raw AS (
   SELECT a.dispensary_id, a.audit_date, a.audit_ts, a.category_canonical, a.brand_key, a.brand_present,
          a.on_page_1, a.first_product_rank, a.brand_skus_on_page_1, a.competitors_ahead, a.page_1_n,
          a.status, i.state, split_part(a.run_id, '-', 1) AS platform
   FROM dsps.fact_first_page_audit a
-  JOIN ind2 i ON i.dispensary_id = a.dispensary_id::bigint AND i.dup_rn = 1
-             AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_rn = 1)
+  JOIN (SELECT dispensary_id, state, menu_ok, dup1 AND verdict = 'RETAIL_ONLY' AS head FROM ind2) i
+    ON i.dispensary_id = a.dispensary_id::bigint AND i.head
+   AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_ok)
   WHERE a.audit_date BETWEEN {lo} AND {hi} AND a.run_id ~ '{PLATFORM_RUNS}'
+    AND a.audit_ts <= date_trunc('minute', now())
 )"""
 
 
@@ -163,7 +201,7 @@ def metrics_sql(edition):
     excl = ", ".join(f"'{b}'" for b in COMPETITOR_EXCLUDE)
     return f"""WITH {_panel_rows_sql(f"date '{lo}'", f"date '{d}'")},
 win AS (SELECT *, row_number() OVER (PARTITION BY dispensary_id, category_canonical, brand_key ORDER BY audit_ts DESC) AS rn
-        FROM raw WHERE audit_date BETWEEN date '{d}' - 2 AND date '{d}'),
+        FROM raw WHERE audit_date = date '{d}'),
 v AS (SELECT * FROM win WHERE rn = 1),
 dly AS (SELECT *, row_number() OVER (PARTITION BY audit_date, dispensary_id, category_canonical, brand_key ORDER BY audit_ts DESC) AS rn
         FROM raw WHERE status <> 'DATA ISSUE'),
@@ -177,7 +215,9 @@ p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present)
 SELECT json_build_object(
   'edition', '{d}',
   'built_at', to_char(now() AT TIME ZONE 'America/Chicago', 'YYYY-MM-DD"T"HH24:MI'),
-  'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup_rn = 1),
+  'built_utc', to_char(date_trunc('minute', now()) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+  'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup1 AND verdict = 'RETAIL_ONLY'),
+  'undetermined', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup1 AND verdict = 'CANNOT_DETERMINE'),
   'captured', (SELECT count(DISTINCT dispensary_id) FROM v),
   'scored', (SELECT count(DISTINCT dispensary_id) FROM v WHERE status <> 'DATA ISSUE'),
   'read_today', (SELECT count(*) FROM last_read WHERE d = date '{d}'),
@@ -249,6 +289,31 @@ def served_edition(path):
         return dt.date.fromisoformat(text[i + len("curaleaf-scorecard edition="):][:10])
     except ValueError:
         return None
+
+
+def served_built(path):
+    """UTC build minute of the page served at `path` (its trailing marker, brief #5899), or None."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return None
+    i = text.rfind("curaleaf-scorecard edition=")
+    j = text.find(" built=", i) if i >= 0 else -1
+    if j < 0:
+        return None
+    try:
+        return dt.datetime.fromisoformat(text[j + len(" built="):].split()[0].replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def newer_reads_sql():
+    """Brief #5899: max(audit_ts) of today's panel rows vs the served page's build minute ($1)."""
+    return f"""WITH {_panel_rows_sql(CT_TODAY_SQL, CT_TODAY_SQL)}
+SELECT to_char(max(audit_ts) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS max_ts,
+       COALESCE(max(audit_ts) > $1::timestamptz, false) AS newer
+FROM raw"""
 
 
 def log_event(dsn, kind, detail):
@@ -400,13 +465,16 @@ def send_publish_emails(dsn, m, smtp_factory=None):
 
 def after_render(dsn, m, ct_today, ct_hm, attempt, why):
     """Publish bookkeeping once the page is written: a 'published' event + emails for
-    today's edition; a 'held' (from 08:45 CT) or 'attempt_short' event otherwise."""
+    today's edition (a 'republished' event, no email, when it was already published:
+    brief #5899); a 'held' (from 08:45 CT) or 'attempt_short' event otherwise."""
     edition = dt.date.fromisoformat(m["edition"])
     if edition == ct_today:
-        if not has_event(dsn, "published", m["edition"]):
-            log_event(dsn, "published", {
-                "edition": m["edition"], "doors_read": m["read_today"], "panel_doors": m["panel"],
-                "p1": m["doors_p1"], "p1_denom": m["scored"], "hard": ct_hm >= HARD_HM, "why": why})
+        detail = {"edition": m["edition"], "doors_read": m["read_today"], "panel_doors": m["panel"],
+                  "p1": m["doors_p1"], "p1_denom": m["scored"], "hard": ct_hm >= HARD_HM, "why": why}
+        if has_event(dsn, "published", m["edition"]):
+            log_event(dsn, "republished", detail)
+            return
+        log_event(dsn, "published", detail)
         log(f"email: {send_publish_emails(dsn, m)}")
     elif attempt:
         kind = "held" if ct_hm >= HARD_HM else "attempt_short"
@@ -479,7 +547,7 @@ def render(m, template_head):
     ed = dt.date.fromisoformat(m["edition"][:10])
     captured, scored, p1 = m["captured"], m["scored"], m["doors_p1"]
     di = captured - scored
-    carried = captured - m["read_today"]
+    undet = m.get("undetermined")
     need = max(0, math.ceil(TARGET * scored) - p1)
     share = round(100 * m["skus_p1"] / m["slots"], 1) if m["slots"] else 0
     trend = m.get("trend") or []
@@ -530,8 +598,9 @@ def render(m, template_head):
     # The as-of line only states doors actually read on the audit date at build time
     # (read_today), never captured or carried doors, so it cannot overstate the read.
     asof_line = (f"Pre-certification read. Audit date {fdate_long(ed)}; edition built {built_txt}; "
-                 f"{m['read_today']} of {m.get('panel', '—')} panel doors read on {fdate_short(ed)}. "
-                 f"Figures are not yet certified and may change.")
+                 f"{m['read_today']} of {m.get('panel', '—')} panel doors read on {fdate_short(ed)}"
+                 + (f"; {undet} further panel doors excluded because their ownership is not confirmed" if undet else "")
+                 + ". Figures are not yet certified and may change.")
     trend_note = (f"Read every day for {len(trend)} days; {min(tscored)}–{max(tscored)} doors scored per day. "
                   f"Each point is that day's own read. Holding the brand list constant, the six-brand rate ranged "
                   f"{round(min(ta))}–{round(max(ta))}% and the original four {round(min(tb))}–{round(max(tb))}% over the window.") if trend else ""
@@ -551,7 +620,7 @@ def render(m, template_head):
     <div>Period: <span>{esc(period)}</span></div>
   </div>
   <div class="den" style="margin-bottom:8px"><b>As of:</b> {esc(asof_line)}</div>
-  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. {di} Data Issue doors are excluded from every rate. Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
+  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, confirmed per door; doors whose ownership is not confirmed are excluded{f" ({undet})" if undet else ""}, and one storefront counts once. {di} Data Issue doors are excluded from every rate. Only reads taken on {fdate_short(ed)} count: a door with no read that day is not counted. This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
 </header>
 
 <section class="panel">
@@ -646,12 +715,12 @@ def render(m, template_head):
   </div>
 </section>
 
-<div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce and Treez), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, checked per door; multi-store retailers are included. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
+<div class="defs"><b>DEFINITIONS —</b> <b>On page 1</b> = the brand's first product appears on the platform's own first page under the store's default sort (25 products on Dutchie, 24 on Jane, Sweed and Carrot, 20 on JointCommerce and Treez), recorded per row. <b>Independent</b> = no owner that holds a cultivation or manufacturing licence, confirmed per door; multi-store retailers are included; doors with unconfirmed ownership are excluded. <b>Data issue</b> = menu inaccessible or empty at capture. <b>Day-over-day</b> = door-level change on doors read both days.<br>
 <b>AUDIT STANDARD:</b> Store's default sort, no brand search, natural category navigation, the platform's actual first page. Text read from the storefront's own data layer. Every figure on this page reproduces from the stored daily shelf reads.</div>
 <div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily by 09:00 CT from the latest complete audit day.</div></div>
 
 </div>
-<!-- curaleaf-scorecard edition={ed.isoformat()} -->
+<!-- curaleaf-scorecard edition={ed.isoformat()}{" built=" + m["built_utc"] if m.get("built_utc") else ""} -->
 </body></html>
 """
     return template_head + body
@@ -684,7 +753,8 @@ def main(argv=None):
     ap.add_argument("--watch", action="store_true",
                     help="cross-watch: DM Ed if the dip-service daily check has not run by 07:15 CT")
     ap.add_argument("--attempt", action="store_true",
-                    help="cron publish attempt: no-op once today's edition is served; logs held/short attempts")
+                    help="cron publish attempt: once today's edition is served, re-renders only when newer "
+                         "reads landed; logs held/short attempts")
     a = ap.parse_args(argv)
 
     if a.print_sql:
@@ -724,11 +794,18 @@ def main(argv=None):
                 today = dt.date.fromisoformat(rows[0]["ct_today"][:10])
                 ct_hm = int(rows[0].get("ct_hm") or 0)
                 if a.attempt and served_edition(a.out) == today:
-                    log(f"today's edition {today} is already served; nothing to do")
-                    return 0
-                counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
-                ratio = HARD_RATIO if ct_hm >= HARD_HM else SHORT_DAY_RATIO
-                edition, why = pick_edition(counts, today, ratio)
+                    # Brief #5899: re-render when reads newer than the served build landed.
+                    built = served_built(a.out)
+                    nr = neon_sql(dsn, newer_reads_sql(),
+                                  [(built or dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc)).isoformat()])
+                    if not (nr and nr[0].get("newer")):
+                        log(f"today's edition {today} is already served and current; nothing to do")
+                        return 0
+                    edition, why = today, f"republish: reads to {nr[0].get('max_ts')} newer than build {built}"
+                else:
+                    counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
+                    ratio = HARD_RATIO if ct_hm >= HARD_HM else SHORT_DAY_RATIO
+                    edition, why = pick_edition(counts, today, ratio)
                 live = (today, ct_hm, why)
             log(f"edition {edition} ({why})")
             rows = neon_sql(dsn, metrics_sql(edition))
