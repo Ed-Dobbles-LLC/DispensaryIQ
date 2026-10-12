@@ -65,9 +65,10 @@ def test_publish_logs_event_and_skips_email_without_credentials(monkeypatch):
     for v in ("SCORECARD_SMTP_HOST", "SCORECARD_SMTP_USER", "SCORECARD_SMTP_PASSWORD", "CURALEAF_EMAIL_DISABLED"):
         monkeypatch.delenv(v, raising=False)
     cs.after_render("dsn", M, TODAY, 712, True, "ok")
-    cs.after_render("dsn", M, TODAY, 722, False, "ok")  # boot re-render: idempotent
+    cs.after_render("dsn", M, TODAY, 722, False, "ok")  # boot re-render: 'republished', no second email
     kinds = [k for k, _ in db.events]
-    assert kinds == ["published", "email_skipped_no_credentials"]
+    assert kinds == ["published", "email_skipped_no_credentials", "republished"]
+    assert db.events[2][1]["p1_denom"] == 455 and db.events[2][1]["edition"] == "2026-10-09"
     assert db.events[0][1]["doors_read"] == 412 and db.events[0][1]["p1_denom"] == 455
 
 
