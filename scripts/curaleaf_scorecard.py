@@ -19,7 +19,9 @@ least 90% of the trailing 7-date average. A short day keeps the previous day's e
 and logs why; a partial day is never published as current.
 
 09:00 CT hard deadline (brief #5807, Ed ruling Historian #780): cron runs --attempt
-every 10 min from 06:00 to 08:50 CT and stops once today's edition is served. From
+every 10 min from 06:00 to 11:00 CT. Once today's edition is served, an attempt re-renders
+only when today's panel reads are newer than the served page's build minute and logs
+kind='republished' (no email; brief #5902). From
 08:45 CT (the hard publish) today's edition is published if it has at least 75% of
 the 7-date average doors (the as-of line states doors read of panel doors); under
 75% the prior edition is kept and a 'held' event is recorded. Every published / held
@@ -100,8 +102,12 @@ def log(msg):
 CT_TODAY_SQL = "(now() AT TIME ZONE 'America/Chicago')::date"
 
 
-# Panel + window rows: dsps.v_firstpage_scorecard_latest's CTEs verbatim, with the
-# CURRENT_DATE window replaced by an explicit [lo, hi] audit_date range (SQL date expressions).
+# Panel + window rows: dsps.v_firstpage_scorecard_latest's CTEs, with the CURRENT_DATE window
+# replaced by an explicit [lo, hi] audit_date range (SQL date expressions). Same panel definition
+# as the view; only the planner shape differs (brief #5902): the dedupe flags are booleans
+# (dup1, menu_ok) rather than row_number() = 1 join filters, on which the planner estimated 1
+# panel door and nested-looped over the fact table. Rows are cut at the build minute so the
+# daily check's fn_firstpage_headline(edition, built) re-derives the same count.
 def _panel_rows_sql(lo, hi):
     return f"""
 ind AS (
@@ -112,8 +118,8 @@ ind AS (
 ), ind2 AS (
   SELECT i.dispensary_id, i.state,
     row_number() OVER (PARTITION BY COALESCE(NULLIF(lower(regexp_replace(d.address::text, '[^a-z0-9]', '', 'gi')), ''),
-                       lower(trim(d.dispensary_name)) || '|' || lower(COALESCE(d.city, ''))) ORDER BY i.dispensary_id) AS dup_rn,
-    row_number() OVER (PARTITION BY COALESCE(ds.dutchie_dispensary_id, 'door-' || i.dispensary_id::text) ORDER BY i.dispensary_id) AS menu_rn
+                       lower(trim(d.dispensary_name)) || '|' || lower(COALESCE(d.city, ''))) ORDER BY i.dispensary_id) = 1 AS dup1,
+    row_number() OVER (PARTITION BY COALESCE(ds.dutchie_dispensary_id, 'door-' || i.dispensary_id::text) ORDER BY i.dispensary_id) = 1 AS menu_ok
   FROM ind i
   JOIN dim_dispensary d ON d.dispensary_id::bigint = i.dispensary_id
   LEFT JOIN dispensaries ds ON ds.id = i.dispensary_id
@@ -127,9 +133,10 @@ ind AS (
          a.on_page_1, a.first_product_rank, a.brand_skus_on_page_1, a.competitors_ahead, a.page_1_n,
          a.status, i.state, split_part(a.run_id, '-', 1) AS platform
   FROM dsps.fact_first_page_audit a
-  JOIN ind2 i ON i.dispensary_id = a.dispensary_id::bigint AND i.dup_rn = 1
-             AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_rn = 1)
+  JOIN ind2 i ON i.dispensary_id = a.dispensary_id::bigint AND i.dup1
+             AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_ok)
   WHERE a.audit_date BETWEEN {lo} AND {hi} AND a.run_id ~ '{PLATFORM_RUNS}'
+    AND a.audit_ts <= date_trunc('minute', now())
 )"""
 
 
@@ -157,13 +164,16 @@ def pick_edition(counts, ct_today, today_ratio=SHORT_DAY_RATIO):
     raise RuntimeError("no audit date passes the short-day guard")
 
 
-def metrics_sql(edition):
+def metrics_sql(edition, edition_day_only=False):
+    """edition_day_only (ops.firstpage_config, brief #5902): count only reads taken on the
+    edition date; off = the latest read over the edition date and the two days before it."""
     d = edition.isoformat()
+    win_lo = f"date '{d}'" if edition_day_only else f"date '{d}' - 2"
     lo = (edition - dt.timedelta(days=TREND_DAYS + 3)).isoformat()
     excl = ", ".join(f"'{b}'" for b in COMPETITOR_EXCLUDE)
     return f"""WITH {_panel_rows_sql(f"date '{lo}'", f"date '{d}'")},
 win AS (SELECT *, row_number() OVER (PARTITION BY dispensary_id, category_canonical, brand_key ORDER BY audit_ts DESC) AS rn
-        FROM raw WHERE audit_date BETWEEN date '{d}' - 2 AND date '{d}'),
+        FROM raw WHERE audit_date BETWEEN {win_lo} AND date '{d}'),
 v AS (SELECT * FROM win WHERE rn = 1),
 dly AS (SELECT *, row_number() OVER (PARTITION BY audit_date, dispensary_id, category_canonical, brand_key ORDER BY audit_ts DESC) AS rn
         FROM raw WHERE status <> 'DATA ISSUE'),
@@ -177,7 +187,9 @@ p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present)
 SELECT json_build_object(
   'edition', '{d}',
   'built_at', to_char(now() AT TIME ZONE 'America/Chicago', 'YYYY-MM-DD"T"HH24:MI'),
-  'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup_rn = 1),
+  'built_utc', to_char(date_trunc('minute', now()) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+  'edition_day_only', {'true' if edition_day_only else 'false'},
+  'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup1),
   'captured', (SELECT count(DISTINCT dispensary_id) FROM v),
   'scored', (SELECT count(DISTINCT dispensary_id) FROM v WHERE status <> 'DATA ISSUE'),
   'read_today', (SELECT count(*) FROM last_read WHERE d = date '{d}'),
@@ -249,6 +261,45 @@ def served_edition(path):
         return dt.date.fromisoformat(text[i + len("curaleaf-scorecard edition="):][:10])
     except ValueError:
         return None
+
+
+def served_built(path):
+    """UTC build minute of the page served at `path` (its trailing marker, brief #5902), or None."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return None
+    i = text.rfind("curaleaf-scorecard edition=")
+    j = text.find(" built=", i) if i >= 0 else -1
+    if j < 0:
+        return None
+    try:
+        return dt.datetime.fromisoformat(text[j + len(" built="):].split()[0].replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def newer_reads_sql():
+    """Brief #5902: max(audit_ts) of today's panel rows vs the served page's build minute ($1)."""
+    return f"""WITH {_panel_rows_sql(CT_TODAY_SQL, CT_TODAY_SQL)}
+SELECT to_char(max(audit_ts) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS max_ts,
+       COALESCE(max(audit_ts) > $1::timestamptz, false) AS newer
+FROM raw"""
+
+
+def edition_day_only(dsn):
+    """ops.firstpage_config edition_day_only (brief #5902, ships false). Any error (table not
+    there yet, bad value) reads as false, i.e. today's 3-day carry-forward behaviour."""
+    try:
+        rows = neon_sql(dsn, "SELECT value FROM ops.firstpage_config WHERE key = 'edition_day_only'")
+    except Exception as e:  # noqa: BLE001
+        log(f"edition_day_only: config unreadable ({e!r}); using false")
+        return False
+    v = rows[0].get("value") if rows else None
+    if isinstance(v, str):
+        v = v.strip().lower() == "true"
+    return v is True
 
 
 def log_event(dsn, kind, detail):
@@ -400,13 +451,16 @@ def send_publish_emails(dsn, m, smtp_factory=None):
 
 def after_render(dsn, m, ct_today, ct_hm, attempt, why):
     """Publish bookkeeping once the page is written: a 'published' event + emails for
-    today's edition; a 'held' (from 08:45 CT) or 'attempt_short' event otherwise."""
+    today's edition (a 'republished' event, no email, when it was already published:
+    brief #5902); a 'held' (from 08:45 CT) or 'attempt_short' event otherwise."""
     edition = dt.date.fromisoformat(m["edition"])
     if edition == ct_today:
-        if not has_event(dsn, "published", m["edition"]):
-            log_event(dsn, "published", {
-                "edition": m["edition"], "doors_read": m["read_today"], "panel_doors": m["panel"],
-                "p1": m["doors_p1"], "p1_denom": m["scored"], "hard": ct_hm >= HARD_HM, "why": why})
+        detail = {"edition": m["edition"], "doors_read": m["read_today"], "panel_doors": m["panel"],
+                  "p1": m["doors_p1"], "p1_denom": m["scored"], "hard": ct_hm >= HARD_HM, "why": why}
+        if has_event(dsn, "published", m["edition"]):
+            log_event(dsn, "republished", detail)
+            return
+        log_event(dsn, "published", detail)
         log(f"email: {send_publish_emails(dsn, m)}")
     elif attempt:
         kind = "held" if ct_hm >= HARD_HM else "attempt_short"
@@ -480,6 +534,7 @@ def render(m, template_head):
     captured, scored, p1 = m["captured"], m["scored"], m["doors_p1"]
     di = captured - scored
     carried = captured - m["read_today"]
+    today_only = bool(m.get("edition_day_only"))
     need = max(0, math.ceil(TARGET * scored) - p1)
     share = round(100 * m["skus_p1"] / m["slots"], 1) if m["slots"] else 0
     trend = m.get("trend") or []
@@ -530,7 +585,8 @@ def render(m, template_head):
     # The as-of line only states doors actually read on the audit date at build time
     # (read_today), never captured or carried doors, so it cannot overstate the read.
     asof_line = (f"Pre-certification read. Audit date {fdate_long(ed)}; edition built {built_txt}; "
-                 f"{m['read_today']} of {m.get('panel', '—')} panel doors read on {fdate_short(ed)}. "
+                 f"{m['read_today']} of {m.get('panel', '—')} panel doors read on {fdate_short(ed)}"
+                 + ("; today's reads only" if today_only else "") + ". "
                  f"Figures are not yet certified and may change.")
     trend_note = (f"Read every day for {len(trend)} days; {min(tscored)}–{max(tscored)} doors scored per day. "
                   f"Each point is that day's own read. Holding the brand list constant, the six-brand rate ranged "
@@ -551,7 +607,7 @@ def render(m, template_head):
     <div>Period: <span>{esc(period)}</span></div>
   </div>
   <div class="den" style="margin-bottom:8px"><b>As of:</b> {esc(asof_line)}</div>
-  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. {di} Data Issue doors are excluded from every rate. Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days). This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
+  <div class="den"><b>Denominator:</b> {scored} independent dispensaries with a readable menu on a validated platform ({platforms}), of {captured} captured. Independent means no owner that grows or manufactures its own product, checked per door; doors that could not be determined are kept and disclosed. {di} Data Issue doors are excluded from every rate. {f"Only reads taken on {fdate_short(ed)} count: a door with no read that day is not counted." if today_only else f"Each door's most recent read is used ({m['read_today']} read on {fdate_short(ed)}, {carried} carried from the prior two days)."} This is <b>our panel, not your distribution file</b>: until the master file is joined, the KPI is <i>doors with a Curaleaf brand on page 1 ÷ doors scored</i>, not Page 1 Compliance as your guide defines it.</div>
 </header>
 
 <section class="panel">
@@ -651,7 +707,7 @@ def render(m, template_head):
 <div class="foot2"><div><b>POWERED BY DOBBLES.AI</b> · DispensaryIQ · Verified, evidence-gated shelf observation.</div><div>Pre-certification daily edition for audit date {esc(fdate_long(ed))}, built {esc(built_txt)}. Published daily by 09:00 CT from the latest complete audit day.</div></div>
 
 </div>
-<!-- curaleaf-scorecard edition={ed.isoformat()} -->
+<!-- curaleaf-scorecard edition={ed.isoformat()}{" built=" + m["built_utc"] if m.get("built_utc") else ""} -->
 </body></html>
 """
     return template_head + body
@@ -684,7 +740,8 @@ def main(argv=None):
     ap.add_argument("--watch", action="store_true",
                     help="cross-watch: DM Ed if the dip-service daily check has not run by 07:15 CT")
     ap.add_argument("--attempt", action="store_true",
-                    help="cron publish attempt: no-op once today's edition is served; logs held/short attempts")
+                    help="cron publish attempt: once today's edition is served, re-renders only when newer "
+                         "reads landed; logs held/short attempts")
     a = ap.parse_args(argv)
 
     if a.print_sql:
@@ -724,14 +781,21 @@ def main(argv=None):
                 today = dt.date.fromisoformat(rows[0]["ct_today"][:10])
                 ct_hm = int(rows[0].get("ct_hm") or 0)
                 if a.attempt and served_edition(a.out) == today:
-                    log(f"today's edition {today} is already served; nothing to do")
-                    return 0
-                counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
-                ratio = HARD_RATIO if ct_hm >= HARD_HM else SHORT_DAY_RATIO
-                edition, why = pick_edition(counts, today, ratio)
+                    # Brief #5902: re-render when reads newer than the served build landed.
+                    built = served_built(a.out)
+                    nr = neon_sql(dsn, newer_reads_sql(),
+                                  [(built or dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc)).isoformat()])
+                    if not (nr and nr[0].get("newer")):
+                        log(f"today's edition {today} is already served and current; nothing to do")
+                        return 0
+                    edition, why = today, f"republish: reads to {nr[0].get('max_ts')} newer than build {built}"
+                else:
+                    counts = [(r["d"], r["doors"]) for r in rows if r.get("d")]
+                    ratio = HARD_RATIO if ct_hm >= HARD_HM else SHORT_DAY_RATIO
+                    edition, why = pick_edition(counts, today, ratio)
                 live = (today, ct_hm, why)
             log(f"edition {edition} ({why})")
-            rows = neon_sql(dsn, metrics_sql(edition))
+            rows = neon_sql(dsn, metrics_sql(edition, edition_day_only(dsn)))
             m = rows[0]["m"]
             if isinstance(m, str):
                 m = json.loads(m)
