@@ -78,7 +78,28 @@ TREND_DAYS = 11
 
 # Brief #5864 (TREEZ-ADAPTER-1): treez-daily added, read_tier page1 -- in lockstep with dip-service
 # migration 437 (dsps.v_firstpage_scorecard_latest / _all_latest / fn_firstpage_headline).
-PLATFORM_RUNS = r"^(dutchie-residential|jane-(direct|residential)|sweed-(daily|direct)|carrot-daily|joint-daily|treez-daily)"
+# Brief #5870 (BROWSER-INCLUDE-2): browser-daily added -- in lockstep with dip-service migration 442.
+# Only the promoted Dispense/Flowhub reads in dsps.fact_first_page_audit_browser match it: FACT_ROWS
+# drops every browser-* row of fact_first_page_audit (generic fact-mode doors stay out).
+PLATFORM_RUNS = r"^(dutchie-residential|jane-(direct|residential)|sweed-(daily|direct)|carrot-daily|joint-daily|treez-daily|browser-daily)"
+
+# dsps.v_first_page_audit_with_browser (dip-service migration 442), inlined so the renderer
+# does not depend on 442 being applied: adapter rows minus browser-* runs, minus a presence-only
+# Dispense/Flowhub row whenever a scored browser row exists for the same door x category x brand
+# on the same or a later audit_date (browser replaces presence-only), UNION ALL the browser rows.
+FACT_COLS = ("dispensary_id, audit_date, audit_ts, run_id, category_canonical, brand_key, brand_present, "
+             "on_page_1, first_product_rank, brand_skus_on_page_1, competitors_ahead, page_1_n, status")
+FACT_ROWS = f"""(
+  SELECT {FACT_COLS} FROM dsps.fact_first_page_audit f
+  WHERE f.run_id !~ '^browser-'
+    AND NOT (f.run_id ~ '^(dispense|flowhub)-daily'
+             AND EXISTS (SELECT 1 FROM dsps.fact_first_page_audit_browser b
+                         WHERE b.dispensary_id = f.dispensary_id AND b.category_canonical = f.category_canonical
+                           AND b.brand_key = f.brand_key AND b.audit_date >= f.audit_date
+                           AND b.run_id LIKE 'browser-daily-%' AND b.status <> 'DATA ISSUE'))
+  UNION ALL
+  SELECT {FACT_COLS} FROM dsps.fact_first_page_audit_browser b WHERE b.run_id LIKE 'browser-daily-%'
+)"""
 CHAIN_RE = (
     r"curaleaf|\mrise\M|verilife|sunnyside|ascend|acreage|columbia care|cannabist|zen leaf|verano|"
     r"\mayr\M|jushi|beyond hello|greenthumb|\mgti\M|cresco|trulieve|terrasana|liberty|apothecarium|"
@@ -126,7 +147,7 @@ ind AS (
   SELECT a.dispensary_id, a.audit_date, a.audit_ts, a.category_canonical, a.brand_key, a.brand_present,
          a.on_page_1, a.first_product_rank, a.brand_skus_on_page_1, a.competitors_ahead, a.page_1_n,
          a.status, i.state, split_part(a.run_id, '-', 1) AS platform
-  FROM dsps.fact_first_page_audit a
+  FROM {FACT_ROWS} a
   JOIN ind2 i ON i.dispensary_id = a.dispensary_id::bigint AND i.dup_rn = 1
              AND (split_part(a.run_id, '-', 1) <> 'dutchie' OR i.menu_rn = 1)
   WHERE a.audit_date BETWEEN {lo} AND {hi} AND a.run_id ~ '{PLATFORM_RUNS}'
@@ -597,7 +618,7 @@ def render(m, template_head):
     <div><i style="background:var(--green)"></i><b>On page 1 · {p1}</b><span class="note">At least one Curaleaf brand on page 1 of at least one category.</span></div>
     <div><i style="background:var(--neutral-bar)"></i><b>Not on page 1 · {scored - p1}</b><span class="note">Menu read cleanly, no Curaleaf brand on any page 1. Splits into Opportunity, Critical Gap and Not Expected once distribution is known.</span></div>
     <div><i style="background:var(--amber)"></i><b>Data issue · {di}</b><span class="note">Menu inaccessible or empty at capture. Excluded from rates.</span></div>
-    <div><i style="background:var(--grey)"></i><b>Not scored here</b><span class="note">Dispense, Blaze and Flowhub storefronts are read for presence only; no validated page-1 rule yet.</span></div>
+    <div><i style="background:var(--grey)"></i><b>Not scored here</b><span class="note">Dispense and Flowhub positions are read from the live storefront in a real browser. Blaze storefronts are read for presence only; no validated page-1 rule yet.</span></div>
   </div>
 </section>
 
