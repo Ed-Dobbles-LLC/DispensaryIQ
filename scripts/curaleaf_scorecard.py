@@ -194,7 +194,7 @@ dd AS (SELECT audit_date, dispensary_id, bool_or(on_page_1 AND brand_present) AS
 days AS (SELECT DISTINCT audit_date FROM dd ORDER BY 1 DESC LIMIT {TREND_DAYS}),
 pages AS (SELECT dispensary_id, category_canonical, max(page_1_n) AS n FROM v WHERE status <> 'DATA ISSUE' GROUP BY 1, 2),
 last_read AS (SELECT dispensary_id, max(audit_date) AS d FROM v GROUP BY 1),
-p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present)
+p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present AND status <> 'DATA ISSUE')
 SELECT json_build_object(
   'edition', '{d}',
   'built_at', to_char(now() AT TIME ZONE 'America/Chicago', 'YYYY-MM-DD"T"HH24:MI'),
@@ -215,7 +215,7 @@ SELECT json_build_object(
   'avg_ahead', (SELECT round(avg(jsonb_array_length(competitors_ahead))::numeric, 1) FROM p1),
   'states', (SELECT json_agg(s) FROM (
       SELECT state, count(DISTINCT dispensary_id) FILTER (WHERE status <> 'DATA ISSUE') AS scored,
-             count(DISTINCT dispensary_id) FILTER (WHERE on_page_1 AND brand_present) AS p1,
+             count(DISTINCT dispensary_id) FILTER (WHERE on_page_1 AND brand_present AND status <> 'DATA ISSUE') AS p1,
              round(avg(first_product_rank) FILTER (WHERE on_page_1 AND brand_present)::numeric, 1) AS avg_rank
       FROM v GROUP BY state ORDER BY 2 DESC) s),
   'matrix', (SELECT json_agg(m) FROM (
