@@ -140,3 +140,52 @@ def test_watch_kill_switch(monkeypatch):
 def test_slack_dm_skips_without_creds(monkeypatch):
     monkeypatch.setattr(cs, "neon_sql", lambda dsn, q, params=None: [{"slack_token": None, "slack_channel": None}])
     assert cs.slack_dm("dsn", "x").startswith("skipped")
+
+
+class ParityDB(FakeDB):
+    def __init__(self, fn_row):
+        super().__init__()
+        self.fn_row, self.alerts = fn_row, []
+
+    def __call__(self, dsn, query, params=None):
+        if "dsps.fn_firstpage_headline" in query:
+            return [self.fn_row]
+        if "ops.fn_enqueue_alert" in query:
+            self.alerts.append(params)
+            return [{"fn_enqueue_alert": 1}]
+        return super().__call__(dsn, query, params)
+
+
+PM = dict(M, built_ts="2026-10-14T09:47:58.815+00:00")
+
+
+def test_headline_parity_match_logs_checked_only(monkeypatch):
+    db = ParityDB({"scored": 455, "doors_p1": 131})
+    monkeypatch.setattr(cs, "neon_sql", db)
+    assert cs.headline_parity("dsn", PM) is True
+    assert [k for k, _ in db.events] == ["headline_parity_checked"]
+    d = db.events[0][1]
+    assert (d["p1"], d["p1_denom"], d["fn_p1"], d["fn_denom"], d["match"]) == (131, 455, 131, 455, True)
+    assert d["built_ts"] == PM["built_ts"] and not db.alerts
+
+
+def test_headline_parity_mismatch_logs_and_texts_ed(monkeypatch):
+    db = ParityDB({"scored": 455, "doors_p1": 129})
+    monkeypatch.setattr(cs, "neon_sql", db)
+    assert cs.headline_parity("dsn", PM) is False
+    assert [k for k, _ in db.events] == ["headline_parity_checked", "headline_mismatch"]
+    assert db.alerts[0][0] == "firstpage:headline_mismatch:2026-10-09"
+    assert "131 of 455" in db.alerts[0][1] and "129 of 455" in db.alerts[0][1]
+
+
+def test_headline_parity_never_raises(monkeypatch):
+    def boom(dsn, query, params=None):
+        raise OSError("neon down")
+    monkeypatch.setattr(cs, "neon_sql", boom)
+    assert cs.headline_parity("dsn", PM) is None
+
+
+def test_metrics_sql_never_counts_data_issue_on_page_1():
+    sql = cs.metrics_sql(dt.date(2026, 10, 14))
+    assert "p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present AND status IS DISTINCT FROM 'DATA ISSUE')" in sql
+    assert "'built_ts', now()" in sql

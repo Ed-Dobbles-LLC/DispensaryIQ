@@ -178,6 +178,10 @@ def pick_edition(counts, ct_today, today_ratio=SHORT_DAY_RATIO):
     raise RuntimeError("no audit date passes the short-day guard")
 
 
+# Brief #5933 (HEADLINE-PARITY-1): a DATA ISSUE row is never counted. The p1 CTE (and the
+# state / rank-1 / top-5 / matrix counts) filter it, in lockstep with dip-service migration 452
+# (dsps.fn_firstpage_headline doors_p1). Without it, edition 2026-10-14 published 286 of 556
+# while the function read 284: doors 37375864 and 39077693 were on page 1 only on DATA ISSUE rows.
 def metrics_sql(edition):
     d = edition.isoformat()
     lo = (edition - dt.timedelta(days=TREND_DAYS + 3)).isoformat()
@@ -194,10 +198,11 @@ dd AS (SELECT audit_date, dispensary_id, bool_or(on_page_1 AND brand_present) AS
 days AS (SELECT DISTINCT audit_date FROM dd ORDER BY 1 DESC LIMIT {TREND_DAYS}),
 pages AS (SELECT dispensary_id, category_canonical, max(page_1_n) AS n FROM v WHERE status <> 'DATA ISSUE' GROUP BY 1, 2),
 last_read AS (SELECT dispensary_id, max(audit_date) AS d FROM v GROUP BY 1),
-p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present)
+p1 AS (SELECT * FROM v WHERE on_page_1 AND brand_present AND status IS DISTINCT FROM 'DATA ISSUE')
 SELECT json_build_object(
   'edition', '{d}',
   'built_at', to_char(now() AT TIME ZONE 'America/Chicago', 'YYYY-MM-DD"T"HH24:MI'),
+  'built_ts', now(),
   'panel', (SELECT count(DISTINCT dispensary_id) FROM ind2 WHERE dup_rn = 1),
   'captured', (SELECT count(DISTINCT dispensary_id) FROM v),
   'scored', (SELECT count(DISTINCT dispensary_id) FROM v WHERE status <> 'DATA ISSUE'),
@@ -205,8 +210,8 @@ SELECT json_build_object(
   'doors_p1', (SELECT count(DISTINCT dispensary_id) FROM p1),
   'doors_p1_4', (SELECT count(DISTINCT dispensary_id) FROM p1 WHERE brand_key NOT IN ('anthem', 'b_noble')),
   'placements', (SELECT count(*) FROM p1),
-  'doors_r1', (SELECT count(DISTINCT dispensary_id) FROM v WHERE brand_present AND first_product_rank = 1),
-  'doors_top5', (SELECT count(DISTINCT dispensary_id) FROM v WHERE brand_present AND first_product_rank BETWEEN 1 AND 5),
+  'doors_r1', (SELECT count(DISTINCT dispensary_id) FROM v WHERE brand_present AND first_product_rank = 1 AND status IS DISTINCT FROM 'DATA ISSUE'),
+  'doors_top5', (SELECT count(DISTINCT dispensary_id) FROM v WHERE brand_present AND first_product_rank BETWEEN 1 AND 5 AND status IS DISTINCT FROM 'DATA ISSUE'),
   'avg_rank', (SELECT round(avg(first_product_rank)::numeric, 1) FROM p1),
   'median_rank', (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY first_product_rank) FROM p1),
   'page_n_min', (SELECT min(n) FROM pages WHERE n > 0), 'page_n_max', (SELECT max(n) FROM pages),
@@ -215,14 +220,14 @@ SELECT json_build_object(
   'avg_ahead', (SELECT round(avg(jsonb_array_length(competitors_ahead))::numeric, 1) FROM p1),
   'states', (SELECT json_agg(s) FROM (
       SELECT state, count(DISTINCT dispensary_id) FILTER (WHERE status <> 'DATA ISSUE') AS scored,
-             count(DISTINCT dispensary_id) FILTER (WHERE on_page_1 AND brand_present) AS p1,
-             round(avg(first_product_rank) FILTER (WHERE on_page_1 AND brand_present)::numeric, 1) AS avg_rank
+             count(DISTINCT dispensary_id) FILTER (WHERE on_page_1 AND brand_present AND status IS DISTINCT FROM 'DATA ISSUE') AS p1,
+             round(avg(first_product_rank) FILTER (WHERE on_page_1 AND brand_present AND status IS DISTINCT FROM 'DATA ISSUE')::numeric, 1) AS avg_rank
       FROM v GROUP BY state ORDER BY 2 DESC) s),
   'matrix', (SELECT json_agg(m) FROM (
       SELECT brand_key, category_canonical, count(DISTINCT dispensary_id) FILTER (WHERE on_page_1) AS doors_p1,
              count(DISTINCT dispensary_id) FILTER (WHERE first_product_rank = 1) AS doors_r1,
              round(avg(first_product_rank) FILTER (WHERE on_page_1)::numeric, 1) AS avg_rank
-      FROM v WHERE brand_present AND brand_key <> 'curaleaf'
+      FROM v WHERE brand_present AND brand_key <> 'curaleaf' AND status IS DISTINCT FROM 'DATA ISSUE'
       GROUP BY 1, 2 HAVING count(DISTINCT dispensary_id) FILTER (WHERE on_page_1) >= 10 ORDER BY 3 DESC, 4 DESC) m),
   'b_noble_p1', (SELECT count(DISTINCT dispensary_id) FROM p1 WHERE brand_key = 'b_noble'),
   'sv_doors', (SELECT count(DISTINCT dispensary_id) FROM v WHERE brand_key = 'select' AND category_canonical = 'vape' AND status <> 'DATA ISSUE'),
@@ -433,6 +438,35 @@ def after_render(dsn, m, ct_today, ct_hm, attempt, why):
         kind = "held" if ct_hm >= HARD_HM else "attempt_short"
         log_event(dsn, kind, {"edition": ct_today.isoformat(), "kept": m["edition"], "ct_hm": f"{ct_hm:04d}",
                               "reason": why})
+
+
+def headline_parity(dsn, m):
+    """Pre-publish check (brief #5933): the page's p1/denominator against
+    dsps.fn_firstpage_headline(edition, built_ts) at the timestamp the metrics were read.
+    Logs 'headline_parity_checked' every render; on a difference also logs
+    'headline_mismatch' and texts Ed via ops.fn_enqueue_alert (decision #366), once per
+    edition. Never raises and never blocks the publish."""
+    try:
+        rows = neon_sql(dsn, "SELECT scored, doors_p1 FROM dsps.fn_firstpage_headline($1::date, $2::timestamptz)",
+                        [m["edition"], m["built_ts"]])
+        fn_p1, fn_denom = int(rows[0]["doors_p1"]), int(rows[0]["scored"])
+    except Exception as e:
+        log(f"headline parity: check failed {e!r}")
+        return None
+    match = (fn_p1, fn_denom) == (int(m["doors_p1"]), int(m["scored"]))
+    detail = {"edition": m["edition"], "built_ts": m["built_ts"], "p1": m["doors_p1"], "p1_denom": m["scored"],
+              "fn_p1": fn_p1, "fn_denom": fn_denom, "match": match}
+    log_event(dsn, "headline_parity_checked", detail)
+    if not match:
+        log_event(dsn, "headline_mismatch", detail)
+        body = (f"DIP First Page {m['edition']}: page headline {m['doors_p1']} of {m['scored']} doors, "
+                f"fn_firstpage_headline {fn_p1} of {fn_denom} at the same timestamp. Published as rendered.")
+        try:
+            neon_sql(dsn, "SELECT ops.fn_enqueue_alert($1, $2)", [f"firstpage:headline_mismatch:{m['edition']}", body])
+        except Exception as e:
+            log(f"headline parity: alert enqueue failed {e!r}")
+    log(f"headline parity: page {m['doors_p1']}/{m['scored']} vs fn {fn_p1}/{fn_denom} -> {'match' if match else 'MISMATCH'}")
+    return match
 
 
 # ---------------------------------------------------------------- rendering
@@ -758,6 +792,8 @@ def main(argv=None):
                 m = json.loads(m)
         if not m.get("scored"):
             raise RuntimeError("edition has zero scored doors; refusing to publish")
+        if dsn and m.get("built_ts"):
+            headline_parity(dsn, m)
         with open(a.template or a.out, encoding="utf-8") as f:
             head = split_head(f.read())
         write_atomic(a.out, render(m, head))
