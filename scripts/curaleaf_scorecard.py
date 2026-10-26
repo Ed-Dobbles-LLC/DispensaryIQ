@@ -42,6 +42,10 @@ SLACK_ED_DM_CHANNEL_ID, read through ops.fn_firstpage_alert_creds() (this role h
 SELECT on ops.secrets). Once per day, guarded by a 'check_missing_alert' row in
 ops.curaleaf_publish_events. Two Railway projects watch each other.
 Kill switch: CURALEAF_WATCH_DISABLED=1.
+Brief #5881 (ALERTS-TEXT-1, CPO decision #366): the same alert is texted to Ed FIRST via
+ops.fn_enqueue_alert() (ops.alert_outbox; the Mac mini poller sends it as an iMessage),
+body "DIP First Page: ..." <= 300 chars, dedupe key firstpage:check_missing:<CT date>.
+Slack is optional and non-fatal: a Slack failure never blocks the text.
 
 Usage:
     python3 scripts/curaleaf_scorecard.py --out site/curaleaf/index.html          # live (Neon HTTP SQL)
@@ -324,10 +328,28 @@ def slack_dm(dsn, text, opener=urllib.request.urlopen):
     return f"sent (ts={res.get('ts')})" if res.get("ok") else f"failed: {res.get('error')}"
 
 
-def watch(dsn, sql=None, dm=None):
+TEXT_PREFIX = "DIP First Page: "
+TEXT_MAX = 300
+
+
+def text_ed(dsn, dedupe_key, alert, sql=None):
+    """Queue one text to Ed via ops.fn_enqueue_alert (brief #5881). Returns 'queued id=N',
+    'duplicate or no handle: <key>' or 'failed: ...'; never raises."""
+    body = TEXT_PREFIX + " ".join(alert.split())
+    body = body if len(body) <= TEXT_MAX else body[:TEXT_MAX - 3] + "..."
+    try:
+        got = (sql or neon_sql)(dsn, "SELECT ops.fn_enqueue_alert($1, $2) AS id", [dedupe_key, body])
+    except Exception as e:  # noqa: BLE001
+        return f"failed: {type(e).__name__}"
+    new_id = got[0].get("id") if got else None
+    return f"queued id={new_id}" if new_id is not None else f"duplicate or no handle: {dedupe_key}"
+
+
+def watch(dsn, sql=None, dm=None, text=None):
     """One cross-watch tick. Returns a short status string; never raises."""
     sql = sql or neon_sql
     dm = dm or slack_dm
+    text = text or text_ed
     if os.environ.get("CURALEAF_WATCH_DISABLED", "").strip().lower() in ("1", "true", "yes", "on"):
         return "disabled"
     try:
@@ -340,12 +362,17 @@ def watch(dsn, sql=None, dm=None):
         return f"ok: {r['checks']} check rows since 06:00 CT"
     if int(r["alerted"]) > 0:
         return "missing; already alerted today"
-    text = (f"First Page check has not run today ({r['ct_today']}, {int(r['ct_hm']):04d} CT): "
+    msg = (f"First Page check has not run today ({r['ct_today']}, {int(r['ct_hm']):04d} CT): "
             "no ops.curaleaf_daily_check_log row since 06:00 CT. dip-service tick "
             "(org_worker.firstpage_check) may be down. Sent by the DispensaryIQ cross-watch.")
-    res = dm(dsn, text)
-    log_event(dsn, "check_missing_alert", {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]), "dm": res})
-    return f"missing; alert {res}"
+    sms = text(dsn, f"firstpage:check_missing:{r['ct_today']}", msg)  # text first; Slack is optional
+    try:
+        res = dm(dsn, msg)
+    except Exception as e:  # noqa: BLE001
+        res = f"failed: {type(e).__name__}"
+    log_event(dsn, "check_missing_alert",
+              {"ct_today": r["ct_today"], "ct_hm": int(r["ct_hm"]), "dm": res, "text": sms})
+    return f"missing; text {sms}; alert {res}"
 
 
 def fdate_email(d):
